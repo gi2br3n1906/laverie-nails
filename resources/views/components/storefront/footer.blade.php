@@ -1,0 +1,8 @@
+<footer class="border-t border-stone-200 bg-[#151412] text-stone-300">
+    <div class="mx-auto grid max-w-screen-2xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-[1.2fr_0.8fr_0.8fr] lg:px-12">
+        <div><p class="font-serif text-3xl text-white">Laverie Nails</p><p class="mt-4 max-w-sm text-sm leading-6 text-stone-400">Press-on nails premium dengan sistem pengukuran manual untuk menemukan fit yang terasa personal.</p></div>
+        <div><p class="text-xs font-semibold uppercase tracking-[0.18em] text-white">Discover</p><div class="mt-4 grid gap-3 text-sm"><a class="hover:text-white" href="{{ route('products.index') }}">Shop all</a><a class="hover:text-white" href="{{ route('measurements.create') }}">Find your size</a><a class="hover:text-white" href="{{ route('guidance') }}">Measurement guide</a></div></div>
+        <div><p class="text-xs font-semibold uppercase tracking-[0.18em] text-white">Account</p><div class="mt-4 grid gap-3 text-sm"><a class="hover:text-white" href="{{ auth()->check() ? route('dashboard') : route('login') }}">My account</a>@auth<a class="hover:text-white" href="{{ route('history.index') }}">Measurement history</a>@else<a class="hover:text-white" href="{{ route('register') }}">Create account</a>@endauth</div></div>
+    </div>
+    <div class="border-t border-white/10 px-5 py-5 text-center text-xs text-stone-500">© {{ date('Y') }} Laverie Nails. Official single-vendor collection.</div>
+</footer>

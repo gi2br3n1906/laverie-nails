@@ -1,0 +1,7 @@
+<x-layouts.app title="Detail Pengukuran">
+    <div class="mx-auto max-w-5xl">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><a class="text-sm font-semibold text-stone-900" href="{{ route('history.index') }}">← Kembali ke riwayat</a><h1 class="mt-4 font-serif text-5xl font-semibold">Detail Pengukuran #{{ $measurement->id }}</h1><p class="mt-3 text-stone-500">{{ $measurement->created_at?->translatedFormat('d F Y, H.i') }}</p></div><a class="rounded-full border border-stone-200 bg-white px-5 py-3 text-center font-semibold text-stone-700 hover:border-stone-300 hover:text-stone-800" href="{{ route('history.print', $measurement) }}">Versi cetak</a></div>
+        <div class="mt-10 grid gap-6"><x-hand-result-card title="Tangan kanan" :data="$measurement->right_hand_data" :size="$measurement->classified_size_right" :confidence="$measurement->confidence_score_right" />@if ($measurement->left_hand_data)<x-hand-result-card title="Tangan kiri" :data="$measurement->left_hand_data" :size="$measurement->classified_size_left" :confidence="$measurement->confidence_score_left" />@endif</div>
+        <form class="mt-8" method="POST" action="{{ route('history.destroy', $measurement) }}">@csrf @method('DELETE')<button class="rounded-full border border-stone-300 bg-stone-100 px-5 py-3 font-semibold text-stone-800 hover:bg-stone-200" type="submit">Hapus riwayat ini</button></form>
+    </div>
+</x-layouts.app>

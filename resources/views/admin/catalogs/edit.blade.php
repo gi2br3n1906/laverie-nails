@@ -1,0 +1,3 @@
+<x-layouts.app title="Edit Produk Laverie">
+    <div class="mx-auto max-w-3xl"><a class="text-sm font-semibold text-stone-900" href="{{ route('admin.catalogs.show', $catalog) }}">← Detail produk</a><h1 class="mt-4 font-serif text-5xl font-semibold">Edit Produk</h1><form class="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8" method="POST" action="{{ route('admin.catalogs.update', $catalog) }}" enctype="multipart/form-data">@csrf @method('PUT')<x-admin.catalog-form :catalog="$catalog" :sizes="$sizes" /><button class="mt-8 rounded-full bg-stone-900 px-7 py-3 font-semibold text-white" type="submit">Simpan perubahan</button></form></div>
+</x-layouts.app>
