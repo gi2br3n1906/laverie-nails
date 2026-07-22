@@ -24,7 +24,7 @@ class HomepageTest extends TestCase
 
         $response->assertOk()
             ->assertSeeInOrder([
-                'CLEAN NAILS',
+                'FIND YOUR PERFECT FIT ⭐',
                 'Laverie Nails',
                 'Nail It, Fit It, Wear It',
                 'perfect fit, stunning nails',
@@ -40,7 +40,7 @@ class HomepageTest extends TestCase
                 'Real reviews from those who trust laverie for salon quality nails at home',
             ])
             ->assertSeeInOrder(['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge'])
-            ->assertSee('images/hero-banner.jpg', false)
+            ->assertSee('images/hero-banner.png', false)
             ->assertSee('our collection')
             ->assertSee('sizing')
             ->assertSee('Verified')

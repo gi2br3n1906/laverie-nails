@@ -1,6 +1,6 @@
 <x-layouts.storefront title="Premium Press-On Nails">
     <section class="relative isolate flex min-h-[38rem] items-center justify-center overflow-hidden bg-[#EAF0F6] sm:min-h-[44rem] lg:min-h-[48rem]" data-homepage-hero>
-        <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="{{ asset('images/hero-banner.jpg') }}" alt="Elegant Laverie press-on nail collection">
+        <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="{{ asset('images/hero-banner.png') }}" alt="Elegant Laverie press-on nail collection">
         <div class="absolute inset-0 -z-10 bg-white/65" aria-hidden="true"></div>
 
         <div class="mx-auto w-full max-w-screen-2xl px-5 py-20 text-center text-[#0C1C39] sm:px-8 lg:px-12">
