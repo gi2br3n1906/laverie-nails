@@ -12,7 +12,7 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-screen bg-[#fbfaf8] font-sans text-stone-950 antialiased">
+    <body class="min-h-screen bg-[#F8FAFC] font-sans text-[#0C1C39] antialiased">
         <x-storefront.announcement />
         <x-navbar />
 

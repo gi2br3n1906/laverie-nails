@@ -26,22 +26,44 @@ class HomepageTest extends TestCase
             ->assertSeeInOrder([
                 'CLEAN NAILS',
                 'Laverie Nails',
-                'Find your perfect fit',
-                'Zero nail damage',
-                'Best Sellers',
-                'Shop By Shape',
-                'The Laverie Collections',
-                'Loved by the Laverie community',
+                'Nail It, Fit It, Wear It',
+                'perfect fit, stunning nails',
+                'SALON QUALITY LOOKS',
+                'ZERO NAIL DAMAGE',
+                'REUSABLE',
+                'AFFORDABLE',
+                '100% HAND PAINTED',
+                'Pretty Picks',
+                'Shop By Style',
+                'Our Handpainted press on nails designed to match every mood, occasion, and style',
+                'Speak to Us',
+                'Real reviews from those who trust laverie for salon quality nails at home',
             ])
-            ->assertSee('Almond')
-            ->assertSee('Coffin')
-            ->assertSee('Oval')
-            ->assertSee('Squoval')
-            ->assertSee('Square')
+            ->assertSeeInOrder(['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge'])
+            ->assertSee('images/hero-banner.jpg', false)
+            ->assertSee('our collection')
+            ->assertSee('sizing')
             ->assertSee('Verified')
             ->assertSee('data-homepage-announcement', false)
             ->assertSee('data-homepage-navbar', false)
             ->assertSee('data-homepage-hero', false);
+    }
+
+    public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Customer Service')
+            ->assertSee('Sizing')
+            ->assertSee('Measurement guide')
+            ->assertSee('NEWSLETTER')
+            ->assertSee('Sign up to save measurement history and get 10% off for your first order.')
+            ->assertSee('placeholder="sign up"', false)
+            ->assertSee('aria-label="WhatsApp"', false)
+            ->assertSee('aria-label="Instagram"', false)
+            ->assertSee('aria-label="TikTok"', false)
+            ->assertDontSee('>Discover<', false)
+            ->assertDontSee('>Account<', false);
     }
 
     public function test_homepage_displays_only_active_products_with_rating_and_price(): void

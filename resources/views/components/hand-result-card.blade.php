@@ -11,7 +11,7 @@
 @endphp
 
 <article class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-200/50">
-    <div class="bg-gradient-to-br from-stone-900 to-stone-700 p-6 text-white sm:p-8">
+    <div class="bg-gradient-to-br from-[#0C1C39] to-[#344761] p-6 text-white sm:p-8">
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-stone-200">{{ $title }}</p>
         <div class="mt-4 flex flex-wrap items-end justify-between gap-4">
             <div>

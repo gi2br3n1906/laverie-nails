@@ -21,7 +21,7 @@
         </div>
 
         @if ($isCustom)
-            <section class="mt-8 overflow-hidden rounded-3xl bg-stone-900 p-6 text-white shadow-2xl sm:p-8">
+            <section class="mt-8 overflow-hidden rounded-3xl bg-[#0C1C39] p-6 text-white shadow-2xl sm:p-8">
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                     <div class="max-w-2xl"><p class="text-sm font-bold uppercase tracking-[0.2em] text-stone-300">Butuh perhatian personal</p><h2 class="mt-2 font-serif text-3xl font-semibold">Ukuran Custom terdeteksi</h2><p class="mt-3 leading-7 text-stone-300">Perbedaan ukuran berada di luar toleransi standar. Konsultasikan hasil Anda sebelum memilih press-on nails.</p></div>
                     <a class="shrink-0 rounded-full bg-emerald-500 px-6 py-4 text-center font-bold text-white transition hover:-translate-y-0.5 hover:bg-emerald-600" href="https://wa.me/?text={{ $consultationMessage }}" target="_blank" rel="noopener noreferrer">Konsultasikan ukuran Custom</a>

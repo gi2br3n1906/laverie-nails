@@ -4,6 +4,6 @@
     </div>
     <div class="mt-5 tracking-[0.08em] text-stone-300" aria-label="Belum ada rating">★★★★★</div>
     <p class="mt-3 text-sm font-semibold text-stone-500">Laverie community</p>
-    <h3 class="mt-4 font-serif text-2xl leading-tight">Your story belongs here</h3>
+    <h3 class="mt-4 font-display text-2xl leading-tight">Your story belongs here</h3>
     <p class="mt-3 text-sm leading-6 text-stone-500">Ulasan pelanggan terverifikasi akan tampil setelah koleksi Laverie mulai digunakan.</p>
 </article>

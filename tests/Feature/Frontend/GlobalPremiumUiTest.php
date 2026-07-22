@@ -48,4 +48,21 @@ class GlobalPremiumUiTest extends TestCase
             $this->assertDoesNotMatchRegularExpression('/(?:rose|pink|red)-(?:50|100|200|300|400|500|600|700|800|900|950)/', $content);
         }
     }
+
+    public function test_key_pages_use_blue_white_tokens_without_true_black_primary_utilities(): void
+    {
+        foreach ([route('home'), route('guidance'), route('measurements.create'), route('products.index'), route('login')] as $url) {
+            $content = $this->get($url)->assertOk()->getContent();
+
+            $this->assertStringContainsString('#0C1C39', $content);
+            $this->assertDoesNotMatchRegularExpression('/\b(?:bg|text|border)-black\b/', $content);
+        }
+    }
+
+    public function test_login_card_does_not_repeat_the_laverie_brand_above_its_heading(): void
+    {
+        $content = $this->get(route('login'))->assertOk()->getContent();
+
+        $this->assertDoesNotMatchRegularExpression('/<header[^>]*>\s*<p[^>]*>Laverie Nails<\/p>\s*<h1[^>]*>Welcome back<\/h1>/s', $content);
+    }
 }

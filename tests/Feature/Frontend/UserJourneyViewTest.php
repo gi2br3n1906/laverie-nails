@@ -18,18 +18,36 @@ class UserJourneyViewTest extends TestCase
     {
         $this->get(route('guidance'))
             ->assertOk()
-            ->assertSee('Panduan Pengukuran')
-            ->assertSee('manual', false)
-            ->assertSee('<svg', false)
+            ->assertSee('How to Measure Your Nails')
+            ->assertSee('a quick and easy guide to ensure your press on nails fit comfortably and look stunning')
+            ->assertSee('watch the video below for a more detailed guide')
+            ->assertSeeInOrder(['Measure 1', 'measure-1.svg', 'Measure 2', 'measure-2.svg'])
             ->assertSee('<video', false)
-            ->assertSee(route('measurements.create'), false);
+            ->assertDontSee('Mulai pengukuran')
+            ->assertDontSee('Tiga langkah')
+            ->assertDontSee('Persiapkan, ukur, lalu catat');
     }
 
     public function test_input_page_has_five_finger_fields_per_hand_and_scoped_toggle_hooks(): void
     {
         $response = $this->get(route('measurements.create'))
             ->assertOk()
-            ->assertSee('Ukur Kuku Anda')
+            ->assertSee('SIZING')
+            ->assertSee('enter the nail measurement in milimeters')
+            ->assertSee('Jempol')
+            ->assertSee('thumb')
+            ->assertSee('Telunjuk')
+            ->assertSee('index')
+            ->assertSee('Jari tengah')
+            ->assertSee('middle')
+            ->assertSee('Jari manis')
+            ->assertSee('ring')
+            ->assertSee('Kelingking')
+            ->assertSee('pinky')
+            ->assertDontSee('Wajib diisi lengkap untuk lima jari.')
+            ->assertDontSee('Aktifkan untuk mengukur tangan kiri secara independen.')
+            ->assertDontSee('Isi lengkap ketika toggle diaktifkan.')
+            ->assertDontSee('Ukur bagian nail plate yang paling lebar.')
             ->assertSee('data-measurement-form', false)
             ->assertSee('data-hand-toggle', false)
             ->assertSee('data-left-hand-panel', false);

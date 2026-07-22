@@ -1,5 +1,5 @@
 <article class="min-w-0" aria-label="Produk Laverie segera hadir">
-    <div class="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#eee3dd] via-[#f8efeb] to-[#d9c4b9]">
+    <div class="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#EAF0F6] via-[#F8FAFC] to-[#D9E4F0]">
         <span class="absolute left-3 top-3 rounded-full bg-white/80 px-3 py-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-stone-600 sm:left-4 sm:top-4">Coming soon</span>
         <div class="absolute inset-0 grid place-items-center" aria-hidden="true">
             <div class="flex -rotate-6 items-end gap-2 opacity-80">
@@ -10,5 +10,5 @@
             </div>
         </div>
     </div>
-    <div class="px-1 pt-4"><div class="text-xs tracking-[0.06em] text-stone-300">★★★★★</div><h3 class="mt-2 font-serif text-xl text-stone-800 sm:text-2xl">Laverie signature set</h3><p class="mt-2 text-sm font-semibold text-stone-500">Koleksi segera hadir</p></div>
+    <div class="px-1 pt-4"><div class="text-xs tracking-[0.06em] text-stone-300">★★★★★</div><h3 class="mt-2 font-display text-xl text-[#0C1C39] sm:text-2xl">Laverie signature set</h3><p class="mt-2 text-sm font-semibold text-stone-500">Koleksi segera hadir</p></div>
 </article>

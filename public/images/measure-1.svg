@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title description">
+  <title id="title">Measure across the widest part of the nail</title>
+  <desc id="description">A hand-drawn nail with a millimeter ruler placed horizontally across its widest point.</desc>
+  <rect width="800" height="600" rx="48" fill="#F8FAFC"/>
+  <circle cx="128" cy="112" r="72" fill="#EAF0F6"/>
+  <circle cx="690" cy="478" r="96" fill="#DDE6F0"/>
+  <path d="M302 500c-34-121-48-278 20-370 29-39 92-36 118 6 53 84 58 249 31 364" fill="#D9E4F0" stroke="#0C1C39" stroke-width="8"/>
+  <path d="M345 177c22-34 59-34 81 0 31 49 38 137 18 199-13 40-37 62-59 62s-47-22-59-62c-20-62-13-150 19-199Z" fill="#FFFFFF" stroke="#92A1B5" stroke-width="8"/>
+  <g transform="translate(176 276)">
+    <rect width="420" height="76" rx="18" fill="#FFFFFF" stroke="#0C1C39" stroke-width="6"/>
+    <g stroke="#92A1B5" stroke-width="4">
+      <path d="M28 0v30M60 0v20M92 0v30M124 0v20M156 0v30M188 0v20M220 0v30M252 0v20M284 0v30M316 0v20M348 0v30M380 0v20"/>
+    </g>
+    <text x="210" y="58" text-anchor="middle" fill="#0C1C39" font-family="Arial, sans-serif" font-size="20" font-weight="700">MILLIMETERS</text>
+  </g>
+  <path d="M300 258h170" fill="none" stroke="#0C1C39" stroke-width="6" stroke-linecap="round"/>
+  <path d="m318 242-18 16 18 16M452 242l18 16-18 16" fill="none" stroke="#0C1C39" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title description">
+  <title id="title">Record every nail measurement</title>
+  <desc id="description">Five stylized nails shown beside a measurement note with millimeter values.</desc>
+  <rect width="800" height="600" rx="48" fill="#F8FAFC"/>
+  <circle cx="690" cy="110" r="86" fill="#EAF0F6"/>
+  <circle cx="112" cy="492" r="70" fill="#DDE6F0"/>
+  <g transform="translate(104 134)" stroke="#0C1C39" stroke-width="7">
+    <path d="M12 292V91c0-48 72-48 72 0v201" fill="#FFFFFF"/>
+    <path d="M100 292V58c0-51 76-51 76 0v234" fill="#EAF0F6"/>
+    <path d="M192 292V33c0-53 80-53 80 0v259" fill="#FFFFFF"/>
+    <path d="M288 292V67c0-49 74-49 74 0v225" fill="#EAF0F6"/>
+    <path d="M378 292V112c0-44 66-44 66 0v180" fill="#FFFFFF"/>
+    <path d="M0 292h458" fill="none" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(526 194)">
+    <rect width="178" height="256" rx="26" fill="#FFFFFF" stroke="#92A1B5" stroke-width="6"/>
+    <path d="M38 57h102M38 101h102M38 145h102M38 189h102" stroke="#D1DAE5" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="42" cy="57" r="7" fill="#0C1C39"/>
+    <circle cx="42" cy="101" r="7" fill="#0C1C39"/>
+    <circle cx="42" cy="145" r="7" fill="#0C1C39"/>
+    <circle cx="42" cy="189" r="7" fill="#0C1C39"/>
+    <text x="92" y="230" text-anchor="middle" fill="#0C1C39" font-family="Arial, sans-serif" font-size="18" font-weight="700">RECORD IN MM</text>
+  </g>
+</svg>
