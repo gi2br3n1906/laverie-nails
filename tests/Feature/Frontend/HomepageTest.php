@@ -41,6 +41,7 @@ class HomepageTest extends TestCase
             ])
             ->assertSeeInOrder(['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge'])
             ->assertSee('images/hero-banner.png', false)
+            ->assertSee('/images/hero-banner.png?v=', false)
             ->assertSee('our collection')
             ->assertSee('sizing')
             ->assertSee('Verified')

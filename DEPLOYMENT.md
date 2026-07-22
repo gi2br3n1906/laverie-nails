@@ -68,15 +68,31 @@ chmod +x deploy.sh
 
 The deployment script performs these steps in order:
 
-1. Validates Docker, Compose, `.env`, and `APP_KEY`.
-2. Runs `docker-compose up -d --build --remove-orphans` (or the Compose plugin fallback).
-3. Creates the persistent SQLite file and Laravel runtime directories.
-4. Applies `www-data` ownership and group-writable directory/file permissions.
-5. Clears stale file-based bootstrap caches without querying a fresh database.
-6. Runs `php artisan migrate --force`.
-7. Synchronizes the canonical XS/S/M/L records using the idempotent `SizeStandardSeeder`.
-8. Clears remaining caches, then runs `php artisan optimize` and `php artisan view:cache`.
-9. Prints final container status.
+1. Fast-forwards the checked-out server branch from its configured Git upstream. Set `DEPLOY_PULL_LATEST=false` only when source synchronization is handled externally.
+2. Validates Docker, Compose, `.env`, `APP_KEY`, and required static assets.
+3. Builds current PHP-FPM and Nginx images, then force-recreates both containers. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
+4. Creates the persistent SQLite file and Laravel runtime directories.
+5. Applies `www-data` ownership and group-writable directory/file permissions.
+6. Clears stale file-based bootstrap caches without querying a fresh database.
+7. Runs `php artisan migrate --force`.
+8. Synchronizes the canonical XS/S/M/L records using the idempotent `SizeStandardSeeder`.
+9. Clears remaining caches, then runs `php artisan optimize` and `php artisan view:cache`.
+10. Verifies that the hero asset SHA-256 checksum is identical in the server checkout, PHP-FPM image, and Nginx image.
+11. Downloads the cache-busted hero URL directly from the local Nginx origin and verifies its checksum.
+12. Prints final container status.
+
+Production does not bind-mount the repository. Editing or uploading a file directly into the host checkout does not alter a running container until the images are rebuilt and containers are recreated. Public image URLs include a content-derived query version so a changed image bypasses existing browser or CDN entries. Dynamic HTML responses are marked `no-store`; if Cloudflare has an explicit Cache Everything rule that ignores origin headers, purge that rule/cache once and exclude application HTML from edge caching.
+
+To diagnose a deployed hero image, compare these values on the server:
+
+```bash
+sha256sum public/images/hero-banner.png
+docker compose exec -T php-fpm sha256sum /var/www/html/public/images/hero-banner.png
+docker compose exec -T nginx sha256sum /var/www/html/public/images/hero-banner.png
+curl -fsS http://127.0.0.1:${APP_PORT:-8080}/ | grep -o 'images/hero-banner.png?v=[a-f0-9]*'
+```
+
+All three checksums must match. The final command must show a `?v=` value. If the local origin is correct but the public domain is stale, the remaining cache is outside Docker (usually a Cloudflare Cache Everything rule); purge it once and preserve the HTML bypass rule.
 
 ## Health and operations
 
