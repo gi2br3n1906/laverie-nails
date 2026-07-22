@@ -1,21 +1,47 @@
-<x-layouts.storefront title="Premium Press-On Nails">
+<x-layouts.storefront title="Premium Press-On Nails" overlay-navigation>
     @php
         $heroBannerPath = 'images/hero-banner.png';
         $heroBannerVersion = substr(hash_file('sha256', public_path($heroBannerPath)), 0, 12);
     @endphp
 
-    <section class="relative isolate flex min-h-[38rem] items-center justify-center overflow-hidden bg-[#EAF0F6] sm:min-h-[44rem] lg:min-h-[48rem]" data-homepage-hero>
+    <section class="relative isolate flex min-h-[38rem] items-end justify-center overflow-hidden bg-[#EAF0F6] sm:min-h-[44rem] lg:min-h-[48rem]" data-homepage-hero>
         <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="{{ asset($heroBannerPath) }}?v={{ $heroBannerVersion }}" alt="Elegant Laverie press-on nail collection">
-        <div class="absolute inset-0 -z-10 bg-white/65" aria-hidden="true"></div>
 
-        <div class="mx-auto w-full max-w-screen-2xl px-5 py-20 text-center text-[#0C1C39] sm:px-8 lg:px-12">
-            <div class="mx-auto max-w-4xl">
-                <p class="font-script text-5xl leading-none sm:text-7xl lg:text-8xl">Nail It, Fit It, Wear It</p>
-                <h1 class="mt-5 font-display text-4xl font-semibold lowercase leading-tight tracking-[-0.04em] sm:text-6xl lg:text-7xl">perfect fit, stunning nails</h1>
-                <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-                    <a class="inline-flex min-h-12 items-center justify-center rounded-full bg-[#0C1C39] px-9 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">our collection</a>
-                    <a class="inline-flex min-h-12 items-center justify-center rounded-full border border-[#0C1C39] bg-white/70 px-9 text-xs font-semibold uppercase tracking-[0.15em] text-[#0C1C39] transition hover:bg-white" href="{{ route('measurements.create') }}">sizing</a>
-                </div>
+        <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
+            <div class="mx-auto max-w-4xl drop-shadow-lg">
+                <h1 class="font-script text-6xl leading-none text-white sm:text-8xl lg:text-9xl">Nail It, Fit It, Wear It</h1>
+                <p class="mt-4 text-[0.65rem] font-semibold tracking-[0.3em] text-white sm:text-xs">temukan ukuranmu, tampil lebih maksimal</p>
+            </div>
+            <div class="mt-7 flex items-center justify-center gap-2" aria-label="Hero slide 1 of 3" data-homepage-hero-indicators>
+                <span class="size-2 rounded-full bg-white" aria-hidden="true"></span>
+                <span class="size-2 rounded-full bg-white/60" aria-hidden="true"></span>
+                <span class="size-2 rounded-full bg-white/60" aria-hidden="true"></span>
+            </div>
+        </div>
+    </section>
+
+    @php
+        $sizeProducts = $catalogs->take(5);
+        $collectionProducts = $catalogs->count() > 5 ? $catalogs->slice(5, 4) : $catalogs->take(4);
+    @endphp
+
+    <section class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="find-size-heading" data-homepage-find-size>
+        <div class="mx-auto max-w-screen-2xl">
+            <div class="text-center">
+                <h2 class="font-display text-4xl font-semibold tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="find-size-heading">Find Your Size</h2>
+                <a class="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.18em] text-[#0C1C39] transition hover:bg-[#0C1C39] hover:text-white" href="{{ route('measurements.create') }}">SIZING</a>
+            </div>
+
+            <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5" data-homepage-size-grid>
+                @forelse ($sizeProducts as $catalog)
+                    <x-storefront.size-product-card :catalog="$catalog" />
+                @empty
+                    @for ($card = 0; $card < 5; $card++)<x-storefront.size-product-placeholder />@endfor
+                @endforelse
+
+                @if ($sizeProducts->isNotEmpty() && $sizeProducts->count() < 5)
+                    @for ($card = $sizeProducts->count(); $card < 5; $card++)<x-storefront.size-product-placeholder />@endfor
+                @endif
             </div>
         </div>
     </section>
@@ -27,22 +53,6 @@
             <x-storefront.benefit title="REUSABLE" icon="reuse" />
             <x-storefront.benefit title="AFFORDABLE" icon="value" />
             <x-storefront.benefit title="100% HAND PAINTED" icon="painted" />
-        </div>
-    </section>
-
-    @php
-        $bestSellers = $catalogs->take(4);
-        $collectionProducts = $catalogs->count() > 4 ? $catalogs->slice(4, 4) : $bestSellers;
-    @endphp
-
-    <section class="mx-auto max-w-screen-2xl px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="best-sellers-heading">
-        <div class="flex items-end justify-between gap-5"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#92A1B5]">Most loved</p><h2 class="mt-3 font-display text-4xl tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="best-sellers-heading">Pretty Picks</h2></div><a class="hidden border-b border-[#0C1C39] pb-1 text-xs font-semibold uppercase tracking-[0.15em] text-[#0C1C39] sm:inline" href="{{ route('products.index') }}">View all</a></div>
-        <div class="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
-            @forelse ($bestSellers as $catalog)
-                <x-storefront.product-card :catalog="$catalog" />
-            @empty
-                @for ($card = 0; $card < 4; $card++)<x-storefront.product-placeholder />@endfor
-            @endforelse
         </div>
     </section>
 

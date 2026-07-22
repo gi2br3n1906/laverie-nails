@@ -1,1 +1,3 @@
-<x-storefront.navbar />
+@props(['overlay' => false])
+
+<x-storefront.navbar :overlay="$overlay" />

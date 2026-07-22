@@ -25,15 +25,16 @@ class HomepageTest extends TestCase
         $response->assertOk()
             ->assertSeeInOrder([
                 'FIND YOUR PERFECT FIT ⭐',
-                'Laverie Nails',
+                'laverie nails',
                 'Nail It, Fit It, Wear It',
-                'perfect fit, stunning nails',
+                'temukan ukuranmu, tampil lebih maksimal',
+                'Find Your Size',
+                'SIZING',
                 'SALON QUALITY LOOKS',
                 'ZERO NAIL DAMAGE',
                 'REUSABLE',
                 'AFFORDABLE',
                 '100% HAND PAINTED',
-                'Pretty Picks',
                 'Shop By Style',
                 'Our Handpainted press on nails designed to match every mood, occasion, and style',
                 'Speak to Us',
@@ -42,12 +43,29 @@ class HomepageTest extends TestCase
             ->assertSeeInOrder(['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge'])
             ->assertSee('images/hero-banner.png', false)
             ->assertSee('/images/hero-banner.png?v=', false)
-            ->assertSee('our collection')
-            ->assertSee('sizing')
+            ->assertSee('data-overlay-navigation="true"', false)
+            ->assertSee('data-homepage-hero-indicators', false)
+            ->assertSee('data-homepage-find-size', false)
+            ->assertSee('data-homepage-size-grid', false)
             ->assertSee('Verified')
             ->assertSee('data-homepage-announcement', false)
             ->assertSee('data-homepage-navbar', false)
-            ->assertSee('data-homepage-hero', false);
+            ->assertSee('data-homepage-hero', false)
+            ->assertDontSee('Pretty Picks')
+            ->assertDontSee('perfect fit, stunning nails');
+
+        $content = $response->getContent();
+        preg_match('/<section[^>]*data-homepage-hero[^>]*>(.*?)<\/section>/s', $content, $heroMatch);
+
+        $this->assertNotEmpty($heroMatch);
+        $this->assertStringContainsString('items-end', $heroMatch[0]);
+        $this->assertStringContainsString('text-white', $heroMatch[0]);
+        $this->assertStringContainsString('drop-shadow-lg', $heroMatch[0]);
+        $this->assertStringContainsString('data-homepage-hero-indicators', $heroMatch[0]);
+        $this->assertSame(3, substr_count($heroMatch[0], 'rounded-full bg-white'));
+        $this->assertStringNotContainsString('bg-white/65', $heroMatch[0]);
+        $this->assertStringNotContainsString('our collection', strtolower($heroMatch[0]));
+        $this->assertStringNotContainsString('>SIZING<', $heroMatch[0]);
     }
 
     public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
@@ -80,9 +98,30 @@ class HomepageTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('LAVERIE-ACTIVE-SET')
+            ->assertSee('Rp 179.000,00')
             ->assertSee('Rp 179.000')
             ->assertSee('5.0')
             ->assertDontSee('LAVERIE-HIDDEN-SET');
+    }
+
+    public function test_find_your_size_renders_five_square_centered_product_slots(): void
+    {
+        NailCatalog::factory()->count(5)->sequence(
+            ['title' => 'Pure Angelic', 'price' => '160000'],
+            ['title' => 'Blue Whisper', 'price' => '165000'],
+            ['title' => 'Pearl Muse', 'price' => '170000'],
+            ['title' => 'Soft Petal', 'price' => '175000'],
+            ['title' => 'Midnight Dew', 'price' => '180000'],
+        )->create();
+
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        $this->assertSame(5, substr_count($content, 'data-homepage-size-product'));
+        $this->assertStringContainsString('lg:grid-cols-5', $content);
+        $this->assertStringContainsString('aspect-square', $content);
+        $this->assertStringContainsString('text-center', $content);
+        $this->assertStringContainsString('Pure Angelic', $content);
+        $this->assertStringContainsString('Rp 160.000,00', $content);
     }
 
     public function test_homepage_has_no_inline_styles_or_inline_scripts(): void

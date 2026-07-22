@@ -1,4 +1,7 @@
-@props(['title' => 'Laverie Nails'])
+@props([
+    'title' => 'Laverie Nails',
+    'overlayNavigation' => false,
+])
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -14,11 +17,20 @@
     </head>
     <body class="min-h-screen bg-[#F8FAFC] font-sans text-[#0C1C39] antialiased">
         <x-storefront.announcement />
-        <x-navbar />
 
-        <main>
-            {{ $slot }}
-        </main>
+        @if ($overlayNavigation)
+            <div class="relative">
+                <x-navbar overlay />
+                <main>
+                    {{ $slot }}
+                </main>
+            </div>
+        @else
+            <x-navbar />
+            <main>
+                {{ $slot }}
+            </main>
+        @endif
 
         <x-storefront.footer />
     </body>

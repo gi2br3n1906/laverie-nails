@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function index(): View
     {
         return view('welcome', [
-            'catalogs' => $this->marketplaceService->products(null)->take(8),
+            'catalogs' => $this->marketplaceService->products(null)->take(9),
             'reviews' => $this->marketplaceService->featuredReviews(),
         ]);
     }

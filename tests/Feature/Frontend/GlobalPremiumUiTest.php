@@ -20,8 +20,21 @@ class GlobalPremiumUiTest extends TestCase
                 ->assertOk()
                 ->assertSee('data-homepage-announcement', false)
                 ->assertSee('data-homepage-navbar', false)
+                ->assertSee('data-overlay-navigation="false"', false)
                 ->assertSee('Laverie Nails');
         }
+    }
+
+    public function test_only_homepage_uses_the_transparent_white_overlay_navigation(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('data-overlay-navigation="true"', $content);
+        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*absolute[^"]*text-white[^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>laverie nails<\/a>/', $content);
+        $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
+        $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
+        $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Buka menu"/', $content);
     }
 
     public function test_authenticated_and_admin_pages_share_the_premium_chrome(): void
