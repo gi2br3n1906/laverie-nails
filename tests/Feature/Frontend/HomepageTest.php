@@ -25,11 +25,12 @@ class HomepageTest extends TestCase
         $response->assertOk()
             ->assertSeeInOrder([
                 'FIND YOUR PERFECT FIT ⭐',
-                'laverie nails',
+                'Laverie Nails',
                 'Nail It, Fit It, Wear It',
                 'temukan ukuranmu, tampil lebih maksimal',
-                'Find Your Size',
+                'OUR COLLECTION',
                 'SIZING',
+                'Featured Sets',
                 'SALON QUALITY LOOKS',
                 'ZERO NAIL DAMAGE',
                 'REUSABLE',
@@ -45,7 +46,8 @@ class HomepageTest extends TestCase
             ->assertSee('/images/hero-banner.png?v=', false)
             ->assertSee('data-overlay-navigation="true"', false)
             ->assertSee('data-homepage-hero-indicators', false)
-            ->assertSee('data-homepage-find-size', false)
+            ->assertSee('data-homepage-hero-ctas', false)
+            ->assertSee('data-homepage-featured-sets', false)
             ->assertSee('data-homepage-size-grid', false)
             ->assertSee('Verified')
             ->assertSee('data-homepage-announcement', false)
@@ -62,10 +64,14 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('text-white', $heroMatch[0]);
         $this->assertStringContainsString('drop-shadow-lg', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-indicators', $heroMatch[0]);
+        $this->assertStringContainsString('data-homepage-hero-ctas', $heroMatch[0]);
         $this->assertSame(3, substr_count($heroMatch[0], 'rounded-full bg-white'));
         $this->assertStringNotContainsString('bg-white/65', $heroMatch[0]);
-        $this->assertStringNotContainsString('our collection', strtolower($heroMatch[0]));
-        $this->assertStringNotContainsString('>SIZING<', $heroMatch[0]);
+        $this->assertStringContainsString('>OUR COLLECTION<', $heroMatch[0]);
+        $this->assertStringContainsString('>SIZING<', $heroMatch[0]);
+        $this->assertStringContainsString(route('products.index'), $heroMatch[0]);
+        $this->assertStringContainsString(route('measurements.create'), $heroMatch[0]);
+        $this->assertSame(1, substr_count($content, '>SIZING<'));
     }
 
     public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
@@ -104,7 +110,7 @@ class HomepageTest extends TestCase
             ->assertDontSee('LAVERIE-HIDDEN-SET');
     }
 
-    public function test_find_your_size_renders_five_square_centered_product_slots(): void
+    public function test_featured_sets_renders_five_square_centered_product_slots_without_duplicate_sizing_cta(): void
     {
         NailCatalog::factory()->count(5)->sequence(
             ['title' => 'Pure Angelic', 'price' => '160000'],
@@ -122,6 +128,9 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('text-center', $content);
         $this->assertStringContainsString('Pure Angelic', $content);
         $this->assertStringContainsString('Rp 160.000,00', $content);
+        $this->assertStringContainsString('Featured Sets', $content);
+        $this->assertStringNotContainsString('data-homepage-find-size', $content);
+        $this->assertSame(1, substr_count($content, '>SIZING<'));
     }
 
     public function test_homepage_has_no_inline_styles_or_inline_scripts(): void

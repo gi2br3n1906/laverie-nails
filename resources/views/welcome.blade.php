@@ -11,6 +11,10 @@
             <div class="mx-auto max-w-4xl drop-shadow-lg">
                 <h1 class="font-script text-6xl leading-none text-white sm:text-8xl lg:text-9xl">Nail It, Fit It, Wear It</h1>
                 <p class="mt-4 text-[0.65rem] font-semibold tracking-[0.3em] text-white sm:text-xs">temukan ukuranmu, tampil lebih maksimal</p>
+                <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row" data-homepage-hero-ctas>
+                    <a class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">OUR COLLECTION</a>
+                    <a class="inline-flex min-h-11 items-center justify-center rounded-full border border-white bg-white/10 px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#0C1C39]" href="{{ route('measurements.create') }}">SIZING</a>
+                </div>
             </div>
             <div class="mt-7 flex items-center justify-center gap-2" aria-label="Hero slide 1 of 3" data-homepage-hero-indicators>
                 <span class="size-2 rounded-full bg-white" aria-hidden="true"></span>
@@ -25,11 +29,10 @@
         $collectionProducts = $catalogs->count() > 5 ? $catalogs->slice(5, 4) : $catalogs->take(4);
     @endphp
 
-    <section class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="find-size-heading" data-homepage-find-size>
+    <section class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="featured-sets-heading" data-homepage-featured-sets>
         <div class="mx-auto max-w-screen-2xl">
             <div class="text-center">
-                <h2 class="font-display text-4xl font-semibold tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="find-size-heading">Find Your Size</h2>
-                <a class="mt-6 inline-flex min-h-11 items-center justify-center rounded-full border border-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.18em] text-[#0C1C39] transition hover:bg-[#0C1C39] hover:text-white" href="{{ route('measurements.create') }}">SIZING</a>
+                <h2 class="font-display text-4xl font-semibold tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="featured-sets-heading">Featured Sets</h2>
             </div>
 
             <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5" data-homepage-size-grid>

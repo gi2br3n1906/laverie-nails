@@ -23,6 +23,9 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('watch the video below for a more detailed guide')
             ->assertSeeInOrder(['Measure 1', 'measure-1.svg', 'Measure 2', 'measure-2.svg'])
             ->assertSee('<video', false)
+            ->assertSeeInOrder(['<video', 'Input Data'], false)
+            ->assertSee('data-guidance-input-cta', false)
+            ->assertSee('href="'.route('measurements.create').'"', false)
             ->assertDontSee('Mulai pengukuran')
             ->assertDontSee('Tiga langkah')
             ->assertDontSee('Persiapkan, ukur, lalu catat');

@@ -31,7 +31,10 @@ class GlobalPremiumUiTest extends TestCase
 
         $this->assertStringContainsString('data-overlay-navigation="true"', $content);
         $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*absolute[^"]*text-white[^"]*"[^>]*data-homepage-navbar/s', $content);
-        $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>laverie nails<\/a>/', $content);
+        $this->assertMatchesRegularExpression('/grid-cols-\[1fr_auto_1fr\]/', $content);
+        $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Buka menu".*?data-navbar-brand/s', $content);
+        $this->assertMatchesRegularExpression('/data-navbar-brand[^>]*>Laverie Nails<\/a>.*?data-navbar-right/s', $content);
+        $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>Laverie Nails<\/a>/', $content);
         $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
         $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
         $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Buka menu"/', $content);

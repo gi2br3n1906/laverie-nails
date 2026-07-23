@@ -30,5 +30,6 @@
         <div class="mt-8 rounded-[2rem] border border-[#92A1B5]/40 bg-white p-3 shadow-xl shadow-[#0C1C39]/5 sm:p-5">
             <video class="aspect-video w-full rounded-2xl bg-[#EAF0F6]" controls preload="metadata" aria-label="Video guide for measuring nails"><track kind="captions" srclang="en" label="English"></video>
         </div>
+        <a class="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0C1C39] px-10 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#192B48]" href="{{ route('measurements.create') }}" data-guidance-input-cta>Input Data</a>
     </section>
 </x-layouts.app>
