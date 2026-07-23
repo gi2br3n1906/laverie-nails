@@ -2,16 +2,14 @@
 
 <section class="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="size-reference-heading">
     <div class="max-w-2xl">
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-stone-600">Referensi aktif</p>
-        <h2 class="mt-2 font-serif text-3xl font-semibold" id="size-reference-heading">Perbandingan ukuran</h2>
-        <p class="mt-3 text-sm leading-6 text-stone-600">Seluruh angka berikut diambil langsung dari standar ukuran aktif di database.</p>
+        <h2 class="font-serif text-3xl font-semibold" id="size-reference-heading">Size Chart</h2>
     </div>
     <div class="mt-6 overflow-hidden rounded-2xl border border-stone-100">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-stone-100 text-left text-sm">
                 <thead class="bg-stone-100 text-xs uppercase tracking-wider text-stone-800">
                     <tr>
-                        <th class="px-4 py-4" scope="col">Ukuran</th><th class="px-4 py-4" scope="col">Jempol</th><th class="px-4 py-4" scope="col">Telunjuk</th><th class="px-4 py-4" scope="col">Tengah</th><th class="px-4 py-4" scope="col">Manis</th><th class="px-4 py-4" scope="col">Kelingking</th><th class="px-4 py-4" scope="col">Toleransi</th>
+                        <th class="px-4 py-4" scope="col">SIZE</th><th class="px-4 py-4" scope="col">THUMB</th><th class="px-4 py-4" scope="col">INDEX</th><th class="px-4 py-4" scope="col">MIDDLE</th><th class="px-4 py-4" scope="col">RING</th><th class="px-4 py-4" scope="col">PINKY</th><th class="px-4 py-4" scope="col">TOLERANCE</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-stone-100 bg-white">

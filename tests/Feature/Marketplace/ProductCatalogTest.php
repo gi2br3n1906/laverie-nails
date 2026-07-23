@@ -20,6 +20,11 @@ class ProductCatalogTest extends TestCase
 
         $this->get(route('products.index'))
             ->assertOk()
+            ->assertSee('Our Collection')
+            ->assertSee('Handpainted press on nails designed to match every mood, occasion, and style')
+            ->assertSee('>All<', false)
+            ->assertDontSee('Official Laverie collection')
+            ->assertDontSee('Koleksi Press-On Nails')
             ->assertSee('PUBLIC-LAVERIE-CATALOG')
             ->assertDontSee('INACTIVE-CATALOG');
     }
@@ -56,7 +61,8 @@ class ProductCatalogTest extends TestCase
         $standard
             ->assertOk()
             ->assertSee(route('products.index', ['size' => 'M']), false)
-            ->assertDontSee('Konsultasikan ukuran Custom');
+            ->assertSee('view M press on nails')
+            ->assertDontSee('consult here');
 
         $custom = $this->post(route('measurements.store'), [
             'right_hand_data' => $this->hand(25, 25, 25, 25, 25),
@@ -64,7 +70,7 @@ class ProductCatalogTest extends TestCase
 
         $custom
             ->assertOk()
-            ->assertSee('Konsultasikan ukuran Custom')
+            ->assertSee('consult here')
             ->assertDontSee(route('products.index', ['size' => 'Custom']), false);
     }
 

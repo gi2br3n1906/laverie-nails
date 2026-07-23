@@ -22,6 +22,12 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('a quick and easy guide to ensure your press on nails fit comfortably and look stunning')
             ->assertSee('watch the video below for a more detailed guide')
             ->assertSeeInOrder(['Measure 1', 'measure-1.svg', 'Measure 2', 'measure-2.svg'])
+            ->assertSee('data-guidance-image-grid="measure-1"', false)
+            ->assertSee('data-guidance-image-grid="measure-2"', false)
+            ->assertSee('aspect-[3/4]', false)
+            ->assertDontSee('Your perfect fit starts here')
+            ->assertDontSee('Step one')
+            ->assertDontSee('Step two')
             ->assertSee('<video', false)
             ->assertSeeInOrder(['<video', 'Input Data'], false)
             ->assertSee('data-guidance-input-cta', false)
@@ -35,8 +41,13 @@ class UserJourneyViewTest extends TestCase
     {
         $response = $this->get(route('measurements.create'))
             ->assertOk()
-            ->assertSee('SIZING')
+            ->assertSee('Sizing')
             ->assertSee('enter the nail measurement in milimeters')
+            ->assertSee('sizes of the fingernails on the right and left hands are different')
+            ->assertSee('<em', false)
+            ->assertSee('← Back')
+            ->assertSee('>Result<', false)
+            ->assertDontSee('Find your perfect fit')
             ->assertSee('Jempol')
             ->assertSee('thumb')
             ->assertSee('Telunjuk')
@@ -106,12 +117,17 @@ class UserJourneyViewTest extends TestCase
             ->assertViewIs('measurements.result')
             ->assertViewHas('measurement', fn (Measurement $viewMeasurement): bool => $viewMeasurement->is($measurement))
             ->assertViewHas('sizeStandards', fn ($standards): bool => $standards->contains('size_name', 'DB-LARGE'))
-            ->assertSee('Hasil Klasifikasi')
+            ->assertSee('Sizing')
+            ->assertSee('measurement successful')
+            ->assertSee('recommendation')
+            ->assertSeeInOrder(['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'])
+            ->assertSee('Size Chart')
+            ->assertSee('re-measure')
             ->assertSee('100.00%')
             ->assertSee('16.0 mm')
             ->assertSee('DB-LARGE')
             ->assertDontSee('INACTIVE-DB-SIZE')
-            ->assertDontSee('Konsultasikan ukuran Custom');
+            ->assertDontSee('consult here');
     }
 
     public function test_custom_result_prominently_displays_whatsapp_consultation_cta(): void
@@ -123,7 +139,9 @@ class UserJourneyViewTest extends TestCase
         ])
             ->assertOk()
             ->assertSee('Custom')
-            ->assertSee('Konsultasikan ukuran Custom')
+            ->assertSee('Custom size detected')
+            ->assertSee('The measurement difference is outside standard tolerances. Consult your results before selecting press-on nails.')
+            ->assertSee('consult here')
             ->assertSee('https://wa.me/', false);
     }
 
