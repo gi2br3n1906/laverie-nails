@@ -6,6 +6,7 @@
 
     <section class="relative isolate flex min-h-[38rem] items-end justify-center overflow-hidden bg-[#EAF0F6] sm:min-h-[44rem] lg:min-h-[48rem]" data-homepage-hero>
         <img class="absolute inset-0 -z-20 h-full w-full object-cover" src="{{ asset($heroBannerPath) }}?v={{ $heroBannerVersion }}" alt="Elegant Laverie press-on nail collection">
+        <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-[#0C1C39]/50 to-transparent" aria-hidden="true" data-homepage-navbar-contrast></div>
 
         <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
             <div class="mx-auto max-w-4xl drop-shadow-lg">

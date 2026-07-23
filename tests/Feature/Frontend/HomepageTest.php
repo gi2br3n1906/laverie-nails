@@ -45,6 +45,7 @@ class HomepageTest extends TestCase
             ->assertSee('images/hero-banner.png', false)
             ->assertSee('/images/hero-banner.png?v=', false)
             ->assertSee('data-overlay-navigation="true"', false)
+            ->assertSee('data-homepage-navbar-contrast', false)
             ->assertSee('data-homepage-hero-indicators', false)
             ->assertSee('data-homepage-hero-ctas', false)
             ->assertSee('data-homepage-featured-sets', false)
@@ -63,6 +64,8 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('items-end', $heroMatch[0]);
         $this->assertStringContainsString('text-white', $heroMatch[0]);
         $this->assertStringContainsString('drop-shadow-lg', $heroMatch[0]);
+        $this->assertStringContainsString('pointer-events-none absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-[#0C1C39]/50 to-transparent', $heroMatch[0]);
+        $this->assertStringContainsString('data-homepage-navbar-contrast', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-indicators', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-ctas', $heroMatch[0]);
         $this->assertSame(3, substr_count($heroMatch[0], 'rounded-full bg-white'));

@@ -38,6 +38,7 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
         $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
         $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Buka menu"/', $content);
+        $this->assertSame(3, preg_match_all('/<svg[^>]*class="[^"]*drop-shadow-lg[^"]*"[^>]*data-navbar-icon="(?:menu|search|cart)"/', $content));
     }
 
     public function test_authenticated_and_admin_pages_share_the_premium_chrome(): void
