@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="mt-12 border-t border-[#92A1B5]/30 pt-10 text-center" data-footer-bottom-row>
+        <div class="mt-12 pt-2 text-center" data-footer-bottom-row>
             <p class="font-logo text-3xl text-[#0C1C39]">Laverie Nails</p>
             <div class="mt-6 flex items-center justify-center gap-3">
                 <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="https://wa.me/6280000000000" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WA</a>
@@ -30,5 +30,5 @@
             </div>
         </div>
     </div>
-    <div class="border-t border-[#92A1B5]/30 px-5 py-5 text-center text-xs text-stone-500">© {{ date('Y') }} Laverie Nails. Official single-vendor collection.</div>
+    <div class="px-5 py-5 text-center text-xs text-stone-500">© {{ date('Y') }} Laverie Nails. Official single-vendor collection.</div>
 </footer>

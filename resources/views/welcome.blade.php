@@ -11,7 +11,7 @@
         <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
             <div class="mx-auto max-w-4xl drop-shadow-lg">
                 <h1 class="whitespace-nowrap font-script text-5xl leading-none text-white sm:text-7xl lg:text-8xl">Nail It, Fit It, Wear It</h1>
-                <p class="mt-4 text-[0.65rem] font-semibold tracking-[0.3em] text-white sm:text-xs">perfect fit, stunning nails</p>
+                <p class="mt-1 text-sm font-semibold tracking-[0.25em] text-white sm:text-base">perfect fit, stunning nails</p>
                 <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row" data-homepage-hero-ctas>
                     <a class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">OUR COLLECTION</a>
                     <a class="inline-flex min-h-11 items-center justify-center rounded-full border border-white bg-white/10 px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#0C1C39]" href="{{ route('measurements.create') }}">SIZING</a>
@@ -43,7 +43,7 @@
     <section class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="featured-sets-heading" data-homepage-featured-sets>
         <div class="mx-auto max-w-screen-2xl">
             <div class="text-center">
-                <h2 class="font-display text-4xl font-semibold tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="featured-sets-heading">Pretty Picks</h2>
+                <h2 class="font-display text-4xl font-semibold tracking-wide text-[#0C1C39] sm:text-6xl" id="featured-sets-heading">Pretty Picks</h2>
             </div>
 
             <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5" data-homepage-size-grid>
@@ -60,9 +60,9 @@
         </div>
     </section>
 
-    <section class="border-y border-[#92A1B5]/40 bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="shape-heading">
+    <section class="bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="shape-heading">
         <div class="mx-auto max-w-screen-2xl">
-            <div class="text-center"><h2 class="font-display text-4xl tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="shape-heading">Shop By Style</h2></div>
+            <div class="text-center"><h2 class="font-display text-4xl tracking-wide text-[#0C1C39] sm:text-6xl" id="shape-heading">Shop by Style</h2></div>
             <div class="mt-12 flex gap-6 overflow-x-auto pb-4 sm:justify-between sm:gap-4">
                 <x-storefront.shape-card name="Classy" shape="Almond" variant="almond" />
                 <x-storefront.shape-card name="Coquette" shape="Coffin" variant="coffin" />
@@ -74,7 +74,7 @@
     </section>
 
     <section class="mx-auto max-w-screen-2xl px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="collections-heading">
-        <div class="mx-auto max-w-4xl text-center"><h2 class="font-display text-4xl leading-tight tracking-[-0.04em] text-[#0C1C39] sm:text-6xl" id="collections-heading">Our Collection</h2><p class="mx-auto mt-5 max-w-3xl text-sm leading-7 text-stone-600 sm:text-base">Handpainted press on nails designed to match every mood, occasion, and style</p></div>
+        <div class="mx-auto max-w-4xl text-center"><h2 class="font-display text-4xl leading-tight tracking-wide text-[#0C1C39] sm:text-6xl" id="collections-heading">Our Collection</h2><p class="mx-auto mt-5 max-w-3xl text-sm leading-7 text-stone-600 sm:text-base">Handpainted press on nails designed to match every mood, occasion, and style</p></div>
         <div class="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
             @forelse ($collectionProducts as $catalog)
                 <x-storefront.product-card :catalog="$catalog" badge="Laverie edit" />

@@ -36,7 +36,7 @@ class HomepageTest extends TestCase
                 'AFFORDABLE',
                 '100% HAND PAINTED',
                 'Pretty Picks',
-                'Shop By Style',
+                'Shop by Style',
                 'Our Collection',
                 'Handpainted press on nails designed to match every mood, occasion, and style',
                 'Speak to Us',
@@ -75,9 +75,14 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('>OUR COLLECTION<', $heroMatch[0]);
         $this->assertStringContainsString('>SIZING<', $heroMatch[0]);
         $this->assertStringContainsString('whitespace-nowrap', $heroMatch[0]);
+        $this->assertStringContainsString('mt-1 text-sm', $heroMatch[0]);
+        $this->assertStringContainsString('sm:text-base', $heroMatch[0]);
         $this->assertStringContainsString(route('products.index'), $heroMatch[0]);
         $this->assertStringContainsString(route('measurements.create'), $heroMatch[0]);
         $this->assertSame(1, substr_count($content, '>SIZING<'));
+        $this->assertStringContainsString('tracking-wide', $content);
+        $this->assertStringNotContainsString('Shop By Style', $content);
+        $this->assertDoesNotMatchRegularExpression('/<section[^>]*class="[^"]*border-(?:t|y)[^"]*"[^>]*aria-labelledby="shape-heading"/', $content);
     }
 
     public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
@@ -98,6 +103,12 @@ class HomepageTest extends TestCase
             ->assertSee('aria-label="TikTok"', false)
             ->assertDontSee('>Discover<', false)
             ->assertDontSee('>Account<', false);
+
+        $content = $this->get(route('home'))->getContent();
+        preg_match('/<div[^>]*data-footer-bottom-row[^>]*>/', $content, $footerBottomRow);
+
+        $this->assertNotEmpty($footerBottomRow);
+        $this->assertStringNotContainsString('border-t', $footerBottomRow[0]);
     }
 
     public function test_homepage_displays_only_active_products_with_rating_and_price(): void
