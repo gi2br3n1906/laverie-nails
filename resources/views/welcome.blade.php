@@ -11,7 +11,7 @@
         <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
             <div class="mx-auto max-w-4xl drop-shadow-lg">
                 <h1 class="whitespace-nowrap font-script text-5xl leading-none text-white sm:text-7xl lg:text-8xl">Nail It, Fit It, Wear It</h1>
-                <p class="mt-1 text-sm font-semibold tracking-[0.25em] text-white sm:text-base">perfect fit, stunning nails</p>
+                <p class="-mt-2 text-sm font-semibold tracking-[0.25em] text-white sm:text-base">perfect fit, stunning nails</p>
                 <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row" data-homepage-hero-ctas>
                     <a class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">OUR COLLECTION</a>
                     <a class="inline-flex min-h-11 items-center justify-center rounded-full border border-white bg-white/10 px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#0C1C39]" href="{{ route('measurements.create') }}">SIZING</a>

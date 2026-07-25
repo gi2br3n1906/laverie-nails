@@ -75,7 +75,7 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('>OUR COLLECTION<', $heroMatch[0]);
         $this->assertStringContainsString('>SIZING<', $heroMatch[0]);
         $this->assertStringContainsString('whitespace-nowrap', $heroMatch[0]);
-        $this->assertStringContainsString('mt-1 text-sm', $heroMatch[0]);
+        $this->assertStringContainsString('-mt-2 text-sm', $heroMatch[0]);
         $this->assertStringContainsString('sm:text-base', $heroMatch[0]);
         $this->assertStringContainsString(route('products.index'), $heroMatch[0]);
         $this->assertStringContainsString(route('measurements.create'), $heroMatch[0]);
