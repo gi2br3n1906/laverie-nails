@@ -58,7 +58,7 @@
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-[#0C1C39]" for="customer_phone">Nomor telepon</label>
-                            <input class="{{ $fieldClass }}" id="customer_phone" name="customer_phone" type="tel" value="{{ old('customer_phone') }}" autocomplete="tel" placeholder="08xxxxxxxxxx" required>
+                            <input class="{{ $fieldClass }}" id="customer_phone" name="customer_phone" type="tel" value="{{ old('customer_phone', auth()->user()?->phone) }}" autocomplete="tel" placeholder="08xxxxxxxxxx" required>
                             <x-input-error class="mt-2" :messages="$errors->get('customer_phone')" />
                         </div>
                     </div>
@@ -72,21 +72,21 @@
                             <select class="{{ $fieldClass }}" id="province_id" name="province_id" data-province-select required>
                                 <option value="">Pilih provinsi</option>
                                 @foreach ($provinces as $province)
-                                    <option value="{{ $province['id'] }}" @selected(old('province_id') === $province['id'])>{{ $province['name'] }}</option>
+                                    <option value="{{ $province['id'] }}" @selected(old('province_id', auth()->user()?->province_id) === $province['id'])>{{ $province['name'] }}</option>
                                 @endforeach
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
                         </div>
                         <div>
                             <label class="text-sm font-semibold text-[#0C1C39]" for="city_id">Kota / Kabupaten</label>
-                            <select class="{{ $fieldClass }}" id="city_id" name="city_id" data-city-select data-old-value="{{ old('city_id') }}" disabled required>
+                            <select class="{{ $fieldClass }}" id="city_id" name="city_id" data-city-select data-old-value="{{ old('city_id', auth()->user()?->city_id) }}" disabled required>
                                 <option value="">Pilih provinsi terlebih dahulu</option>
                             </select>
                             <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
                         </div>
                         <div class="sm:col-span-2">
                             <label class="text-sm font-semibold text-[#0C1C39]" for="shipping_address">Alamat lengkap</label>
-                            <textarea class="{{ $fieldClass }} min-h-32 resize-y" id="shipping_address" name="shipping_address" autocomplete="street-address" placeholder="Nama jalan, nomor rumah, kecamatan, kode pos, dan patokan" required>{{ old('shipping_address') }}</textarea>
+                            <textarea class="{{ $fieldClass }} min-h-32 resize-y" id="shipping_address" name="shipping_address" autocomplete="street-address" placeholder="Nama jalan, nomor rumah, kecamatan, kode pos, dan patokan" required>{{ old('shipping_address', auth()->user()?->address) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('shipping_address')" />
                         </div>
                     </div>

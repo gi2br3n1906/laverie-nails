@@ -21,6 +21,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeasurementHistoryController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StorefrontProductController;
 use App\Models\Measurement;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,11 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/information', [ProfileController::class, 'updateInformation'])->name('profile.information.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::patch('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.address.update');
+    Route::get('/profile/logistics/cities', [ProfileController::class, 'cities'])->name('profile.logistics.cities');
     Route::post('/produk/{catalog}/ulasan', [CatalogReviewController::class, 'store'])->name('products.reviews.store');
 
     Route::prefix('riwayat')->name('history.')->group(function (): void {

@@ -27,6 +27,10 @@ class User extends Authenticatable
         'password',
         'roles',
         'default_size_payload',
+        'phone',
+        'address',
+        'province_id',
+        'city_id',
     ];
 
     /**

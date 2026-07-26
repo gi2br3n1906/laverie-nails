@@ -5,3 +5,4 @@ import './hero-carousel';
 import './storefront-navbar';
 import './checkout';
 import './payment-snap';
+import './profile-address';

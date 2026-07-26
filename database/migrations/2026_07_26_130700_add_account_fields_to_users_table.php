@@ -11,14 +11,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->json('default_size_payload')->nullable();
+            $table->string('phone')->nullable();
+            $table->text('address')->nullable();
+            $table->string('province_id')->nullable();
+            $table->string('city_id')->nullable();
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table): void {
-            $table->dropColumn('default_size_payload');
+            $table->dropColumn(['phone', 'address', 'province_id', 'city_id']);
         });
     }
 };
