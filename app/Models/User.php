@@ -65,6 +65,13 @@ class User extends Authenticatable
         return in_array($roleValue, $this->roles ?? [], true);
     }
 
+    public function accountHomeRouteName(): string
+    {
+        return $this->hasRole(UserRole::Admin)
+            ? 'admin.orders.index'
+            : 'dashboard';
+    }
+
     /** @return HasMany<Measurement, $this> */
     public function measurements(): HasMany
     {

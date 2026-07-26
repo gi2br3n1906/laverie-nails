@@ -32,6 +32,21 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_admin_is_redirected_to_order_management_after_login(): void
+    {
+        $admin = User::factory()->create([
+            'roles' => ['admin'],
+            'password' => 'secure-password',
+        ]);
+
+        $this->post(route('login'), [
+            'email' => $admin->email,
+            'password' => 'secure-password',
+        ])->assertRedirect(route('admin.orders.index'));
+
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_users_cannot_authenticate_with_an_invalid_password(): void
     {
         $user = User::factory()->create([

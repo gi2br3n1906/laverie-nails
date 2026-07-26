@@ -19,7 +19,7 @@
                         @guest
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('login') }}">Login</a>
                         @else
-                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a>
+                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route(auth()->user()->accountHomeRouteName()) }}">Dashboard</a>
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
                             <form action="{{ route('logout') }}" method="POST">
@@ -51,7 +51,7 @@
                         <span class="truncate">Akun</span>
                     </summary>
                     <div class="absolute right-0 top-12 w-56 rounded-2xl border border-[#92A1B5]/40 bg-white p-3 text-[#0C1C39] shadow-2xl shadow-[#0C1C39]/10 sm:top-14">
-                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a>
+                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route(auth()->user()->accountHomeRouteName()) }}">Dashboard</a>
                         <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
                         <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
                         <form action="{{ route('logout') }}" method="POST">

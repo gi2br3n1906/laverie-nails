@@ -49,4 +49,17 @@ class AuthNavigationTest extends TestCase
         $this->assertSame(2, substr_count($source, "route('logout')"));
         $this->assertSame(2, substr_count($source, '@csrf'));
     }
+
+    public function test_dashboard_links_are_role_aware_in_both_responsive_account_menus(): void
+    {
+        $admin = User::factory()->create(['roles' => ['admin']]);
+        $adminResponse = $this->actingAs($admin)->get('/');
+        $adminResponse->assertOk();
+        $this->assertSame(2, substr_count($adminResponse->getContent(), 'href="'.route('admin.orders.index').'"'));
+
+        $customer = User::factory()->create();
+        $customerResponse = $this->actingAs($customer)->get('/');
+        $customerResponse->assertOk();
+        $this->assertSame(2, substr_count($customerResponse->getContent(), 'href="'.route('dashboard').'"'));
+    }
 }
