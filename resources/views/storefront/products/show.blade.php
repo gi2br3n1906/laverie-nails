@@ -70,6 +70,9 @@
                     <fieldset>
                         <legend class="text-sm font-semibold text-[#0C1C39]">Custom Measurements</legend>
                         <p class="mt-1 text-xs leading-5 text-stone-500">Masukkan lebar setiap kuku dalam milimeter (0–25 mm) untuk kedua tangan.</p>
+                        @if ($savedMeasurements)
+                            <p class="mt-2 text-xs font-semibold text-[#385273]">Ukuran tersimpan telah diisi otomatis.</p>
+                        @endif
                         <div class="mt-5 grid gap-6 sm:grid-cols-2">
                             @foreach (['right_hand' => 'Right Hand', 'left_hand' => 'Left Hand'] as $hand => $handLabel)
                                 <div class="rounded-2xl border border-[#92A1B5]/40 bg-white p-5">
@@ -79,7 +82,7 @@
                                             <label class="grid grid-cols-[1fr_6.5rem] items-center gap-3 text-xs font-semibold uppercase tracking-[0.1em] text-stone-500">
                                                 {{ $fingerLabel }}
                                                 <span class="relative">
-                                                    <input class="w-full rounded-xl border border-[#92A1B5]/60 bg-[#F8FAFC] px-3 py-2.5 pr-9 text-sm text-[#0C1C39] outline-none transition focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" name="custom_measurements[{{ $hand }}][{{ $finger }}]" type="number" min="0" max="25" step="0.1" value="{{ old("custom_measurements.{$hand}.{$finger}") }}" inputmode="decimal">
+                                                    <input class="w-full rounded-xl border border-[#92A1B5]/60 bg-[#F8FAFC] px-3 py-2.5 pr-9 text-sm text-[#0C1C39] outline-none transition focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" name="custom_measurements[{{ $hand }}][{{ $finger }}]" type="number" min="0" max="25" step="0.1" value="{{ old("custom_measurements.{$hand}.{$finger}", data_get($savedMeasurements, "{$hand}.{$finger}")) }}" inputmode="decimal">
                                                     <span class="pointer-events-none absolute inset-y-0 right-3 grid place-items-center text-[0.65rem] font-medium normal-case tracking-normal text-stone-400">mm</span>
                                                 </span>
                                             </label>

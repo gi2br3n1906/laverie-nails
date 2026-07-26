@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\HeroBannerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogReviewController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CheckoutLogisticsController;
+use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\HasilKlasifikasiController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeasurementHistoryController;
@@ -54,7 +56,6 @@ Route::middleware('guest')->group(function (): void {
 });
 
 Route::middleware('auth')->group(function (): void {
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
     Route::post('/produk/{catalog}/ulasan', [CatalogReviewController::class, 'store'])->name('products.reviews.store');
 
@@ -74,6 +75,12 @@ Route::middleware('auth')->group(function (): void {
     });
 });
 
+Route::middleware(['auth', 'role:user'])->group(function (): void {
+    Route::get('/dashboard', [CustomerPortalController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/orders/{order}', [CustomerPortalController::class, 'show'])->name('dashboard.orders.show');
+    Route::patch('/dashboard/measurements', [CustomerPortalController::class, 'updateMeasurements'])->name('dashboard.measurements.update');
+});
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function (): void {
     Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('dashboard');
     Route::resource('size-standards', SizeStandardController::class);
@@ -84,4 +91,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         ->name('products.images.destroy');
     Route::resource('products', AdminProductController::class)->except('show');
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
+    Route::resource('customers', AdminCustomerController::class)->only('index');
 });

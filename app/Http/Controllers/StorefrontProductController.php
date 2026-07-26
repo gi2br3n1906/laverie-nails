@@ -7,10 +7,11 @@ namespace App\Http\Controllers;
 use App\Enums\CatalogSize;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 
 class StorefrontProductController extends Controller
 {
-    public function show(Product $product): View
+    public function show(Request $request, Product $product): View
     {
         abort_unless($product->is_active, 404);
 
@@ -19,6 +20,7 @@ class StorefrontProductController extends Controller
         return view('storefront.products.show', [
             'product' => $product,
             'standardSizes' => CatalogSize::cases(),
+            'savedMeasurements' => $request->user()?->default_size_payload,
         ]);
     }
 }

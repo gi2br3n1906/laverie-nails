@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'roles',
+        'default_size_payload',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'roles' => 'array',
+            'default_size_payload' => 'array',
         ];
     }
 
