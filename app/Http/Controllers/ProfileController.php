@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class ProfileController extends Controller
 {
@@ -25,9 +26,19 @@ class ProfileController extends Controller
 
     public function edit(Request $request): View
     {
+        try {
+            $provinces = $this->logisticsService->provinces();
+            $logisticsAvailable = true;
+        } catch (Throwable $exception) {
+            report($exception);
+            $provinces = [];
+            $logisticsAvailable = false;
+        }
+
         return view('profile.edit', [
             'user' => $request->user(),
-            'provinces' => $this->logisticsService->provinces(),
+            'provinces' => $provinces,
+            'logisticsAvailable' => $logisticsAvailable,
         ]);
     }
 
@@ -60,8 +71,16 @@ class ProfileController extends Controller
 
     public function cities(LogisticsCitiesRequest $request): JsonResponse
     {
-        return response()->json([
-            'data' => $this->logisticsService->cities((string) $request->validated('province_id')),
-        ]);
+        try {
+            return response()->json([
+                'data' => $this->logisticsService->cities((string) $request->validated('province_id')),
+            ]);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'Layanan wilayah belum dapat dimuat. Silakan coba lagi nanti.',
+            ], 503);
+        }
     }
 }

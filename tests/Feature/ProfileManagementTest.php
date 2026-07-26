@@ -53,6 +53,23 @@ class ProfileManagementTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $source);
     }
 
+    public function test_profile_remains_available_when_rajaongkir_is_not_configured(): void
+    {
+        config(['services.rajaongkir.api_key' => null]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/profile')
+            ->assertOk()
+            ->assertSeeText('Informasi Pribadi')
+            ->assertSeeText('Ganti Password')
+            ->assertSeeText('Layanan wilayah belum dapat dimuat')
+            ->assertSee('disabled', false);
+
+        $this->actingAs($user)->getJson('/profile/logistics/cities?province_id=10')
+            ->assertStatus(503)
+            ->assertJsonPath('message', 'Layanan wilayah belum dapat dimuat. Silakan coba lagi nanti.');
+    }
+
     public function test_user_can_update_personal_information_and_email_remains_unique(): void
     {
         $user = User::factory()->create();
