@@ -15,17 +15,19 @@
                     <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('products.index') }}">Shop all</a>
                     <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('measurements.create') }}">Sizing</a>
                     <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('guidance') }}">Measurement guide</a>
-                    @guest
-                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('login') }}">Login</a>
-                    @else
-                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a>
-                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
-                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-stone-100" type="submit">Logout</button>
-                        </form>
-                    @endguest
+                    <div data-mobile-account-menu class="md:hidden">
+                        @guest
+                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('login') }}">Login</a>
+                        @else
+                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a>
+                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
+                            <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-stone-100" type="submit">Logout</button>
+                            </form>
+                        @endguest
+                    </div>
                 </div>
             </details>
         </div>
@@ -41,9 +43,9 @@
                 <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="search"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg>
             </a>
             @guest
-                <a @class(['hidden min-h-10 items-center rounded-full px-3 text-xs font-semibold uppercase tracking-[0.1em] transition sm:inline-flex', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('login') }}">Login</a>
+                <a @class(['hidden min-h-10 items-center rounded-full px-3 text-xs font-semibold uppercase tracking-[0.1em] transition md:inline-flex', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('login') }}">Login</a>
             @else
-                <details class="group relative hidden sm:block">
+                <details data-desktop-account-menu class="group relative hidden md:block">
                     <summary @class(['flex min-h-10 max-w-40 cursor-pointer list-none items-center gap-2 rounded-full px-3 text-xs font-semibold transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) aria-label="Menu akun">
                         <svg class="size-5 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="3.25" /><path stroke-linecap="round" d="M5.5 19c.7-3.3 3-5 6.5-5s5.8 1.7 6.5 5" /></svg>
                         <span class="truncate">Akun</span>
@@ -51,6 +53,7 @@
                     <div class="absolute right-0 top-12 w-56 rounded-2xl border border-[#92A1B5]/40 bg-white p-3 text-[#0C1C39] shadow-2xl shadow-[#0C1C39]/10 sm:top-14">
                         <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('dashboard') }}">Dashboard</a>
                         <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
+                        <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-stone-100" type="submit">Logout</button>

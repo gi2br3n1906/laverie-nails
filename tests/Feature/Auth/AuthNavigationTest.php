@@ -37,4 +37,16 @@ class AuthNavigationTest extends TestCase
 
         $this->get('/logout')->assertMethodNotAllowed();
     }
+
+    public function test_account_navigation_uses_exclusive_mobile_and_desktop_breakpoints(): void
+    {
+        $source = file_get_contents(resource_path('views/components/storefront/navbar.blade.php'));
+
+        $this->assertIsString($source);
+        $this->assertStringContainsString('data-mobile-account-menu class="md:hidden"', $source);
+        $this->assertStringContainsString('data-desktop-account-menu class="group relative hidden md:block"', $source);
+        $this->assertSame(2, substr_count($source, "route('history.index')"));
+        $this->assertSame(2, substr_count($source, "route('logout')"));
+        $this->assertSame(2, substr_count($source, '@csrf'));
+    }
 }
