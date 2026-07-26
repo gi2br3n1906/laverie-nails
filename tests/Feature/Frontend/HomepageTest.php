@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace Tests\Feature\Frontend;
 
 use App\Models\CatalogReview;
+use App\Models\Category;
+use App\Models\HeroBanner;
 use App\Models\NailCatalog;
+use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class HomepageTest extends TestCase
@@ -48,6 +53,8 @@ class HomepageTest extends TestCase
             ->assertSee('data-overlay-navigation="true"', false)
             ->assertSee('data-homepage-navbar-contrast', false)
             ->assertSee('data-homepage-hero-indicators', false)
+            ->assertSee('data-hero-carousel', false)
+            ->assertSee('aria-roledescription="carousel"', false)
             ->assertSee('data-homepage-hero-ctas', false)
             ->assertSee('data-homepage-featured-sets', false)
             ->assertSee('data-homepage-size-grid', false)
@@ -70,7 +77,9 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('data-homepage-navbar-contrast', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-indicators', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-ctas', $heroMatch[0]);
-        $this->assertSame(3, substr_count($heroMatch[0], 'rounded-full bg-white'));
+        $this->assertSame(1, preg_match_all('/\sdata-hero-slide(?:\s|>)/', $heroMatch[0]));
+        $this->assertSame(1, substr_count($heroMatch[0], 'data-hero-indicator='));
+        $this->assertStringContainsString('aria-current="true"', $heroMatch[0]);
         $this->assertStringNotContainsString('bg-white/65', $heroMatch[0]);
         $this->assertStringContainsString('>OUR COLLECTION<', $heroMatch[0]);
         $this->assertStringContainsString('>SIZING<', $heroMatch[0]);
@@ -83,6 +92,13 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('tracking-wide', $content);
         $this->assertStringNotContainsString('Shop By Style', $content);
         $this->assertDoesNotMatchRegularExpression('/<section[^>]*class="[^"]*border-(?:t|y)[^"]*"[^>]*aria-labelledby="shape-heading"/', $content);
+        $this->assertMatchesRegularExpression('/<section[^>]*class="[^"]*bg-\[#0C1C39\][^"]*text-white[^"]*"[^>]*data-homepage-benefits>/', $content);
+
+        $carouselScript = file_get_contents(resource_path('js/hero-carousel.js'));
+        $this->assertIsString($carouselScript);
+        $this->assertStringContainsString("indicator.addEventListener('click'", $carouselScript);
+        $this->assertStringContainsString('window.setInterval', $carouselScript);
+        $this->assertStringContainsString('prefers-reduced-motion: reduce', $carouselScript);
     }
 
     public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
@@ -159,5 +175,68 @@ class HomepageTest extends TestCase
 
         $this->assertDoesNotMatchRegularExpression('/\sstyle\s*=/i', $content);
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $content);
+    }
+
+    public function test_homepage_uses_only_active_database_banners_in_sequence_order(): void
+    {
+        Storage::fake('public');
+        HeroBanner::factory()->create(['image_path' => 'banners/second.jpg', 'sequence' => 20]);
+        HeroBanner::factory()->create(['image_path' => 'banners/first.jpg', 'sequence' => 10]);
+        HeroBanner::factory()->inactive()->create(['image_path' => 'banners/hidden.jpg', 'sequence' => 1]);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSeeInOrder([
+                Storage::disk('public')->url('banners/first.jpg'),
+                Storage::disk('public')->url('banners/second.jpg'),
+            ], false)
+            ->assertDontSee('banners/hidden.jpg', false)
+            ->assertDontSee('/images/hero-banner.png?v=', false);
+    }
+
+    public function test_homepage_falls_back_to_the_static_banner_when_no_active_banner_exists(): void
+    {
+        HeroBanner::factory()->inactive()->create();
+
+        $response = $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('/images/hero-banner.png?v=', false);
+
+        $this->assertSame(1, preg_match_all('/\sdata-hero-slide(?:\s|>)/', $response->getContent()));
+        $this->assertSame(1, substr_count($response->getContent(), 'data-hero-indicator='));
+    }
+
+    public function test_shop_by_style_contains_only_categories_with_active_products(): void
+    {
+        $visible = Category::factory()->create(['name' => 'Editorial Classy']);
+        Product::factory()->for($visible)->create();
+        $inactiveOnly = Category::factory()->create(['name' => 'Hidden Coquette']);
+        Product::factory()->for($inactiveOnly)->inactive()->create();
+        Category::factory()->create(['name' => 'Empty Y2K']);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Editorial Classy')
+            ->assertDontSee('Hidden Coquette')
+            ->assertDontSee('Empty Y2K');
+    }
+
+    public function test_our_collection_uses_latest_active_products_and_supports_missing_image_fallback(): void
+    {
+        Storage::fake('public');
+        $older = Product::factory()->create(['name' => 'Editorial Older', 'price' => '125000']);
+        ProductImage::factory()->for($older)->primary()->create(['image_path' => 'products/older.jpg']);
+        $latest = Product::factory()->create(['name' => 'Editorial Latest', 'price' => '195000']);
+        Product::factory()->inactive()->create(['name' => 'Editorial Hidden']);
+
+        $content = $this->get(route('home'))
+            ->assertOk()
+            ->assertSeeInOrder(['Editorial Latest', 'Editorial Older'])
+            ->assertSee('Rp 195.000')
+            ->assertSee('data-product-image-fallback', false)
+            ->assertDontSee('Editorial Hidden')
+            ->getContent();
+
+        $this->assertSame(2, substr_count($content, 'data-homepage-product-card'));
     }
 }

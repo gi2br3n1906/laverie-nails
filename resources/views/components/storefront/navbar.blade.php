@@ -1,10 +1,10 @@
 @props(['overlay' => false])
 
 <header @class([
-    'z-50 w-full',
-    'absolute inset-x-0 top-0 text-white' => $overlay,
-    'sticky top-0 border-b border-[#92A1B5]/40 bg-white/95 text-[#0C1C39] backdrop-blur-xl' => ! $overlay,
-]) data-homepage-navbar data-overlay-navigation="{{ $overlay ? 'true' : 'false' }}">
+    'sticky top-0 z-50 w-full',
+    '-mb-16 bg-[#0C1C39]/15 text-white backdrop-blur-[2px] sm:-mb-20' => $overlay,
+    'bg-white text-[#0C1C39]' => ! $overlay,
+]) data-homepage-navbar data-overlay-navigation="{{ $overlay ? 'true' : 'false' }}" data-navbar-scrolled="false">
     <nav class="mx-auto grid h-16 max-w-screen-2xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:h-20 sm:px-8 lg:px-12" aria-label="Navigasi toko">
         <div class="flex items-center justify-start" data-navbar-left>
             <details class="group relative">
@@ -31,8 +31,12 @@
             <a @class(['grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('products.index') }}" aria-label="Cari produk">
                 <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="search"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg>
             </a>
-            <a @class(['relative grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('products.index') }}" aria-label="Tas belanja">
+            <a @class(['relative grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('cart.index') }}" aria-label="Tas belanja">
                 <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="cart"><path stroke-linejoin="round" d="M5.5 8.5h13l-1 11h-11l-1-11Z" /><path stroke-linecap="round" d="M9 9V6.75a3 3 0 0 1 6 0V9" /></svg>
+                @if ($cartQuantity > 0)
+                    <span class="absolute -right-0.5 -top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-[#60738C] px-1 text-[0.6rem] font-bold leading-none text-white ring-2 ring-white" data-cart-count>{{ $cartQuantity }}</span>
+                    <span class="sr-only">{{ $cartQuantity }} item</span>
+                @endif
             </a>
         </div>
     </nav>

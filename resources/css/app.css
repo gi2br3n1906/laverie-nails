@@ -29,3 +29,25 @@
     --color-stone-900: #0c1c39;
     --color-stone-950: #081329;
 }
+
+[data-homepage-navbar] {
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] {
+    background-color: #fff;
+    color: #0c1c39;
+    backdrop-filter: none;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-brand],
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-left] summary,
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a {
+    color: #0c1c39;
+    filter: none;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-left] summary:hover,
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a:hover {
+    background-color: #f1f4f8;
+}

@@ -1,4 +1,4 @@
-@props(['name', 'variant', 'shape' => null])
+@props(['name', 'variant' => 'square', 'shape' => null, 'image' => null])
 
 @php
     $rounding = match ($variant) {
@@ -12,7 +12,11 @@
 
 <a class="group flex min-w-24 flex-col items-center gap-4 text-center" href="{{ route('products.index') }}" aria-label="{{ $shape ? $name.' style, '.$shape.' shape' : $name }}" data-homepage-shape-card>
     <span class="grid size-24 place-items-center rounded-full bg-[#EAF0F6] transition duration-300 group-hover:bg-[#DDE6F0] sm:size-32">
-        <span @class(['h-16 w-9 bg-gradient-to-b from-[#D9E4F0] via-[#AEBED0] to-[#92A1B5] shadow-inner sm:h-20 sm:w-11', $rounding])></span>
+        @if ($image)
+            <img class="size-full rounded-full object-cover" src="{{ Storage::disk('public')->url($image) }}" alt="{{ $name }} style" loading="lazy">
+        @else
+            <span @class(['h-16 w-9 bg-gradient-to-b from-[#D9E4F0] via-[#AEBED0] to-[#92A1B5] shadow-inner sm:h-20 sm:w-11', $rounding]) data-category-image-fallback></span>
+        @endif
     </span>
     <span class="font-display text-lg tracking-[-0.02em] text-[#0C1C39] sm:text-xl">{{ $name }}</span>
 </a>

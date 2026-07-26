@@ -8,4 +8,7 @@
         <h3 class="font-display text-lg leading-tight text-[#0C1C39] sm:text-xl">{{ $catalog->title }}</h3>
     </a>
     <p class="mt-2 text-sm font-medium tabular-nums text-[#0C1C39]">Rp {{ number_format((float) $catalog->price, 2, ',', '.') }}</p>
+    @if (($catalog->reviews_count ?? 0) > 0)
+        <p class="mt-1 text-xs font-medium text-stone-500">★ {{ number_format((float) ($catalog->reviews_avg_rating ?? 0), 1) }}</p>
+    @endif
 </article>

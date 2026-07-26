@@ -37,4 +37,20 @@ return [
         ],
     ],
 
+    'rajaongkir' => [
+        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
+        'api_key' => env('RAJAONGKIR_API_KEY'),
+        'origin_city_id' => env('RAJAONGKIR_ORIGIN_CITY_ID', '399'),
+        'couriers' => array_values(array_filter(explode(',', (string) env('RAJAONGKIR_COURIERS', 'jne,jnt')))),
+        'item_weight_grams' => (int) env('RAJAONGKIR_ITEM_WEIGHT_GRAMS', 500),
+    ],
+
+    'midtrans' => [
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'is_production' => (bool) env('MIDTRANS_IS_PRODUCTION', false),
+        'snap_url' => env('MIDTRANS_SNAP_URL', 'https://app.sandbox.midtrans.com/snap/v1/transactions'),
+        'snap_js_url' => env('MIDTRANS_SNAP_JS_URL', 'https://app.sandbox.midtrans.com/snap/snap.js'),
+    ],
+
 ];

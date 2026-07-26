@@ -1,6 +1,6 @@
 @props(['title', 'icon'])
 
-<div class="flex min-w-48 items-center justify-center gap-2.5 px-5 py-4 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#0C1C39] sm:px-4 lg:min-w-0 lg:text-xs">
+<div class="flex min-w-48 items-center justify-center gap-2.5 px-5 py-4 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-white sm:px-4 lg:min-w-0 lg:text-xs">
     @if ($icon === 'shield')
         <svg class="size-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linejoin="round" d="M12 3.5 19 6v5.3c0 4.3-2.7 7.65-7 9.2-4.3-1.55-7-4.9-7-9.2V6l7-2.5Z" /><path stroke-linecap="round" d="m8.8 12 2.1 2.1 4.4-4.4" /></svg>
     @elseif ($icon === 'reuse')

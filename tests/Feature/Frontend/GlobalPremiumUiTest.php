@@ -16,12 +16,21 @@ class GlobalPremiumUiTest extends TestCase
     public function test_public_and_auth_pages_share_the_premium_announcement_and_navbar(): void
     {
         foreach ([route('guidance'), route('measurements.create'), route('products.index'), route('login')] as $url) {
-            $this->get($url)
+            $content = $this->get($url)
                 ->assertOk()
                 ->assertSee('data-homepage-announcement', false)
                 ->assertSee('data-homepage-navbar', false)
                 ->assertSee('data-overlay-navigation="false"', false)
-                ->assertSee('Laverie Nails');
+                ->assertSee('Laverie Nails')
+                ->getContent();
+
+            preg_match('/<header[^>]*data-homepage-navbar[^>]*>/', $content, $navbar);
+
+            $this->assertNotEmpty($navbar);
+            $this->assertStringContainsString('sticky top-0 z-50', $navbar[0]);
+            $this->assertStringContainsString('bg-white', $navbar[0]);
+            $this->assertStringNotContainsString('border-b', $navbar[0]);
+            $this->assertStringNotContainsString('shadow', $navbar[0]);
         }
     }
 
@@ -30,7 +39,15 @@ class GlobalPremiumUiTest extends TestCase
         $content = $this->get(route('home'))->assertOk()->getContent();
 
         $this->assertStringContainsString('data-overlay-navigation="true"', $content);
-        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*absolute[^"]*text-white[^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*sticky top-0 z-50[^"]*text-white[^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*-mb-16[^"]*sm:-mb-20[^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*bg-\[#0C1C39\]\/15[^"]*backdrop-blur-\[2px\][^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertStringContainsString('data-navbar-scrolled="false"', $content);
+
+        $navbarScript = file_get_contents(resource_path('js/storefront-navbar.js'));
+        $this->assertIsString($navbarScript);
+        $this->assertStringContainsString('window.scrollY > 24', $navbarScript);
+        $this->assertStringContainsString('navbarScrolled', $navbarScript);
         $this->assertMatchesRegularExpression('/grid-cols-\[1fr_auto_1fr\]/', $content);
         $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Buka menu".*?data-navbar-brand/s', $content);
         $this->assertMatchesRegularExpression('/data-navbar-brand[^>]*>Laverie Nails<\/a>.*?data-navbar-right/s', $content);

@@ -16,6 +16,10 @@
             <x-storefront.announcement />
             <x-navbar />
 
+            @if (auth()->user()?->hasRole(\App\Enums\UserRole::Admin))
+                <x-admin.navigation />
+            @endif
+
             <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
                 {{ $slot }}
             </main>

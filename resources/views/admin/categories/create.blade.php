@@ -1,0 +1,3 @@
+<x-layouts.app title="Tambah Kategori">
+    <div class="mx-auto max-w-2xl"><a class="text-sm font-semibold" href="{{ route('admin.categories.index') }}">← Kelola Kategori</a><h1 class="mt-4 font-serif text-5xl font-semibold">Tambah Kategori</h1><form class="mt-8 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8" method="POST" action="{{ route('admin.categories.store') }}">@csrf <x-admin.category-form /><div class="mt-8 flex justify-end"><button class="rounded-full bg-stone-900 px-7 py-3 font-semibold text-white" type="submit">Simpan kategori</button></div></form></div>
+</x-layouts.app>
