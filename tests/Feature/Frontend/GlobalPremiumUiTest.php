@@ -41,7 +41,8 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertStringContainsString('data-overlay-navigation="true"', $content);
         $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*sticky top-0 z-50[^"]*text-white[^"]*"[^>]*data-homepage-navbar/s', $content);
         $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*-mb-16[^"]*sm:-mb-20[^"]*"[^>]*data-homepage-navbar/s', $content);
-        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*bg-\[#0C1C39\]\/15[^"]*backdrop-blur-\[2px\][^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertMatchesRegularExpression('/<header[^>]*class="[^"]*bg-gradient-to-b[^"]*from-\[#0C1C39\]\/70[^"]*backdrop-blur-md[^"]*"[^>]*data-homepage-navbar/s', $content);
+        $this->assertStringContainsString('data-navbar-blend', $content);
         $this->assertStringContainsString('data-navbar-scrolled="false"', $content);
 
         $navbarScript = file_get_contents(resource_path('js/storefront-navbar.js'));

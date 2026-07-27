@@ -31,13 +31,22 @@
 }
 
 [data-homepage-navbar] {
-    transition: background-color 200ms ease, color 200ms ease;
+    transition: background 350ms ease, color 300ms ease, backdrop-filter 350ms ease;
+}
+
+[data-navbar-blend] {
+    background: linear-gradient(to bottom, rgb(12 28 57 / 10%), transparent);
+    transition: background 350ms ease;
 }
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] {
-    background-color: #fff;
+    background: rgb(255 255 255 / 92%);
     color: #0c1c39;
-    backdrop-filter: none;
+    backdrop-filter: blur(16px) saturate(140%);
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-blend] {
+    background: linear-gradient(to bottom, rgb(255 255 255 / 76%), transparent);
 }
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-brand],

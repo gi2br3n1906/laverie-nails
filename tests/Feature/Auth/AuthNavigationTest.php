@@ -38,28 +38,30 @@ class AuthNavigationTest extends TestCase
         $this->get('/logout')->assertMethodNotAllowed();
     }
 
-    public function test_account_navigation_uses_exclusive_mobile_and_desktop_breakpoints(): void
+    public function test_account_navigation_lives_only_in_the_hamburger_menu(): void
     {
         $source = file_get_contents(resource_path('views/components/storefront/navbar.blade.php'));
 
         $this->assertIsString($source);
-        $this->assertStringContainsString('data-mobile-account-menu class="md:hidden"', $source);
-        $this->assertStringContainsString('data-desktop-account-menu class="group relative hidden md:block"', $source);
-        $this->assertSame(2, substr_count($source, "route('history.index')"));
-        $this->assertSame(2, substr_count($source, "route('logout')"));
-        $this->assertSame(2, substr_count($source, '@csrf'));
+        $this->assertStringContainsString('data-hamburger-account-menu', $source);
+        $this->assertStringNotContainsString('data-desktop-account-menu', $source);
+        $this->assertStringContainsString('data-navbar-blend', $source);
+        $this->assertStringContainsString('backdrop-blur-md', $source);
+        $this->assertSame(1, substr_count($source, "route('history.index')"));
+        $this->assertSame(1, substr_count($source, "route('logout')"));
+        $this->assertSame(1, substr_count($source, '@csrf'));
     }
 
-    public function test_dashboard_links_are_role_aware_in_both_responsive_account_menus(): void
+    public function test_hamburger_dashboard_link_is_role_aware(): void
     {
         $admin = User::factory()->create(['roles' => ['admin']]);
         $adminResponse = $this->actingAs($admin)->get('/');
         $adminResponse->assertOk();
-        $this->assertSame(2, substr_count($adminResponse->getContent(), 'href="'.route('admin.orders.index').'"'));
+        $this->assertSame(1, substr_count($adminResponse->getContent(), 'href="'.route('admin.orders.index').'"'));
 
         $customer = User::factory()->create();
         $customerResponse = $this->actingAs($customer)->get('/');
         $customerResponse->assertOk();
-        $this->assertSame(2, substr_count($customerResponse->getContent(), 'href="'.route('dashboard').'"'));
+        $this->assertSame(1, substr_count($customerResponse->getContent(), 'href="'.route('dashboard').'"'));
     }
 }
