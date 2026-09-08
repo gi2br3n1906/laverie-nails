@@ -35,7 +35,7 @@
                     </div>
                 @endif
 
-                <form class="mt-8 space-y-8" action="{{ route('cart.store') }}" method="POST">
+                <form class="mt-8 space-y-8" action="{{ route('cart.store') }}" method="POST" data-add-to-cart-form>
                     @csrf
                     <input name="product_id" type="hidden" value="{{ $product->id }}">
                     <input name="quantity" type="hidden" value="1">
@@ -97,6 +97,8 @@
                         {{ $product->stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis' }}
                     </button>
                 </form>
+
+                <section class="mt-12 border-t border-stone-200 pt-8" aria-labelledby="reviews-heading"><div class="flex items-center justify-between gap-4"><h2 class="font-display text-3xl" id="reviews-heading">Ulasan pelanggan</h2><span class="text-sm font-semibold">{{ number_format((float) ($product->reviews_avg_rating ?? 0), 1) }} / 5</span></div>@if ($canReview)<form class="mt-6 space-y-4" method="POST" action="{{ route('storefront.products.reviews.store', $product) }}">@csrf<label class="block text-sm font-semibold" for="rating">Rating</label><select class="mt-2 w-full rounded-xl border border-stone-300 px-4 py-3" id="rating" name="rating" required>@for ($rating = 5; $rating >= 1; $rating--)<option value="{{ $rating }}">{{ $rating }} bintang</option>@endfor</select><label class="block text-sm font-semibold" for="comment">Komentar</label><textarea class="mt-2 min-h-24 w-full rounded-xl border border-stone-300 px-4 py-3" id="comment" name="comment" maxlength="2000" required>{{ old('comment') }}</textarea><button class="rounded-full border border-[#0C1C39] px-5 py-2 text-sm font-semibold" type="submit">Kirim ulasan</button></form>@elseif (auth()->guest())<a class="mt-5 inline-flex text-sm font-semibold underline underline-offset-4" href="{{ route('login') }}">Masuk untuk memberi ulasan</a>@endif<div class="mt-6 space-y-4">@forelse ($product->reviews as $review)<article class="rounded-2xl bg-stone-50 p-4"><div class="flex justify-between gap-3"><p class="font-semibold">{{ $review->user->name }}</p><p class="text-amber-600">{{ str_repeat('★', $review->rating) }}</p></div><p class="mt-2 text-sm leading-6 text-stone-600">{{ $review->comment }}</p></article>@empty<p class="text-sm text-stone-500">Belum ada ulasan.</p>@endforelse</div></section>
             </div>
         </div>
     </section>

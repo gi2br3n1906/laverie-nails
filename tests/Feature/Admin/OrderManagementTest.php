@@ -57,6 +57,7 @@ class OrderManagementTest extends TestCase
             'customer_phone' => '081222333444',
             'shipping_address' => 'Jl. Kenanga No. 19, Semarang',
             'courier' => 'jne:REG',
+            'order_notes' => 'Gift wrap this order.',
         ]);
         OrderItem::factory()->for($order)->create([
             'product_name' => 'Moonlit Pearl',
@@ -76,6 +77,7 @@ class OrderManagementTest extends TestCase
             ->assertSeeText('081222333444')
             ->assertSeeText('Jl. Kenanga No. 19, Semarang')
             ->assertSeeText('JNE · REG')
+            ->assertSeeText('Gift wrap this order.')
             ->assertSeeText('Moonlit Pearl')
             ->assertSeeText('Standard · M')
             ->assertSeeText('Bespoke Azure')

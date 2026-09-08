@@ -16,7 +16,7 @@ class CatalogReview extends Model
     use HasFactory;
 
     /** @var list<string> */
-    protected $fillable = ['catalog_id', 'user_id', 'rating', 'comment'];
+    protected $fillable = ['product_id', 'user_id', 'rating', 'comment'];
 
     /** @return array<string, string> */
     protected function casts(): array
@@ -24,10 +24,10 @@ class CatalogReview extends Model
         return ['rating' => 'integer'];
     }
 
-    /** @return BelongsTo<NailCatalog, $this> */
-    public function catalog(): BelongsTo
+    /** @return BelongsTo<Product, $this> */
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(NailCatalog::class, 'catalog_id');
+        return $this->belongsTo(Product::class);
     }
 
     /** @return BelongsTo<User, $this> */

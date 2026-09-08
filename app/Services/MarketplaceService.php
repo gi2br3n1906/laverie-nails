@@ -6,40 +6,35 @@ namespace App\Services;
 
 use App\Enums\CatalogSize;
 use App\Models\CatalogReview;
-use App\Models\NailCatalog;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
 
 class MarketplaceService
 {
-    /** @return Collection<int, NailCatalog> */
+    /** @return Collection<int, Product> */
     public function products(?CatalogSize $size): Collection
     {
-        return NailCatalog::query()
-            ->publiclyVisible()
-            ->forSize($size)
+        return $this->mainProducts($size);
+    }
+
+    /** @return Collection<int, Product> */
+    public function mainProducts(?CatalogSize $size): Collection
+    {
+        return Product::query()->active()
+            ->when($size, fn ($query) => $query->whereJsonContains('available_sizes', $size->value))
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->latest()
-            ->get();
+            ->with(['category', 'primaryImage'])->latest()->get();
     }
 
     /** @return Collection<int, CatalogReview> */
     public function featuredReviews(int $limit = 3): Collection
     {
         return CatalogReview::query()
-            ->whereHas('catalog', fn ($query) => $query->publiclyVisible())
-            ->with(['user', 'catalog'])
+            ->whereHas('product', fn ($query) => $query->active())
+            ->with(['user', 'product'])
             ->latest()
             ->limit($limit)
             ->get();
-    }
-
-    public function publicProduct(NailCatalog $catalog): NailCatalog
-    {
-        return NailCatalog::query()
-            ->publiclyVisible()
-            ->with('reviews.user')
-            ->withAvg('reviews', 'rating')
-            ->findOrFail($catalog->id);
     }
 }

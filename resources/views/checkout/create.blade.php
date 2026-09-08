@@ -89,6 +89,7 @@
                             <textarea class="{{ $fieldClass }} min-h-32 resize-y" id="shipping_address" name="shipping_address" autocomplete="street-address" placeholder="Nama jalan, nomor rumah, kecamatan, kode pos, dan patokan" required>{{ old('shipping_address', auth()->user()?->address) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('shipping_address')" />
                         </div>
+                        <div class="sm:col-span-2"><label class="text-sm font-semibold text-[#0C1C39]" for="order_notes">Catatan pesanan</label><textarea class="{{ $fieldClass }} min-h-24 resize-y" id="order_notes" name="order_notes" maxlength="500" placeholder="Catatan untuk pesanan (opsional)">{{ old('order_notes') }}</textarea><x-input-error class="mt-2" :messages="$errors->get('order_notes')" /></div>
                     </div>
                 </fieldset>
 

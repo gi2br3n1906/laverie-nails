@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\HeroBannerController;
@@ -31,9 +30,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::view('/panduan', 'guidance')->name('guidance');
 Route::view('/input-data', 'measurements.create')->name('measurements.create');
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
-Route::get('/produk/{catalog}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/koleksi/{product:slug}', [StorefrontProductController::class, 'show'])->name('storefront.products.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/state', [CartController::class, 'state'])->name('cart.state');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
@@ -63,7 +62,7 @@ Route::middleware('auth')->group(function (): void {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::patch('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.address.update');
     Route::get('/profile/logistics/cities', [ProfileController::class, 'cities'])->name('profile.logistics.cities');
-    Route::post('/produk/{catalog}/ulasan', [CatalogReviewController::class, 'store'])->name('products.reviews.store');
+    Route::post('/koleksi/{product:slug}/ulasan', [CatalogReviewController::class, 'store'])->name('storefront.products.reviews.store');
 
     Route::prefix('riwayat')->name('history.')->group(function (): void {
         Route::get('/', [MeasurementHistoryController::class, 'index'])
@@ -90,7 +89,7 @@ Route::middleware(['auth', 'role:user'])->group(function (): void {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function (): void {
     Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('dashboard');
     Route::resource('size-standards', SizeStandardController::class);
-    Route::resource('catalogs', CatalogController::class);
+
     Route::resource('banners', HeroBannerController::class)->except('show');
     Route::resource('categories', CategoryController::class)->except('show');
     Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'destroyImage'])

@@ -6,10 +6,8 @@ namespace App\Providers;
 
 use App\Enums\UserRole;
 use App\Models\Measurement;
-use App\Models\NailCatalog;
 use App\Models\User;
 use App\Policies\MeasurementPolicy;
-use App\Policies\NailCatalogPolicy;
 use App\Services\CartService;
 use App\ValueObjects\CartOwner;
 use Illuminate\Contracts\View\View;
@@ -33,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Measurement::class, MeasurementPolicy::class);
-        Gate::policy(NailCatalog::class, NailCatalogPolicy::class);
+
         Gate::define('access-admin', static fn (User $user): bool => $user->hasRole(UserRole::Admin));
 
         ViewFacade::composer('components.storefront.navbar', function (View $view): void {

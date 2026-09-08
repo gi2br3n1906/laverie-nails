@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Marketplace;
 
-use App\Models\NailCatalog;
+use App\Models\Product;
 use Database\Seeders\SizeStandardSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,8 +15,8 @@ class ProductCatalogTest extends TestCase
 
     public function test_public_marketplace_exposes_only_active_laverie_catalogs(): void
     {
-        NailCatalog::factory()->create(['title' => 'PUBLIC-LAVERIE-CATALOG']);
-        NailCatalog::factory()->inactive()->create(['title' => 'INACTIVE-CATALOG']);
+        Product::factory()->create(['name' => 'PUBLIC-LAVERIE-CATALOG']);
+        Product::factory()->inactive()->create(['name' => 'INACTIVE-CATALOG']);
 
         $this->get(route('products.index'))
             ->assertOk()
@@ -31,8 +31,8 @@ class ProductCatalogTest extends TestCase
 
     public function test_size_query_filters_exactly_to_the_requested_canonical_size(): void
     {
-        NailCatalog::factory()->create(['title' => 'SIZE-M', 'size' => 'M']);
-        NailCatalog::factory()->create(['title' => 'SIZE-S', 'size' => 'S']);
+        Product::factory()->create(['name' => 'SIZE-M', 'available_sizes' => ['M', 'L']]);
+        Product::factory()->create(['name' => 'SIZE-S', 'available_sizes' => ['S']]);
 
         $this->get(route('products.index', ['size' => 'M']))
             ->assertOk()
@@ -43,11 +43,23 @@ class ProductCatalogTest extends TestCase
             ->assertUnprocessable();
     }
 
-    public function test_non_public_catalogs_cannot_be_opened_directly(): void
+    public function test_shop_all_lists_main_products_and_uses_available_sizes_for_recommendations(): void
     {
-        $inactive = NailCatalog::factory()->inactive()->create();
+        $matching = Product::factory()->create(['name' => 'SHOP-ALL-M', 'available_sizes' => ['M']]);
+        Product::factory()->create(['name' => 'SHOP-ALL-HIDDEN', 'available_sizes' => ['S'], 'is_active' => false]);
 
-        $this->get(route('products.show', $inactive))->assertNotFound();
+        $this->get(route('products.index', ['size' => 'M']))
+            ->assertOk()
+            ->assertSee('SHOP-ALL-M')
+            ->assertDontSee('SHOP-ALL-HIDDEN')
+            ->assertSee(route('storefront.products.show', $matching), false);
+    }
+
+    public function test_inactive_products_cannot_be_opened_directly(): void
+    {
+        $inactive = Product::factory()->inactive()->create();
+
+        $this->get(route('storefront.products.show', $inactive))->assertNotFound();
     }
 
     public function test_standard_measurement_result_links_to_matching_products_and_custom_keeps_whatsapp(): void
@@ -72,6 +84,20 @@ class ProductCatalogTest extends TestCase
             ->assertOk()
             ->assertSee('consult here')
             ->assertDontSee(route('products.index', ['size' => 'Custom']), false);
+    }
+
+    public function test_sizing_result_renders_up_to_four_matching_main_product_recommendations(): void
+    {
+        $this->seed(SizeStandardSeeder::class);
+        Product::factory()->create(['name' => 'RESULT-MATCH', 'available_sizes' => ['M']]);
+        Product::factory()->create(['name' => 'RESULT-NO-MATCH', 'available_sizes' => ['S']]);
+
+        $this->post(route('measurements.store'), [
+            'right_hand_data' => $this->hand(16, 12, 13, 12, 10),
+        ])->assertOk()
+            ->assertSee('Recommended for your size')
+            ->assertSee('RESULT-MATCH')
+            ->assertDontSee('RESULT-NO-MATCH');
     }
 
     /** @return array{jempol: int, telunjuk: int, tengah: int, manis: int, kelingking: int} */

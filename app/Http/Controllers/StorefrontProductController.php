@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\CatalogSize;
 use App\Models\Product;
+use App\Policies\CatalogReviewPolicy;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -15,12 +16,13 @@ class StorefrontProductController extends Controller
     {
         abort_unless($product->is_active, 404);
 
-        $product->load(['category', 'primaryImage', 'images']);
+        $product->load(['category', 'primaryImage', 'images', 'reviews.user'])->loadAvg('reviews', 'rating');
 
         return view('storefront.products.show', [
             'product' => $product,
             'standardSizes' => CatalogSize::cases(),
             'savedMeasurements' => $request->user()?->default_size_payload,
+            'canReview' => $request->user() !== null && app(CatalogReviewPolicy::class)->create($request->user(), $product),
         ]);
     }
 }

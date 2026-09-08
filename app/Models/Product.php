@@ -25,6 +25,7 @@ class Product extends Model
         'description',
         'price',
         'stock',
+        'available_sizes',
         'is_active',
     ];
 
@@ -34,6 +35,7 @@ class Product extends Model
         return [
             'price' => 'decimal:2',
             'stock' => 'integer',
+            'available_sizes' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -66,6 +68,12 @@ class Product extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /** @return HasMany<CatalogReview, $this> */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(CatalogReview::class);
     }
 
     /** @param  Builder<Product>  $query */

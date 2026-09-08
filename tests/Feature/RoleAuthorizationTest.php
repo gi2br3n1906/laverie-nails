@@ -17,7 +17,7 @@ class RoleAuthorizationTest extends TestCase
     public function test_guests_are_redirected_from_role_protected_routes(): void
     {
         $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
-        $this->get(route('admin.catalogs.index'))->assertRedirect(route('login'));
+
     }
 
     public function test_standard_users_cannot_access_admin_routes(): void
@@ -25,7 +25,7 @@ class RoleAuthorizationTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->get(route('admin.dashboard'))->assertForbidden();
-        $this->actingAs($user)->get(route('admin.catalogs.index'))->assertForbidden();
+
     }
 
     public function test_admin_role_can_access_the_admin_area(): void
@@ -33,7 +33,7 @@ class RoleAuthorizationTest extends TestCase
         $admin = User::factory()->withRole(UserRole::Admin)->create();
 
         $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk();
-        $this->actingAs($admin)->get(route('admin.catalogs.index'))->assertOk();
+
         $this->assertTrue(Gate::forUser($admin)->allows('access-admin'));
     }
 

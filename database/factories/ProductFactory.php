@@ -26,6 +26,7 @@ class ProductFactory extends Factory
             'description' => $this->faker->paragraph(),
             'price' => $this->faker->numberBetween(100000, 500000),
             'stock' => $this->faker->numberBetween(0, 100),
+            'available_sizes' => ['XS', 'S', 'M', 'L'],
             'is_active' => true,
         ];
     }

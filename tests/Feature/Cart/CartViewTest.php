@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Cart;
 
+use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,6 +14,45 @@ use Tests\TestCase;
 class CartViewTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_storefront_layout_contains_accessible_ajax_cart_drawer(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('data-cart-drawer', $content);
+        $this->assertStringContainsString('data-cart-drawer-trigger', $content);
+        $this->assertStringContainsString('data-cart-drawer-close', $content);
+        $this->assertStringContainsString('data-cart-drawer-items', $content);
+        $this->assertStringContainsString('data-cart-drawer-notes', $content);
+        $this->assertStringContainsString('data-cart-drawer-checkout', $content);
+        $this->assertStringContainsString('Subtotal', $content);
+        $this->assertStringContainsString(route('cart.state'), $content);
+        $this->assertStringContainsString(route('checkout.create'), $content);
+    }
+
+    public function test_cart_state_and_ajax_mutations_return_owner_scoped_totals(): void
+    {
+        $product = Product::factory()->create(['price' => '125000.00', 'stock' => 5]);
+
+        $this->postJson(route('cart.store'), [
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'size_type' => 'standard',
+            'standard_size' => 'S',
+        ])->assertOk()->assertJsonPath('data.quantity', 1)->assertJsonPath('data.total', 12500000);
+
+        $item = CartItem::query()->sole();
+        $this->patchJson(route('cart.update', $item), ['quantity' => 2])
+            ->assertOk()->assertJsonPath('data.quantity', 2)->assertJsonPath('data.items.0.quantity', 2);
+
+        $this->getJson(route('cart.state'))->assertOk()
+            ->assertJsonPath('data.items.0.size_label', 'SIZE: S')
+            ->assertJsonPath('data.items.0.update_url', route('cart.update', $item))
+            ->assertJsonPath('data.items.0.remove_url', route('cart.destroy', $item));
+
+        $this->deleteJson(route('cart.destroy', $item))->assertOk()
+            ->assertJsonPath('data.quantity', 0)->assertJsonCount(0, 'data.items');
+    }
 
     public function test_active_editorial_product_detail_has_complete_standard_and_custom_sizing_form(): void
     {

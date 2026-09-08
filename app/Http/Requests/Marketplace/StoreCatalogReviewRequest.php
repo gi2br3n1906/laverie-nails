@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Marketplace;
 
-use App\Models\NailCatalog;
+use App\Models\Product;
 use App\Policies\CatalogReviewPolicy;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,15 +12,15 @@ class StoreCatalogReviewRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $catalog = $this->route('catalog');
+        $product = $this->route('product');
 
-        if ($catalog instanceof NailCatalog && ! $catalog->is_active) {
+        if ($product instanceof Product && ! $product->is_active) {
             abort(404);
         }
 
-        return $catalog instanceof NailCatalog
+        return $product instanceof Product
             && $this->user() !== null
-            && app(CatalogReviewPolicy::class)->create($this->user(), $catalog);
+            && app(CatalogReviewPolicy::class)->create($this->user(), $product);
     }
 
     /** @return array<string, mixed> */

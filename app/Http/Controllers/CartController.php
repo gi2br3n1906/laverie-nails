@@ -11,6 +11,7 @@ use App\Services\CartService;
 use App\ValueObjects\CartOwner;
 use App\ValueObjects\CartSize;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,12 @@ class CartController extends Controller
         ]);
     }
 
-    public function store(StoreCartItemRequest $request): RedirectResponse
+    public function state(Request $request): JsonResponse
+    {
+        return response()->json(['data' => $this->cartService->state(CartOwner::fromRequest($request))]);
+    }
+
+    public function store(StoreCartItemRequest $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validated();
 
@@ -39,10 +45,17 @@ class CartController extends Controller
             (int) $validated['quantity'],
         );
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Produk ditambahkan ke keranjang.',
+                'data' => $this->cartService->state(CartOwner::fromRequest($request)),
+            ]);
+        }
+
         return to_route('cart.index')->with('status', 'Produk ditambahkan ke keranjang.');
     }
 
-    public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse
+    public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse|JsonResponse
     {
         $this->cartService->updateQuantity(
             CartOwner::fromRequest($request),
@@ -50,12 +63,26 @@ class CartController extends Controller
             (int) $request->validated('quantity'),
         );
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Jumlah produk diperbarui.',
+                'data' => $this->cartService->state(CartOwner::fromRequest($request)),
+            ]);
+        }
+
         return to_route('cart.index')->with('status', 'Jumlah produk diperbarui.');
     }
 
-    public function destroy(Request $request, CartItem $cartItem): RedirectResponse
+    public function destroy(Request $request, CartItem $cartItem): RedirectResponse|JsonResponse
     {
         $this->cartService->remove(CartOwner::fromRequest($request), $cartItem->id);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Produk dihapus dari keranjang.',
+                'data' => $this->cartService->state(CartOwner::fromRequest($request)),
+            ]);
+        }
 
         return to_route('cart.index')->with('status', 'Produk dihapus dari keranjang.');
     }

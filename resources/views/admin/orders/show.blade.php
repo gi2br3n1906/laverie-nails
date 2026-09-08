@@ -44,6 +44,7 @@
                         <p class="mt-2 text-sm leading-6 text-stone-600">{{ $order->shipping_address }}</p>
                         <p class="mt-2 text-xs text-stone-400">Province {{ $order->province_id }} · City {{ $order->city_id }}</p>
                     </article>
+                    <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6 md:col-span-2"><p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Order notes</p><p class="mt-4 whitespace-pre-line text-sm leading-6 text-stone-600">{{ $order->order_notes ?: 'Tidak ada catatan.' }}</p></article>
                 </div>
 
                 <section class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6 sm:p-8" aria-labelledby="crafting-heading">

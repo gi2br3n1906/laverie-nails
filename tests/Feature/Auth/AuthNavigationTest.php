@@ -45,8 +45,8 @@ class AuthNavigationTest extends TestCase
         $this->assertIsString($source);
         $this->assertStringContainsString('data-hamburger-account-menu', $source);
         $this->assertStringNotContainsString('data-desktop-account-menu', $source);
-        $this->assertStringContainsString('data-navbar-blend', $source);
-        $this->assertStringContainsString('backdrop-blur-md', $source);
+        $this->assertStringContainsString('bg-transparent', $source);
+        $this->assertStringNotContainsString('data-navbar-blend', $source);
         $this->assertSame(1, substr_count($source, "route('history.index')"));
         $this->assertSame(1, substr_count($source, "route('logout')"));
         $this->assertSame(1, substr_count($source, '@csrf'));

@@ -36,6 +36,7 @@ class ProductCrudTest extends TestCase
             'description' => 'Hand-painted pearl press-on nails.',
             'price' => '175000.00',
             'stock' => 12,
+            'available_sizes' => ['XS', 'M'],
             'is_active' => '1',
             'images' => [
                 UploadedFile::fake()->image('front.jpg'),
@@ -47,6 +48,7 @@ class ProductCrudTest extends TestCase
         $product = Product::query()->sole();
         $images = $product->images()->orderBy('sequence')->get();
         $this->assertSame('pearl-muse', $product->slug);
+        $this->assertSame(['XS', 'M'], $product->available_sizes);
         $this->assertCount(2, $images);
         $this->assertFalse($images[0]->is_primary);
         $this->assertTrue($images[1]->is_primary);
@@ -82,13 +84,29 @@ class ProductCrudTest extends TestCase
             'description' => 'Updated description.',
             'price' => '190000',
             'stock' => 4,
+            'available_sizes' => ['S', 'L'],
             'primary_image_id' => $second->id,
         ])->assertRedirect(route('admin.products.index'));
 
         $this->assertFalse($product->refresh()->is_active);
         $this->assertSame('updated-product', $product->slug);
+        $this->assertSame(['S', 'L'], $product->available_sizes);
         $this->assertFalse($first->refresh()->is_primary);
         $this->assertTrue($second->refresh()->is_primary);
+    }
+
+    public function test_product_form_exposes_canonical_available_size_checkboxes(): void
+    {
+        Category::factory()->create();
+
+        $content = $this->actingAs($this->admin())->get(route('admin.products.create'))
+            ->assertOk()
+            ->getContent();
+
+        foreach (['XS', 'S', 'M', 'L'] as $size) {
+            $this->assertStringContainsString('name="available_sizes[]"', $content);
+            $this->assertStringContainsString('value="'.$size.'"', $content);
+        }
     }
 
     public function test_admin_can_delete_one_image_and_primary_falls_back_to_the_first_remaining_image(): void

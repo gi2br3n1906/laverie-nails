@@ -31,6 +31,7 @@ class Order extends Model
         'customer_email',
         'customer_phone',
         'shipping_address',
+        'order_notes',
         'province_id',
         'city_id',
         'courier',

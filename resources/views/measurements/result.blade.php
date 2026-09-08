@@ -28,6 +28,10 @@
             </section>
         @endif
 
+        @if ($recommendedProducts->isNotEmpty())
+            <section class="mt-8" aria-labelledby="recommended-products-heading"><div class="flex items-end justify-between gap-4"><h2 class="font-serif text-3xl font-semibold" id="recommended-products-heading">Recommended for your size</h2><a class="text-sm font-semibold underline underline-offset-4" href="{{ route('products.index', ['size' => $rightCatalogSize?->value]) }}">View Shop All</a></div><div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">@foreach ($recommendedProducts as $product)<x-storefront.product-card :product="$product" badge="Recommended" :homepage-card="false" />@endforeach</div></section>
+        @endif
+
         @if ($rightCatalogSize || $leftCatalogSize)
             <section class="mt-8 rounded-3xl border border-stone-200 bg-white p-6 text-center shadow-sm sm:p-8"><h2 class="font-serif text-3xl font-semibold tracking-wide">Our Collection</h2><div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">@if ($rightCatalogSize)<a class="rounded-full bg-[#0C1C39] px-6 py-3 font-semibold text-white hover:bg-[#192B48]" href="{{ route('products.index', ['size' => $rightCatalogSize->value]) }}">view {{ $rightCatalogSize->value }} press on nails</a>@endif @if ($leftCatalogSize && $leftCatalogSize !== $rightCatalogSize)<a class="rounded-full border border-[#92A1B5] bg-white px-6 py-3 font-semibold text-[#0C1C39] hover:bg-[#EAF0F6]" href="{{ route('products.index', ['size' => $leftCatalogSize->value]) }}">view {{ $leftCatalogSize->value }} press on nails</a>@endif</div></section>
         @endif

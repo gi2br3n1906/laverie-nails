@@ -32,6 +32,7 @@
             </main>
         @endif
 
+        <x-storefront.cart-drawer />
         <x-storefront.footer />
     </body>
 </html>

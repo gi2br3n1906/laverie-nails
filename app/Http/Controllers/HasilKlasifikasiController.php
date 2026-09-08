@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMeasurementRequest;
+use App\Models\Product;
 use App\Services\MeasurementService;
 use App\Services\SizeStandardService;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,10 @@ class HasilKlasifikasiController extends Controller
         return view('measurements.result', [
             'measurement' => $measurement,
             'sizeStandards' => $this->sizeStandardService->active(),
+            'recommendedProducts' => Product::query()->active()
+                ->whereJsonContains('available_sizes', $measurement->classified_size_right)
+                ->with(['category', 'primaryImage'])
+                ->latest()->take(4)->get(),
         ]);
     }
 }

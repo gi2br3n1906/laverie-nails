@@ -79,6 +79,7 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame(PaymentStatus::Pending, $order->payment_status);
         $this->assertSame(FulfillmentStatus::Pending, $order->fulfillment_status);
         $this->assertSame('snap-token-for-order', $order->snap_token);
+        $this->assertSame('Please pack the adhesive tabs separately.', $order->order_notes);
         $this->assertSame(1, $order->items()->count());
         $this->assertDatabaseHas('order_items', [
             'order_id' => $order->id,
@@ -244,6 +245,7 @@ class CheckoutFlowTest extends TestCase
             'city_id' => '152',
             'shipping_address' => 'Jl. Melati No. 7, Kecamatan Menteng, Jakarta',
             'shipping_option' => 'jne:REG',
+            'order_notes' => 'Please pack the adhesive tabs separately.',
         ];
     }
 

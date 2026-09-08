@@ -44,6 +44,11 @@ const initCheckout = (form) => {
     const shippingOptionInput = form.querySelector('[data-shipping-option-input]');
     const subtotal = Number.parseInt(form.dataset.subtotal ?? '0', 10);
     const oldShippingOption = shippingOptionInput?.value ?? '';
+    const orderNotes = form.querySelector('[name="order_notes"]');
+
+    if (orderNotes && orderNotes.value === '') {
+        orderNotes.value = window.localStorage.getItem('laverie.cart.note') ?? '';
+    }
 
     if (!provinceSelect || !citySelect || !shippingContainer || !shippingTotal || !grandTotal || !submitButton || !shippingOptionInput) {
         return;

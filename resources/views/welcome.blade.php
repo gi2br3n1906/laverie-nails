@@ -25,8 +25,6 @@
                 </div>
             @endforeach
         </div>
-        <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-[#0C1C39]/50 to-transparent" aria-hidden="true" data-homepage-navbar-contrast></div>
-
         <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
             <div class="mx-auto max-w-4xl drop-shadow-lg">
                 <h1 class="whitespace-nowrap font-script text-5xl leading-none text-white sm:text-7xl lg:text-8xl">Nail It, Fit It, Wear It</h1>
@@ -66,7 +64,7 @@
 
             <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5" data-homepage-size-grid>
                 @forelse ($sizeProducts as $catalog)
-                    <x-storefront.size-product-card :catalog="$catalog" />
+                    <x-storefront.product-card :product="$catalog" badge="Pretty Pick" :homepage-card="false" />
                 @empty
                     @for ($card = 0; $card < 5; $card++)<x-storefront.size-product-placeholder />@endfor
                 @endforelse
@@ -115,7 +113,7 @@
                     <x-storefront.review-card
                         :initials="str($review->user->name)->substr(0, 2)->upper()"
                         :name="$review->user->name"
-                        :title="'Ulasan untuk '.$review->catalog->title"
+                        :title="'Ulasan untuk '.$review->product->name"
                         :text="$review->comment"
                         :tone="$loop->iteration === 2 ? 'sand' : ($loop->iteration === 3 ? 'sage' : 'rose')"
                     />

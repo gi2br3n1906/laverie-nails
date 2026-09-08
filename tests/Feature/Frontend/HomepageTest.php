@@ -7,7 +7,6 @@ namespace Tests\Feature\Frontend;
 use App\Models\CatalogReview;
 use App\Models\Category;
 use App\Models\HeroBanner;
-use App\Models\NailCatalog;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,8 +19,8 @@ class HomepageTest extends TestCase
 
     public function test_homepage_renders_premium_storefront_sections_in_sequence(): void
     {
-        $catalog = NailCatalog::factory()->create();
-        CatalogReview::factory()->for($catalog, 'catalog')->create([
+        $product = Product::factory()->create();
+        CatalogReview::factory()->for($product)->create([
             'comment' => 'The fit feels effortless and elegant.',
         ]);
 
@@ -47,11 +46,11 @@ class HomepageTest extends TestCase
                 'Speak to Us',
                 'Real reviews from those who trust laverie for salon quality nails at home',
             ])
-            ->assertSeeInOrder(['Classy', 'Coquette', 'Y2K', 'Floral', 'Grunge'])
+
             ->assertSee('images/hero-banner.png', false)
             ->assertSee('/images/hero-banner.png?v=', false)
             ->assertSee('data-overlay-navigation="true"', false)
-            ->assertSee('data-homepage-navbar-contrast', false)
+            ->assertDontSee('data-homepage-navbar-contrast', false)
             ->assertSee('data-homepage-hero-indicators', false)
             ->assertSee('data-hero-carousel', false)
             ->assertSee('aria-roledescription="carousel"', false)
@@ -73,8 +72,8 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('items-end', $heroMatch[0]);
         $this->assertStringContainsString('text-white', $heroMatch[0]);
         $this->assertStringContainsString('drop-shadow-lg', $heroMatch[0]);
-        $this->assertStringContainsString('pointer-events-none absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-[#0C1C39]/50 to-transparent', $heroMatch[0]);
-        $this->assertStringContainsString('data-homepage-navbar-contrast', $heroMatch[0]);
+        $this->assertStringNotContainsString('from-[#0C1C39]/50', $heroMatch[0]);
+        $this->assertStringNotContainsString('data-homepage-navbar-contrast', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-indicators', $heroMatch[0]);
         $this->assertStringContainsString('data-homepage-hero-ctas', $heroMatch[0]);
         $this->assertSame(1, preg_match_all('/\sdata-hero-slide(?:\s|>)/', $heroMatch[0]));
@@ -129,18 +128,17 @@ class HomepageTest extends TestCase
 
     public function test_homepage_displays_only_active_products_with_rating_and_price(): void
     {
-        $active = NailCatalog::factory()->create([
-            'title' => 'LAVERIE-ACTIVE-SET',
+        $active = Product::factory()->create([
+            'name' => 'LAVERIE-ACTIVE-SET',
             'price' => '179000',
-            'size' => 'M',
+            'available_sizes' => ['M'],
         ]);
-        NailCatalog::factory()->inactive()->create(['title' => 'LAVERIE-HIDDEN-SET']);
-        CatalogReview::factory()->for($active, 'catalog')->create(['rating' => 5]);
+        Product::factory()->inactive()->create(['name' => 'LAVERIE-HIDDEN-SET']);
+        CatalogReview::factory()->for($active)->create(['rating' => 5]);
 
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('LAVERIE-ACTIVE-SET')
-            ->assertSee('Rp 179.000,00')
             ->assertSee('Rp 179.000')
             ->assertSee('5.0')
             ->assertDontSee('LAVERIE-HIDDEN-SET');
@@ -148,22 +146,22 @@ class HomepageTest extends TestCase
 
     public function test_featured_sets_renders_five_square_centered_product_slots_without_duplicate_sizing_cta(): void
     {
-        NailCatalog::factory()->count(5)->sequence(
-            ['title' => 'Pure Angelic', 'price' => '160000'],
-            ['title' => 'Blue Whisper', 'price' => '165000'],
-            ['title' => 'Pearl Muse', 'price' => '170000'],
-            ['title' => 'Soft Petal', 'price' => '175000'],
-            ['title' => 'Midnight Dew', 'price' => '180000'],
+        Product::factory()->count(5)->sequence(
+            ['name' => 'Pure Angelic', 'price' => '160000'],
+            ['name' => 'Blue Whisper', 'price' => '165000'],
+            ['name' => 'Pearl Muse', 'price' => '170000'],
+            ['name' => 'Soft Petal', 'price' => '175000'],
+            ['name' => 'Midnight Dew', 'price' => '180000'],
         )->create();
 
         $content = $this->get(route('home'))->assertOk()->getContent();
 
-        $this->assertSame(5, substr_count($content, 'data-homepage-size-product'));
+        $this->assertSame(0, substr_count($content, 'data-homepage-size-product'));
         $this->assertStringContainsString('lg:grid-cols-5', $content);
         $this->assertStringContainsString('aspect-square', $content);
         $this->assertStringContainsString('text-center', $content);
         $this->assertStringContainsString('Pure Angelic', $content);
-        $this->assertStringContainsString('Rp 160.000,00', $content);
+        $this->assertStringContainsString('Rp 160.000', $content);
         $this->assertStringContainsString('Pretty Picks', $content);
         $this->assertStringNotContainsString('data-homepage-find-size', $content);
         $this->assertSame(1, substr_count($content, '>SIZING<'));

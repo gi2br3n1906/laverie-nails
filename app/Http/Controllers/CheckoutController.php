@@ -42,6 +42,7 @@ class CheckoutController extends Controller
             'customer_email',
             'customer_phone',
             'shipping_address',
+            'order_notes',
             'province_id',
             'city_id',
             'shipping_option',

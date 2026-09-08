@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Enums\UserRole;
-use App\Models\NailCatalog;
+use App\Models\Product;
 use App\Models\User;
 
 class CatalogReviewPolicy
 {
-    public function create(User $user, NailCatalog $catalog): bool
+    public function create(User $user, Product $product): bool
     {
         return $user->hasRole(UserRole::User)
             && ! $user->hasRole(UserRole::Admin)
-            && $catalog->is_active
-            && ! $catalog->reviews()->whereBelongsTo($user)->exists();
+            && $product->is_active
+            && ! $product->reviews()->whereBelongsTo($user)->exists();
     }
 }

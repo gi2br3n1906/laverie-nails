@@ -19,7 +19,7 @@ class CheckoutService
         private readonly PaymentService $paymentService,
     ) {}
 
-    /** @param  array<string, string>  $customerData */
+    /** @param  array<string, string|null>  $customerData */
     public function placeOrder(CartOwner $owner, array $customerData): Order
     {
         $quantity = (int) $owner->scope(CartItem::query())->sum('quantity');
@@ -68,6 +68,7 @@ class CheckoutService
                 'customer_email' => $customerData['customer_email'],
                 'customer_phone' => $customerData['customer_phone'],
                 'shipping_address' => $customerData['shipping_address'],
+                'order_notes' => $customerData['order_notes'] ?? null,
                 'province_id' => $customerData['province_id'],
                 'city_id' => $customerData['city_id'],
                 'courier' => (string) $selectedShipping['key'],

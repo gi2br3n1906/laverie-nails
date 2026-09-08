@@ -21,6 +21,7 @@ class StoreCheckoutRequest extends FormRequest
             'customer_email' => ['required', 'email:rfc', 'max:255'],
             'customer_phone' => ['required', 'string', 'regex:/^[0-9+()\-\s]{8,30}$/'],
             'shipping_address' => ['required', 'string', 'min:10', 'max:1000'],
+            'order_notes' => ['nullable', 'string', 'max:500'],
             'province_id' => ['required', 'string', 'max:30'],
             'city_id' => ['required', 'string', 'max:30'],
             'shipping_option' => ['required', 'string', 'regex:/^[a-z0-9_-]+:[A-Za-z0-9_-]+$/', 'max:100'],

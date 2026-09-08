@@ -6,3 +6,4 @@ import './storefront-navbar';
 import './checkout';
 import './payment-snap';
 import './profile-address';
+import './cart-drawer';

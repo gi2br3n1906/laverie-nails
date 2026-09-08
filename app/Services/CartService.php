@@ -11,6 +11,7 @@ use App\ValueObjects\CartSize;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class CartService
@@ -92,6 +93,37 @@ class CartService
     public function quantity(CartOwner $owner): int
     {
         return (int) $this->ownedQuery($owner)->sum('quantity');
+    }
+
+    /** @return array{items: list<array<string, int|string|null>>, quantity: int, total: int} */
+    public function state(CartOwner $owner): array
+    {
+        $items = $this->items($owner);
+
+        return [
+            'items' => $items->map(function (CartItem $item): array {
+                $product = $item->product;
+                $standardSize = $item->size_payload['size'] ?? null;
+
+                return [
+                    'id' => $item->id,
+                    'name' => $product->name,
+                    'product_url' => route('storefront.products.show', $product),
+                    'image_url' => $product->primaryImage
+                        ? Storage::disk('public')->url($product->primaryImage->image_path)
+                        : null,
+                    'size_label' => $standardSize ? 'SIZE: '.strtoupper((string) $standardSize) : 'SIZE: CUSTOM',
+                    'unit_price' => intdiv($item->subtotalInCents(), $item->quantity),
+                    'subtotal' => $item->subtotalInCents(),
+                    'quantity' => $item->quantity,
+                    'max_quantity' => $product->stock,
+                    'update_url' => route('cart.update', $item),
+                    'remove_url' => route('cart.destroy', $item),
+                ];
+            })->values()->all(),
+            'quantity' => (int) $items->sum('quantity'),
+            'total' => $this->grandTotalInCents($items),
+        ];
     }
 
     /** @param  Collection<int, CartItem>  $items */
