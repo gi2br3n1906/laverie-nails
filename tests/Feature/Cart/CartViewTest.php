@@ -91,51 +91,16 @@ class CartViewTest extends TestCase
         $this->get('/koleksi/'.$product->slug)->assertNotFound();
     }
 
-    public function test_cart_page_displays_size_details_subtotals_grand_total_controls_image_and_quantity_count(): void
+    public function test_measurements_page_renders_the_same_ajax_cart_drawer_as_the_homepage(): void
     {
-        Storage::fake('public');
-        $first = Product::factory()->create([
-            'name' => 'Pearl Muse',
-            'price' => '125000',
-            'stock' => 5,
-        ]);
-        ProductImage::factory()->for($first)->primary()->create(['image_path' => 'products/pearl.jpg']);
-        $second = Product::factory()->create([
-            'name' => 'Blue Whisper',
-            'price' => '200000',
-            'stock' => 3,
-        ]);
-
-        $this->postJson(route('cart.store'), [
-            'product_id' => $first->id,
-            'quantity' => 2,
-            'size_type' => 'standard',
-            'standard_size' => 'M',
-        ])->assertOk();
-        $this->postJson(route('cart.store'), [
-            'product_id' => $second->id,
-            'quantity' => 1,
-            'size_type' => 'custom',
-            'custom_measurements' => $this->customMeasurements(),
-        ])->assertOk();
-
-        $response = $this->get('/input-data')
+        $response = $this->get(route('measurements.create'))
             ->assertOk()
             ->assertSee('Input Data Pengukuran')
-            ->assertSee('Keranjang
-            ->assertSee(Storage::disk('public')->url('products/pearl.jpg'), false)
-            ->assertSeeInOrder(['Pearl Muse', 'Size: M', 'Rp 125.000', 'Rp 250.000'])
-            ->assertSee('Blue Whisper')
-            ->assertSee('Size: Custom')
-            ->assertSee('Jempol 14,2 mm')
-            ->assertSee('Kelingking 8,7 mm')
-            ->assertSee('Grand Total')
-            ->assertSee('Rp 450.000')
-            ->assertSee('Kurangi jumlah Pearl Muse')
-            ->assertSee('Tambah jumlah Pearl Muse')
-            ->assertSee('Hapus Pearl Muse')
-            ->assertSee('data-cart-count', false)
-            ->assertSee('>3</span>', false);
+            ->assertSee('data-cart-drawer', false)
+            ->assertSee('data-cart-drawer-trigger', false)
+            ->assertSee('aria-controls="cart-drawer"', false)
+            ->assertSee(route('cart.state'), false)
+            ->assertSee(route('checkout.create'), false);
 
         $this->assertDoesNotMatchRegularExpression('/\sstyle\s*=/i', $response->getContent());
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $response->getContent());
@@ -162,6 +127,15 @@ class CartViewTest extends TestCase
             ->assertOk()
             ->assertSee('Linked Editorial Set')
             ->assertSee(url('/koleksi/linked-editorial-set'), false);
+    }
+
+    public function test_auth_layout_renders_cart_drawer_for_navbar_consistency(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('data-cart-drawer', false)
+            ->assertSee('data-cart-drawer-trigger', false)
+            ->assertSee(route('cart.state'), false);
     }
 
     /** @return array<string, array<string, float>> */

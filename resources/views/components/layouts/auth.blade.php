@@ -18,6 +18,7 @@
             <main class="flex flex-1 items-center justify-center px-4 py-12 sm:py-16">
                 {{ $slot }}
             </main>
+            <x-storefront.cart-drawer />
             <x-storefront.footer />
         </div>
     </body>
