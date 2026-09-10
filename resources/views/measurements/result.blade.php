@@ -19,11 +19,16 @@
             @endif
         </div>
 
+        @php
+            $whatsappBaseUrl = config('laverie.contact.whatsapp_number') ? 'https://wa.me/'.config('laverie.contact.whatsapp_number') : 'https://wa.me/';
+            $consultationUrl = $whatsappBaseUrl.'?text='.$consultationMessage;
+        @endphp
+
         @if ($isCustom)
             <section class="mt-8 overflow-hidden rounded-3xl bg-[#0C1C39] p-6 text-white shadow-2xl sm:p-8">
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                     <div class="max-w-2xl"><h2 class="font-serif text-3xl font-semibold">Custom size detected</h2><p class="mt-3 leading-7 text-stone-300">The measurement difference is outside standard tolerances. Consult your results before selecting press-on nails.</p></div>
-                    <a class="shrink-0 rounded-full bg-emerald-500 px-6 py-4 text-center font-bold text-white transition hover:-translate-y-0.5 hover:bg-emerald-600" href="https://wa.me/?text={{ $consultationMessage }}" target="_blank" rel="noopener noreferrer">consult here</a>
+                    <a class="shrink-0 rounded-full bg-emerald-500 px-6 py-4 text-center font-bold text-white transition hover:-translate-y-0.5 hover:bg-emerald-600" href="{{ $consultationUrl }}" target="_blank" rel="noopener noreferrer">consult here</a>
                 </div>
             </section>
         @endif

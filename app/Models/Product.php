@@ -81,4 +81,55 @@ class Product extends Model
     {
         $query->where('is_active', true);
     }
+
+    public function scopeSearchText(Builder $query, ?string $search): void
+    {
+        if (trim((string) $search) === '') {
+            return;
+        }
+
+        $term = '%'.mb_strtolower(trim((string) $search)).'%';
+
+        $query->where(function (Builder $query) use ($term): void {
+            $query->whereRaw('LOWER(name) LIKE ?', [$term])
+                ->orWhereRaw('LOWER(description) LIKE ?', [$term]);
+        });
+    }
+
+    /** @param  string|int|null $category */
+    public function scopeCategory(Builder $query, mixed $category): void
+    {
+        if ($category === null || $category === '') {
+            return;
+        }
+
+        if (is_numeric((string) $category)) {
+            $query->where('category_id', (int) $category);
+
+            return;
+        }
+
+        $query->whereHas('category', static function (Builder $query) use ($category): void {
+            $query->where('slug', $category);
+        });
+    }
+
+    public function scopeSize(Builder $query, ?string $size): void
+    {
+        if ($size === null || $size === '') {
+            return;
+        }
+
+        $query->whereJsonContains('available_sizes', $size);
+    }
+
+    /**
+     * @param  array{search?: string|null, category?: string|null, size?: string|null}  $filters
+     */
+    public function scopeCatalogFilters(Builder $query, array $filters): void
+    {
+        $query->searchText($filters['search'] ?? null)
+            ->category($filters['category'] ?? null)
+            ->size($filters['size'] ?? null);
+    }
 }

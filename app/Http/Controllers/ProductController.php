@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\CatalogSize;
 use App\Http\Requests\Marketplace\FilterProductsRequest;
+use App\Models\Category;
 use App\Services\MarketplaceService;
 use Illuminate\View\View;
 
@@ -15,11 +16,23 @@ class ProductController extends Controller
 
     public function index(FilterProductsRequest $request): View
     {
-        $size = $request->filled('size') ? CatalogSize::from($request->validated('size')) : null;
+        $validated = $request->validated();
+        $size = $validated['size'] ?? null;
+        $category = $validated['category'] ?? null;
+        $search = $validated['search'] ?? null;
+
+        $selectedSize = is_string($size) ? CatalogSize::tryFrom($size) : null;
 
         return view('products.index', [
-            'catalogs' => $this->marketplaceService->mainProducts($size),
-            'selectedSize' => $size,
+            'categories' => Category::query()->orderBy('name')->get(),
+            'catalogs' => $this->marketplaceService->filteredProducts(
+                search: $search,
+                category: $category,
+                size: $selectedSize?->value,
+            ),
+            'selectedCategory' => $category,
+            'selectedSize' => $selectedSize,
+            'search' => $search,
             'sizes' => CatalogSize::cases(),
         ]);
     }

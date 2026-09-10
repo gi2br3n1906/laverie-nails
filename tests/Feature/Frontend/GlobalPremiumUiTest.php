@@ -54,8 +54,8 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Buka menu".*?data-navbar-brand/s', $content);
         $this->assertMatchesRegularExpression('/data-navbar-brand[^>]*>Laverie Nails<\/a>.*?data-navbar-right/s', $content);
         $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>Laverie Nails<\/a>/', $content);
-        $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
-        $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
+        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
+        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
         $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Buka menu"/', $content);
         $this->assertSame(3, preg_match_all('/<svg[^>]*class="[^"]*drop-shadow-lg[^"]*"[^>]*data-navbar-icon="(?:menu|search|cart)"/', $content));
         $this->assertStringContainsString('>Sizing</a>', $content);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Marketplace;
 
+use App\Models\Category;
 use App\Models\Product;
 use Database\Seeders\SizeStandardSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -53,6 +54,69 @@ class ProductCatalogTest extends TestCase
             ->assertSee('SHOP-ALL-M')
             ->assertDontSee('SHOP-ALL-HIDDEN')
             ->assertSee(route('storefront.products.show', $matching), false);
+    }
+
+    public function test_search_query_filters_products_by_name_or_description(): void
+    {
+        Product::factory()->create([
+            'name' => 'Lover Matte Classic',
+            'description' => 'soft pink with subtle sheen',
+        ]);
+        Product::factory()->create([
+            'name' => 'Moon White',
+            'description' => 'a perfect match for office vibes',
+        ]);
+
+        $this->get(route('products.index', ['search' => 'Lover']))
+            ->assertOk()
+            ->assertSee('Lover Matte Classic')
+            ->assertDontSee('Moon White');
+
+        $this->get(route('products.index', ['search' => 'office']))
+            ->assertOk()
+            ->assertSee('Moon White')
+            ->assertDontSee('Lover Matte Classic');
+    }
+
+    public function test_can_filter_products_by_category_and_size_together(): void
+    {
+        $classy = Category::factory()->create(['name' => 'Classy', 'slug' => 'classy']);
+        $minimal = Category::factory()->create(['name' => 'Minimal', 'slug' => 'minimal']);
+
+        Product::factory()->create([
+            'name' => 'CLASSY-SHORT',
+            'category_id' => $classy->id,
+            'available_sizes' => ['S'],
+        ]);
+        Product::factory()->create([
+            'name' => 'CLASSY-LONG',
+            'category_id' => $classy->id,
+            'available_sizes' => ['M'],
+        ]);
+        Product::factory()->create([
+            'name' => 'MINIMAL-S',
+            'category_id' => $minimal->id,
+            'available_sizes' => ['S'],
+        ]);
+
+        $this->get(route('products.index', ['category' => $classy->slug, 'size' => 'S']))
+            ->assertOk()
+            ->assertSee('CLASSY-SHORT')
+            ->assertDontSee('CLASSY-LONG')
+            ->assertDontSee('MINIMAL-S');
+    }
+
+    public function test_empty_or_special_character_search_queries_do_not_crash_filtering(): void
+    {
+        Product::factory()->create(['name' => 'SOFT SHINE']);
+
+        $this->get(route('products.index', ['search' => '']))
+            ->assertOk()
+            ->assertSee('Our Collection');
+
+        $this->get(route('products.index', ['search' => '%%%__']))
+            ->assertOk()
+            ->assertSee('Our Collection');
     }
 
     public function test_inactive_products_cannot_be_opened_directly(): void

@@ -23,31 +23,20 @@
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route(auth()->user()->accountHomeRouteName()) }}">Dashboard</a>
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('profile.edit') }}">Pengaturan Akun</a>
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('history.index') }}">Measurement history</a>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-stone-100" type="submit">Logout</button>
-                            </form>
+                            <form action="{{ route('logout') }}" method="POST">@csrf<button class="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-stone-100" type="submit">Logout</button></form>
                         @endguest
                     </div>
                 </div>
             </details>
         </div>
-
-        <a @class([
-            'justify-self-center whitespace-nowrap font-logo text-2xl tracking-[-0.04em] sm:text-3xl',
-            'text-white drop-shadow-lg' => $overlay,
-            'text-[#0C1C39]' => ! $overlay,
-        ]) href="{{ route('home') }}" data-navbar-brand>Laverie Nails</a>
-
+        <a @class(['justify-self-center whitespace-nowrap font-logo text-2xl tracking-[-0.04em] sm:text-3xl', 'text-white drop-shadow-lg' => $overlay, 'text-[#0C1C39]' => ! $overlay]) href="{{ route('home') }}" data-navbar-brand>Laverie Nails</a>
         <div class="flex items-center justify-end gap-0.5 sm:gap-1" data-navbar-right>
-            <a @class(['grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('products.index') }}" aria-label="Cari produk">
-                <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="search"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg>
-            </a>
-            <a @class(['relative grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) href="{{ route('cart.index') }}" aria-label="Tas belanja" aria-controls="cart-drawer" data-cart-drawer-trigger>
-                <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="cart"><path stroke-linejoin="round" d="M5.5 8.5h13l-1 11h-11l-1-11Z" /><path stroke-linecap="round" d="M9 9V6.75a3 3 0 0 1 6 0V9" /></svg>
-                <span @class(['absolute -right-0.5 -top-0.5 min-h-4 min-w-4 place-items-center rounded-full bg-[#60738C] px-1 text-[0.6rem] font-bold leading-none text-white ring-2 ring-white', 'grid' => $cartQuantity > 0, 'hidden' => $cartQuantity < 1]) data-cart-count>{{ $cartQuantity }}</span>
-                <span class="sr-only" data-cart-count-label>{{ $cartQuantity }} item</span>
-            </a>
+            <form action="{{ route('products.index') }}" method="GET" class="contents" data-navbar-search-form>
+                <label class="sr-only" for="navbar-search">Cari produk</label>
+                <input id="navbar-search" type="hidden" name="search" value="" />
+                <button @class(['grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) type="submit" aria-label="Cari produk"><svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="search"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg></button>
+            </form>
+            <button @class(['relative grid size-10 place-items-center rounded-full transition', 'text-white hover:bg-white/15' => $overlay, 'hover:bg-stone-100' => ! $overlay]) type="button" aria-label="Tas belanja" aria-controls="cart-drawer" data-cart-drawer-trigger><svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="cart"><path stroke-linejoin="round" d="M5.5 8.5h13l-1 11h-11l-1-11Z" /><path stroke-linecap="round" d="M9 9V6.75a3 3 0 0 1 6 0V9" /></svg><span @class(['absolute -right-0.5 -top-0.5 min-h-4 min-w-4 place-items-center rounded-full bg-[#60738C] px-1 text-[0.6rem] font-bold leading-none text-white ring-2 ring-white', 'grid' => $cartQuantity > 0, 'hidden' => $cartQuantity < 1]) data-cart-count>{{ $cartQuantity }}</span><span class="sr-only" data-cart-count-label>{{ $cartQuantity }} item</span></button>
         </div>
     </nav>
 </header>

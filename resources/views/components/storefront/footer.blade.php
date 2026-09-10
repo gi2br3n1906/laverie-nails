@@ -24,9 +24,9 @@
         <div class="mt-12 pt-2 text-center" data-footer-bottom-row>
             <p class="font-logo text-3xl text-[#0C1C39]">Laverie Nails</p>
             <div class="mt-6 flex items-center justify-center gap-3">
-                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="https://wa.me/6280000000000" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WA</a>
-                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>
-                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TT</a>
+                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="{{ config('laverie.contact.whatsapp_number') ? 'https://wa.me/'.config('laverie.contact.whatsapp_number') : '#' }}" target="{{ config('laverie.contact.whatsapp_number') ? '_blank' : '_self' }}" rel="noopener noreferrer" aria-label="WhatsApp">WA</a>
+                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="{{ config('laverie.contact.instagram_url') }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>
+                <a class="grid size-10 place-items-center rounded-full border border-[#92A1B5]/60 text-[0.65rem] font-bold transition hover:border-[#0C1C39] hover:bg-[#0C1C39] hover:text-white" href="{{ config('laverie.contact.tiktok_url') }}" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TT</a>
             </div>
         </div>
     </div>

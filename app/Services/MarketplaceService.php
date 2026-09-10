@@ -18,13 +18,32 @@ class MarketplaceService
     }
 
     /** @return Collection<int, Product> */
+    public function filteredProducts(?string $search = null, string|int|null $category = null, ?string $size = null): Collection
+    {
+        return Product::query()
+            ->active()
+            ->catalogFilters([
+                'search' => $search,
+                'category' => $category,
+                'size' => $size,
+            ])
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->with(['category', 'primaryImage'])
+            ->latest()
+            ->get();
+    }
+
+    /** @return Collection<int, Product> */
     public function mainProducts(?CatalogSize $size): Collection
     {
         return Product::query()->active()
             ->when($size, fn ($query) => $query->whereJsonContains('available_sizes', $size->value))
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->with(['category', 'primaryImage'])->latest()->get();
+            ->with(['category', 'primaryImage'])
+            ->latest()
+            ->get();
     }
 
     /** @return Collection<int, CatalogReview> */

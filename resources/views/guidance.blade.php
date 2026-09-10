@@ -33,7 +33,11 @@
     <section class="mx-auto mt-24 max-w-5xl text-center" id="video-panduan">
         <h2 class="font-display text-3xl font-semibold leading-tight text-[#0C1C39] sm:text-4xl">watch the video below for a more detailed guide</h2>
         <div class="mt-8 rounded-[2rem] border border-[#92A1B5]/40 bg-white p-3 shadow-xl shadow-[#0C1C39]/5 sm:p-5">
-            <video class="aspect-video w-full rounded-2xl bg-[#EAF0F6]" controls preload="metadata" aria-label="Video guide for measuring nails"><track kind="captions" srclang="en" label="English"></video>
+            <video class="aspect-video w-full rounded-2xl bg-[#EAF0F6]" controls preload="metadata" poster="{{ asset('images/measure-1.svg') }}" aria-label="Video guide for measuring nails">
+                <source src="{{ asset('videos/tutorial-sizing.mp4') }}" type="video/mp4">
+                Maaf, browser Anda tidak dapat memutar video ini saat ini. Pastikan koneksi internet Anda stabil dan video sudah tersedia.
+            </video>
+            <p class="mt-3 text-sm text-stone-600">Jika video tidak muncul, cek file pada <strong>public/videos/tutorial-sizing.mp4</strong> atau hapus cache browser lalu coba lagi.</p>
         </div>
         <a class="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0C1C39] px-10 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#192B48]" href="{{ route('measurements.create') }}" data-guidance-input-cta>Input Data</a>
     </section>
