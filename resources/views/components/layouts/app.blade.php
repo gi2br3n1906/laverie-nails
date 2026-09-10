@@ -24,6 +24,8 @@
                 {{ $slot }}
             </main>
 
+            <x-storefront.cart-drawer />
+
             <x-storefront.footer />
         </div>
 
