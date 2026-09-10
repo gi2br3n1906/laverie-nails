@@ -77,7 +77,7 @@ class CartViewTest extends TestCase
             ->assertSee('custom_measurements[right_hand][kelingking]', false)
             ->assertSee('custom_measurements[left_hand][jempol]', false)
             ->assertSee('custom_measurements[left_hand][kelingking]', false)
-            ->assertSee('action="'.url('/cart').'"', false)
+            ->assertSee('action="'.route('cart.store').'"', false)
             ->assertSee('Tambah ke Keranjang');
 
         $this->assertDoesNotMatchRegularExpression('/\sstyle\s*=/i', $response->getContent());
@@ -106,22 +106,23 @@ class CartViewTest extends TestCase
             'stock' => 3,
         ]);
 
-        $this->post('/cart', [
+        $this->postJson(route('cart.store'), [
             'product_id' => $first->id,
             'quantity' => 2,
             'size_type' => 'standard',
             'standard_size' => 'M',
-        ]);
-        $this->post('/cart', [
+        ])->assertOk();
+        $this->postJson(route('cart.store'), [
             'product_id' => $second->id,
             'quantity' => 1,
             'size_type' => 'custom',
             'custom_measurements' => $this->customMeasurements(),
-        ]);
+        ])->assertOk();
 
-        $response = $this->get('/cart')
+        $response = $this->get('/input-data')
             ->assertOk()
-            ->assertSee('Keranjang Belanja')
+            ->assertSee('Input Data Pengukuran')
+            ->assertSee('Keranjang
             ->assertSee(Storage::disk('public')->url('products/pearl.jpg'), false)
             ->assertSeeInOrder(['Pearl Muse', 'Size: M', 'Rp 125.000', 'Rp 250.000'])
             ->assertSee('Blue Whisper')
@@ -140,13 +141,14 @@ class CartViewTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $response->getContent());
     }
 
-    public function test_empty_cart_has_a_clear_storefront_return_action(): void
+    public function test_measurements_page_uses_ajax_cart_drawer_toggle(): void
     {
-        $this->get('/cart')
+        $this->get(route('measurements.create'))
             ->assertOk()
-            ->assertSee('Keranjang Anda masih kosong')
-            ->assertSee('Kembali ke koleksi')
-            ->assertSee(url('/#collection'), false);
+            ->assertSee('data-cart-drawer', false)
+            ->assertSee('data-cart-drawer-trigger', false)
+            ->assertSee('aria-controls="cart-drawer"', false)
+            ->assertSee(route('cart.state'), false);
     }
 
     public function test_homepage_editorial_product_card_links_to_the_editorial_detail_route(): void
