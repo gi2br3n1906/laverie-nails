@@ -22,7 +22,7 @@ class CheckoutController extends Controller
         $items = $cartService->items($owner);
 
         if ($items->isEmpty()) {
-            return redirect()->route('cart.index')->withErrors([
+            return redirect()->route('home')->withErrors([
                 'cart' => 'Keranjang belanja Anda masih kosong.',
             ]);
         }

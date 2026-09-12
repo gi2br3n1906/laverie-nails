@@ -18,11 +18,11 @@ class CartOperationsTest extends TestCase
     {
         $product = Product::factory()->create(['stock' => 5]);
 
-        $this->post('/cart', [
+        $this->post('/cart-items', [
             'product_id' => $product->id,
             'size_type' => 'standard',
             'standard_size' => 'M',
-        ])->assertRedirect('/cart');
+        ])->assertRedirect('/');
 
         $cartItem = CartItem::query()->sole();
 
@@ -40,12 +40,12 @@ class CartOperationsTest extends TestCase
         $user = User::factory()->create();
         $product = Product::factory()->create(['stock' => 4]);
 
-        $this->actingAs($user)->post('/cart', [
+        $this->actingAs($user)->post('/cart-items', [
             'product_id' => $product->id,
             'quantity' => 2,
             'size_type' => 'standard',
             'standard_size' => 'S',
-        ])->assertRedirect('/cart');
+        ])->assertRedirect('/');
 
         $cartItem = CartItem::query()->sole();
 
@@ -58,9 +58,9 @@ class CartOperationsTest extends TestCase
     {
         $product = Product::factory()->create(['stock' => 10]);
 
-        $this->post('/cart', $this->standardPayload($product, 'M', 2))->assertRedirect('/cart');
-        $this->post('/cart', $this->standardPayload($product, 'M'))->assertRedirect('/cart');
-        $this->post('/cart', $this->standardPayload($product, 'L'))->assertRedirect('/cart');
+        $this->post('/cart-items', $this->standardPayload($product, 'M', 2))->assertRedirect('/');
+        $this->post('/cart-items', $this->standardPayload($product, 'M'))->assertRedirect('/');
+        $this->post('/cart-items', $this->standardPayload($product, 'L'))->assertRedirect('/');
 
         $this->assertDatabaseCount('cart_items', 2);
         $this->assertSame(3, CartItem::query()->whereJsonContains('size_payload->size', 'M')->sole()->quantity);
@@ -72,7 +72,7 @@ class CartOperationsTest extends TestCase
         $product = Product::factory()->create(['stock' => 4]);
         $measurements = $this->customMeasurements('10.00');
 
-        $this->post('/cart', $this->customPayload($product, $measurements))->assertRedirect('/cart');
+        $this->post('/cart-items', $this->customPayload($product, $measurements))->assertRedirect('/');
 
         $cartItem = CartItem::query()->sole();
 
@@ -95,7 +95,7 @@ class CartOperationsTest extends TestCase
         ], $cartItem->size_payload);
 
         $numericEquivalent = $this->customMeasurements(10.0);
-        $this->post('/cart', $this->customPayload($product, $numericEquivalent))->assertRedirect('/cart');
+        $this->post('/cart-items', $this->customPayload($product, $numericEquivalent))->assertRedirect('/');
 
         $this->assertDatabaseCount('cart_items', 1);
         $this->assertSame(2, $cartItem->refresh()->quantity);
@@ -105,15 +105,15 @@ class CartOperationsTest extends TestCase
     {
         $product = Product::factory()->create(['stock' => 5]);
 
-        $this->post('/cart', ['product_id' => $product->id])
+        $this->post('/cart-items', ['product_id' => $product->id])
             ->assertSessionHasErrors(['size_type']);
 
-        $this->post('/cart', [
+        $this->post('/cart-items', [
             'product_id' => $product->id,
             'size_type' => 'standard',
         ])->assertSessionHasErrors(['standard_size']);
 
-        $this->post('/cart', [
+        $this->post('/cart-items', [
             'product_id' => $product->id,
             'size_type' => 'standard',
             'standard_size' => 'XL',
@@ -121,12 +121,12 @@ class CartOperationsTest extends TestCase
 
         $missingFinger = $this->customMeasurements(10);
         unset($missingFinger['left_hand']['kelingking']);
-        $this->post('/cart', $this->customPayload($product, $missingFinger))
+        $this->post('/cart-items', $this->customPayload($product, $missingFinger))
             ->assertSessionHasErrors(['custom_measurements.left_hand.kelingking']);
 
         $outOfRange = $this->customMeasurements(10);
         $outOfRange['right_hand']['jempol'] = 25.1;
-        $this->post('/cart', $this->customPayload($product, $outOfRange))
+        $this->post('/cart-items', $this->customPayload($product, $outOfRange))
             ->assertSessionHasErrors(['custom_measurements.right_hand.jempol']);
 
         $this->assertDatabaseCount('cart_items', 0);
@@ -138,11 +138,11 @@ class CartOperationsTest extends TestCase
         $empty = Product::factory()->create(['stock' => 0]);
         $limited = Product::factory()->create(['stock' => 2]);
 
-        $this->post('/cart', $this->standardPayload($inactive, 'M'))
+        $this->post('/cart-items', $this->standardPayload($inactive, 'M'))
             ->assertSessionHasErrors(['product_id']);
-        $this->post('/cart', $this->standardPayload($empty, 'M'))
+        $this->post('/cart-items', $this->standardPayload($empty, 'M'))
             ->assertSessionHasErrors(['quantity']);
-        $this->post('/cart', $this->standardPayload($limited, 'M', 3))
+        $this->post('/cart-items', $this->standardPayload($limited, 'M', 3))
             ->assertSessionHasErrors(['quantity']);
 
         $this->assertDatabaseCount('cart_items', 0);
@@ -152,8 +152,8 @@ class CartOperationsTest extends TestCase
     {
         $product = Product::factory()->create(['stock' => 2]);
 
-        $this->post('/cart', $this->standardPayload($product, 'XS', 2))->assertRedirect('/cart');
-        $this->post('/cart', $this->standardPayload($product, 'XS'))
+        $this->post('/cart-items', $this->standardPayload($product, 'XS', 2))->assertRedirect('/');
+        $this->post('/cart-items', $this->standardPayload($product, 'XS'))
             ->assertSessionHasErrors(['quantity']);
 
         $this->assertSame(2, CartItem::query()->sole()->quantity);
@@ -163,19 +163,19 @@ class CartOperationsTest extends TestCase
     {
         $user = User::factory()->create();
         $product = Product::factory()->create(['stock' => 3]);
-        $this->actingAs($user)->post('/cart', $this->standardPayload($product, 'M'));
+        $this->actingAs($user)->post('/cart-items', $this->standardPayload($product, 'M'));
         $cartItem = CartItem::query()->sole();
 
-        $this->actingAs($user)->patch('/cart/'.$cartItem->id, ['quantity' => 3])
-            ->assertRedirect('/cart');
+        $this->actingAs($user)->patch('/cart-items/'.$cartItem->id, ['quantity' => 3])
+            ->assertRedirect('/');
         $this->assertSame(3, $cartItem->refresh()->quantity);
 
-        $this->actingAs($user)->patch('/cart/'.$cartItem->id, ['quantity' => 4])
+        $this->actingAs($user)->patch('/cart-items/'.$cartItem->id, ['quantity' => 4])
             ->assertSessionHasErrors(['quantity']);
         $this->assertSame(3, $cartItem->refresh()->quantity);
 
-        $this->actingAs($user)->delete('/cart/'.$cartItem->id)
-            ->assertRedirect('/cart');
+        $this->actingAs($user)->delete('/cart-items/'.$cartItem->id)
+            ->assertRedirect('/');
         $this->assertModelMissing($cartItem);
     }
 
@@ -184,11 +184,11 @@ class CartOperationsTest extends TestCase
         $owner = User::factory()->create();
         $intruder = User::factory()->create();
         $product = Product::factory()->create(['stock' => 5]);
-        $this->actingAs($owner)->post('/cart', $this->standardPayload($product, 'L'));
+        $this->actingAs($owner)->post('/cart-items', $this->standardPayload($product, 'L'));
         $cartItem = CartItem::query()->sole();
 
-        $this->actingAs($intruder)->patch('/cart/'.$cartItem->id, ['quantity' => 2])->assertNotFound();
-        $this->actingAs($intruder)->delete('/cart/'.$cartItem->id)->assertNotFound();
+        $this->actingAs($intruder)->patch('/cart-items/'.$cartItem->id, ['quantity' => 2])->assertNotFound();
+        $this->actingAs($intruder)->delete('/cart-items/'.$cartItem->id)->assertNotFound();
 
         $this->assertSame(1, $cartItem->refresh()->quantity);
     }
@@ -196,14 +196,14 @@ class CartOperationsTest extends TestCase
     public function test_another_guest_session_cannot_update_or_remove_a_cart_item(): void
     {
         $product = Product::factory()->create(['stock' => 5]);
-        $this->post('/cart', $this->standardPayload($product, 'S'));
+        $this->post('/cart-items', $this->standardPayload($product, 'S'));
         $cartItem = CartItem::query()->sole();
 
         $this->withSession(['cart.guest_id' => 'another-browser-session'])
-            ->patch('/cart/'.$cartItem->id, ['quantity' => 2])
+            ->patch('/cart-items/'.$cartItem->id, ['quantity' => 2])
             ->assertNotFound();
         $this->withSession(['cart.guest_id' => 'another-browser-session'])
-            ->delete('/cart/'.$cartItem->id)
+            ->delete('/cart-items/'.$cartItem->id)
             ->assertNotFound();
 
         $this->assertSame(1, $cartItem->refresh()->quantity);
@@ -212,25 +212,25 @@ class CartOperationsTest extends TestCase
     public function test_authenticated_and_guest_carts_are_isolated(): void
     {
         $product = Product::factory()->create(['stock' => 5]);
-        $this->post('/cart', $this->standardPayload($product, 'M'));
+        $this->post('/cart-items', $this->standardPayload($product, 'M'));
 
-        $this->actingAs(User::factory()->create())->get('/cart')
+        $this->actingAs(User::factory()->create())->getJson(route('cart.state'))
             ->assertOk()
-            ->assertSee('Keranjang Anda masih kosong')
-            ->assertDontSee($product->name);
+            ->assertJsonPath('data.quantity', 0)
+            ->assertJsonCount(0, 'data.items');
     }
 
     public function test_deleting_a_product_or_user_cascades_their_cart_items(): void
     {
         $user = User::factory()->create();
         $product = Product::factory()->create(['stock' => 5]);
-        $this->actingAs($user)->post('/cart', $this->standardPayload($product, 'M'));
+        $this->actingAs($user)->post('/cart-items', $this->standardPayload($product, 'M'));
 
         $product->delete();
         $this->assertDatabaseCount('cart_items', 0);
 
         $secondProduct = Product::factory()->create(['stock' => 5]);
-        $this->actingAs($user)->post('/cart', $this->standardPayload($secondProduct, 'S'));
+        $this->actingAs($user)->post('/cart-items', $this->standardPayload($secondProduct, 'S'));
         $user->delete();
         $this->assertDatabaseCount('cart_items', 0);
     }

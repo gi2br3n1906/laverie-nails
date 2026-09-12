@@ -50,7 +50,7 @@ class CheckoutFlowTest extends TestCase
         ]);
         $otherProduct = Product::factory()->create(['stock' => 4]);
 
-        $this->post('/cart', $this->cartPayload($product, 2))->assertRedirect('/cart');
+        $this->post('/cart-items', $this->cartPayload($product, 2))->assertRedirect('/');
         $guestId = (string) CartItem::query()->sole()->session_id;
         CartItem::query()->create([
             'user_id' => null,
@@ -107,7 +107,7 @@ class CheckoutFlowTest extends TestCase
         $this->fakeGateways();
         $user = User::factory()->create();
         $product = Product::factory()->create(['price' => '125000.00', 'stock' => 3]);
-        $this->actingAs($user)->post('/cart', $this->cartPayload($product));
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product));
 
         $this->actingAs($user)->post('/checkout', $this->checkoutPayload())->assertRedirect();
 
@@ -121,7 +121,7 @@ class CheckoutFlowTest extends TestCase
     {
         $this->fakeGateways();
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
-        $this->post('/cart', $this->cartPayload($product, 2));
+        $this->post('/cart-items', $this->cartPayload($product, 2));
         $product->update(['stock' => 1]);
 
         $this->from('/checkout')->post('/checkout', $this->checkoutPayload())
@@ -139,7 +139,7 @@ class CheckoutFlowTest extends TestCase
     {
         $this->fakeGateways(failPayment: true);
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
-        $this->post('/cart', $this->cartPayload($product, 2));
+        $this->post('/cart-items', $this->cartPayload($product, 2));
         $this->withoutExceptionHandling();
 
         try {
@@ -159,7 +159,7 @@ class CheckoutFlowTest extends TestCase
     {
         $this->fakeGateways();
         $product = Product::factory()->create(['stock' => 2]);
-        $this->post('/cart', $this->cartPayload($product));
+        $this->post('/cart-items', $this->cartPayload($product));
         $this->post('/checkout', $this->checkoutPayload());
         $order = Order::query()->sole();
 
@@ -175,7 +175,7 @@ class CheckoutFlowTest extends TestCase
         $owner = User::factory()->create();
         $intruder = User::factory()->create();
         $product = Product::factory()->create(['stock' => 2]);
-        $this->actingAs($owner)->post('/cart', $this->cartPayload($product));
+        $this->actingAs($owner)->post('/cart-items', $this->cartPayload($product));
         $this->actingAs($owner)->post('/checkout', $this->checkoutPayload());
         $order = Order::query()->sole();
 
@@ -189,7 +189,7 @@ class CheckoutFlowTest extends TestCase
     {
         $this->fakeGateways();
         $product = Product::factory()->create(['stock' => 2]);
-        $this->post('/cart', $this->cartPayload($product));
+        $this->post('/cart-items', $this->cartPayload($product));
 
         $this->from('/checkout')->post('/checkout', [
             ...$this->checkoutPayload(),
@@ -208,7 +208,7 @@ class CheckoutFlowTest extends TestCase
         $this->fakeGateways();
         $user = User::factory()->create();
         $product = Product::factory()->create(['name' => 'Permanent Memory', 'stock' => 2]);
-        $this->actingAs($user)->post('/cart', $this->cartPayload($product));
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product));
         $this->actingAs($user)->post('/checkout', $this->checkoutPayload());
         $order = Order::query()->sole();
 

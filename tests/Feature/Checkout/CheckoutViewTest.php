@@ -40,17 +40,18 @@ class CheckoutViewTest extends TestCase
             ]),
         ]);
         $product = Product::factory()->create(['name' => 'Moonlit Pearl', 'price' => '175000.00', 'stock' => 4]);
-        $this->post('/cart', [
+        $this->post('/cart-items', [
             'product_id' => $product->id,
             'quantity' => 2,
             'size_type' => 'standard',
             'standard_size' => 'L',
         ]);
 
-        $this->get('/cart')
+        $this->get('/')
             ->assertOk()
-            ->assertSee(route('checkout.create'))
-            ->assertSee('Lanjut ke Checkout');
+            ->assertSee('data-cart-drawer', false)
+            ->assertSee('data-cart-drawer-checkout', false)
+            ->assertSee(route('checkout.create'), false);
 
         $response = $this->get('/checkout')
             ->assertOk()
@@ -90,7 +91,7 @@ class CheckoutViewTest extends TestCase
             ]]]]);
         });
         $product = Product::factory()->create(['stock' => 4]);
-        $this->post('/cart', [
+        $this->post('/cart-items', [
             'product_id' => $product->id,
             'quantity' => 3,
             'size_type' => 'standard',
@@ -111,7 +112,7 @@ class CheckoutViewTest extends TestCase
 
     public function test_empty_cart_cannot_enter_checkout(): void
     {
-        $this->get('/checkout')->assertRedirect('/cart')->assertSessionHasErrors(['cart']);
+        $this->get('/checkout')->assertRedirect('/')->assertSessionHasErrors(['cart']);
     }
 
     public function test_payment_page_exposes_snap_configuration_via_data_attributes_without_inline_script(): void

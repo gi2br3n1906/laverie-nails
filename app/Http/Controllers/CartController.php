@@ -10,7 +10,6 @@ use App\Models\CartItem;
 use App\Services\CartService;
 use App\ValueObjects\CartOwner;
 use App\ValueObjects\CartSize;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,16 +17,6 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     public function __construct(private readonly CartService $cartService) {}
-
-    public function index(Request $request): View
-    {
-        $items = $this->cartService->items(CartOwner::fromRequest($request));
-
-        return view('cart.index', [
-            'items' => $items,
-            'grandTotalInCents' => $this->cartService->grandTotalInCents($items),
-        ]);
-    }
 
     public function state(Request $request): JsonResponse
     {
@@ -52,7 +41,7 @@ class CartController extends Controller
             ]);
         }
 
-        return to_route('cart.index')->with('status', 'Produk ditambahkan ke keranjang.');
+        return to_route('home')->with('status', 'Produk ditambahkan ke keranjang.');
     }
 
     public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse|JsonResponse
@@ -70,7 +59,7 @@ class CartController extends Controller
             ]);
         }
 
-        return to_route('cart.index')->with('status', 'Jumlah produk diperbarui.');
+        return to_route('home')->with('status', 'Jumlah produk diperbarui.');
     }
 
     public function destroy(Request $request, CartItem $cartItem): RedirectResponse|JsonResponse
@@ -84,6 +73,6 @@ class CartController extends Controller
             ]);
         }
 
-        return to_route('cart.index')->with('status', 'Produk dihapus dari keranjang.');
+        return to_route('home')->with('status', 'Produk dihapus dari keranjang.');
     }
 }
