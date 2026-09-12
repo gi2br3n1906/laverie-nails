@@ -30,6 +30,15 @@
     --color-stone-950: #081329;
 }
 
+@utility scrollbar-none {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
 [data-homepage-navbar] {
     transition: background 350ms ease, color 300ms ease, backdrop-filter 350ms ease;
 }

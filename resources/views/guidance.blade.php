@@ -9,24 +9,24 @@
             <div>
                 <h2 class="font-display text-4xl font-semibold text-[#0C1C39] sm:text-5xl">Measure 1</h2>
             </div>
-            <div class="mt-8 grid w-full gap-4 sm:grid-cols-3" data-guidance-image-grid="measure-1">
+            <div class="scrollbar-none mt-8 flex w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0" data-guidance-image-grid="measure-1">
                 @for ($image = 1; $image <= 3; $image++)
-                    <img class="aspect-[3/4] w-full rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/measure-1.svg') }}" alt="Measure 1 illustration {{ $image }}: place a millimeter ruler across the widest part of the nail plate">
+                    <img class="aspect-[3/4] w-[78%] flex-shrink-0 snap-center rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5 sm:w-[60%] md:w-auto" src="{{ asset('images/measure-1.svg') }}" alt="Measure 1 illustration {{ $image }}: place a millimeter ruler across the widest part of the nail plate">
                 @endfor
             </div>
-            <p class="mt-7 max-w-2xl text-base leading-8 text-stone-600">Place a millimeter ruler straight across the widest part of your nail plate. Begin at the left edge and keep the ruler flat rather than following the curve of your nail.</p>
+            <p class="mt-7 max-w-2xl text-xs leading-6 text-stone-600 md:text-sm md:leading-7">Place a millimeter ruler straight across the widest part of your nail plate. Begin at the left edge and keep the ruler flat rather than following the curve of your nail.</p>
         </article>
 
         <article class="flex flex-col items-center border-t border-[#92A1B5]/30 pt-20 text-center">
             <div>
                 <h2 class="font-display text-4xl font-semibold text-[#0C1C39] sm:text-5xl">Measure 2</h2>
             </div>
-            <div class="mt-8 grid w-full gap-4 sm:grid-cols-3" data-guidance-image-grid="measure-2">
+            <div class="scrollbar-none mt-8 flex w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0" data-guidance-image-grid="measure-2">
                 @for ($image = 1; $image <= 3; $image++)
-                    <img class="aspect-[3/4] w-full rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/measure-2.svg') }}" alt="Measure 2 illustration {{ $image }}: record the nail width in millimeters for all five fingers">
+                    <img class="aspect-[3/4] w-[78%] flex-shrink-0 snap-center rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5 sm:w-[60%] md:w-auto" src="{{ asset('images/measure-2.svg') }}" alt="Measure 2 illustration {{ $image }}: record the nail width in millimeters for all five fingers">
                 @endfor
             </div>
-            <p class="mt-7 max-w-2xl text-base leading-8 text-stone-600">Read the width in millimeters and record it for every finger, from your thumb to your pinky. Measure the other hand separately whenever its nail widths are different.</p>
+            <p class="mt-7 max-w-2xl text-xs leading-6 text-stone-600 md:text-sm md:leading-7">Read the width in millimeters and record it for every finger, from your thumb to your pinky. Measure the other hand separately whenever its nail widths are different.</p>
         </article>
     </section>
 
