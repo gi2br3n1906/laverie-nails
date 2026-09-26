@@ -38,6 +38,7 @@
             data-cities-url="{{ route('checkout.logistics.cities') }}"
             data-shipping-options-url="{{ route('checkout.logistics.shipping-options') }}"
             data-subtotal="{{ $subtotal }}"
+            data-discount="{{ $discount }}"
         >
             @csrf
             <input name="shipping_option" type="hidden" value="{{ old('shipping_option') }}" data-shipping-option-input>
@@ -126,9 +127,15 @@
                         <dt>Shipping</dt>
                         <dd data-shipping-total>Belum dipilih</dd>
                     </div>
+                    @if ($coupon && $discount > 0)
+                        <div class="flex justify-between gap-4 text-[#DDE6F0]">
+                            <dt>Diskon ({{ $coupon['code'] }})</dt>
+                            <dd>−Rp {{ number_format($discount, 0, ',', '.') }}</dd>
+                        </div>
+                    @endif
                     <div class="flex items-end justify-between gap-4 border-t border-white/20 pt-5">
                         <dt class="font-display text-2xl">Grand Total</dt>
-                        <dd class="text-lg font-semibold" data-grand-total>Rp {{ number_format($subtotal, 0, ',', '.') }}</dd>
+                        <dd class="text-lg font-semibold" data-grand-total>Rp {{ number_format($subtotal - $discount, 0, ',', '.') }}</dd>
                     </div>
                 </dl>
 

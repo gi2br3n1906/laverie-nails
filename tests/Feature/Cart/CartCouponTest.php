@@ -58,6 +58,55 @@ class CartCouponTest extends TestCase
         $this->getJson('/cart-state')->assertJsonPath('data.coupon', null);
     }
 
+    public function test_coupon_requires_a_minimum_order_amount(): void
+    {
+        $product = Product::factory()->create(['stock' => 5, 'price' => '100000.00']);
+        Coupon::query()->create([
+            'code' => 'MIN150',
+            'discount_percentage' => 10,
+            'minimum_order_amount' => 150000,
+            'is_active' => true,
+        ]);
+
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+        ]);
+
+        $this->postJson('/cart-coupon', ['code' => 'MIN150'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrorFor('code');
+
+        $this->assertFalse(session()->has('cart_coupon_id'));
+        $this->getJson('/cart-state')->assertJsonPath('data.coupon', null);
+    }
+
+    public function test_expired_coupon_cannot_be_applied(): void
+    {
+        $product = Product::factory()->create(['stock' => 5, 'price' => '100000.00']);
+        Coupon::query()->create([
+            'code' => 'EXPIRED',
+            'discount_percentage' => 10,
+            'expires_at' => now()->subMinute(),
+            'is_active' => true,
+        ]);
+
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+        ]);
+
+        $this->postJson('/cart-coupon', ['code' => 'EXPIRED'])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrorFor('code');
+
+        $this->assertFalse(session()->has('cart_coupon_id'));
+    }
+
     public function test_removing_a_coupon_restores_the_full_total(): void
     {
         $product = Product::factory()->create(['stock' => 5, 'price' => '100000.00']);

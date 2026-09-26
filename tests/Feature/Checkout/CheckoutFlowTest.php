@@ -7,6 +7,7 @@ namespace Tests\Feature\Checkout;
 use App\Enums\FulfillmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -98,8 +99,121 @@ class CheckoutFlowTest extends TestCase
             && $request->hasHeader('Authorization', 'Basic '.base64_encode('midtrans-server-secret:'))
             && $request['transaction_details']['order_id'] === $order->id
             && $request['transaction_details']['gross_amount'] === 518000
+            && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 518000
             && $request['item_details'][0]['price'] === 250000
             && $request['item_details'][1]['id'] === 'SHIPPING');
+    }
+
+    public function test_checkout_applies_percentage_coupon_and_matches_the_snap_item_total(): void
+    {
+        $this->fakeGateways();
+        $product = Product::factory()->create(['price' => '250000.00', 'stock' => 5]);
+        Coupon::query()->create([
+            'code' => 'SAVE10',
+            'discount_type' => 'percentage',
+            'discount_percentage' => 10,
+            'is_active' => true,
+        ]);
+
+        $this->post('/cart-items', $this->cartPayload($product, 2));
+        $this->postJson('/cart-coupon', ['code' => 'SAVE10'])->assertOk();
+        $this->post('/checkout', $this->checkoutPayload())->assertRedirect();
+
+        $order = Order::query()->sole();
+        $this->assertSame('SAVE10', $order->coupon_code);
+        $this->assertSame(50000, $order->discount_amount);
+        $this->assertSame(500000, $order->subtotal);
+        $this->assertSame(18000, $order->shipping_cost);
+        $this->assertSame(468000, $order->grand_total);
+
+        Http::assertSent(function (Request $request) use ($order): bool {
+            if ($request->url() !== 'https://midtrans.test/snap/v1/transactions') {
+                return false;
+            }
+
+            $items = $request['item_details'];
+            $itemTotal = array_sum(array_map(
+                fn (array $item): int => $item['price'] * $item['quantity'],
+                $items,
+            ));
+            $discount = collect($items)->firstWhere('id', 'DISCOUNT');
+
+            return $request['transaction_details']['order_id'] === $order->id
+                && $request['transaction_details']['gross_amount'] === $order->grand_total
+                && $itemTotal === $order->grand_total
+                && $discount === [
+                    'id' => 'DISCOUNT',
+                    'price' => -50000,
+                    'quantity' => 1,
+                    'name' => 'Diskon (SAVE10)',
+                ];
+        });
+    }
+
+    public function test_checkout_applies_a_fixed_coupon_and_snapshots_the_discount(): void
+    {
+        $this->fakeGateways();
+        $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
+        Coupon::query()->create([
+            'code' => 'POTONG25',
+            'discount_type' => 'fixed',
+            'discount_percentage' => 0,
+            'discount_amount' => 25000,
+            'is_active' => true,
+        ]);
+
+        $this->post('/cart-items', $this->cartPayload($product));
+        $this->postJson('/cart-coupon', ['code' => 'POTONG25'])->assertOk();
+        $this->getJson('/cart-state')
+            ->assertJsonPath('data.coupon.discount_label', 'Rp 25.000')
+            ->assertJsonPath('data.discount', 2500000)
+            ->assertJsonPath('data.total', 17500000);
+        $this->post('/checkout', $this->checkoutPayload())->assertRedirect();
+
+        $order = Order::query()->sole();
+        Coupon::query()->where('code', 'POTONG25')->delete();
+        $order = $order->fresh();
+        $this->assertSame('POTONG25', $order->coupon_code);
+        $this->assertSame(25000, $order->discount_amount);
+        $this->assertSame(193000, $order->grand_total);
+        Http::assertSent(fn (Request $request): bool => str_contains($request->url(), 'midtrans.test')
+            && collect($request['item_details'])->contains(fn (array $item): bool => $item['id'] === 'DISCOUNT'
+                && $item['price'] === -25000
+                && $item['name'] === 'Diskon (POTONG25)'));
+    }
+
+    public function test_checkout_revalidates_coupon_expiry_and_minimum_order_amount(): void
+    {
+        $this->fakeGateways();
+        $product = Product::factory()->create(['price' => '200000.00', 'stock' => 4]);
+        $coupon = Coupon::query()->create([
+            'code' => 'SAVE10',
+            'discount_type' => 'percentage',
+            'discount_percentage' => 10,
+            'minimum_order_amount' => 100000,
+            'is_active' => true,
+        ]);
+        $this->post('/cart-items', $this->cartPayload($product));
+        $this->postJson('/cart-coupon', ['code' => 'SAVE10'])->assertOk();
+
+        $coupon->update(['minimum_order_amount' => 300000]);
+        $this->from('/checkout')->post('/checkout', $this->checkoutPayload())
+            ->assertRedirect('/checkout')
+            ->assertSessionHasErrors(['coupon']);
+        $this->assertDatabaseCount('orders', 0);
+        Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'midtrans.test'));
+
+        $coupon->update(['minimum_order_amount' => 0, 'expires_at' => now()->subMinute()]);
+        $this->from('/checkout')->post('/checkout', $this->checkoutPayload())
+            ->assertRedirect('/checkout')
+            ->assertSessionHasErrors(['coupon']);
+        $this->assertDatabaseCount('orders', 0);
+
+        $coupon->update(['expires_at' => null, 'is_active' => false]);
+        $this->from('/checkout')->post('/checkout', $this->checkoutPayload())
+            ->assertRedirect('/checkout')
+            ->assertSessionHasErrors(['coupon']);
+        $this->assertDatabaseCount('orders', 0);
     }
 
     public function test_checkout_only_carries_selected_items_and_leaves_unselected_in_cart(): void

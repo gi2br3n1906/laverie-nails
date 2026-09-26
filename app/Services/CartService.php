@@ -117,7 +117,10 @@ class CartService
         $items = $this->items($owner);
         $selectedItems = $items->where('is_selected', true);
         $subtotal = $this->grandTotalInCents($selectedItems);
-        $discount = $coupon ? intdiv($subtotal * $coupon->discount_percentage, 100) : 0;
+        $subtotalInRupiah = intdiv($subtotal, 100);
+        $discountInRupiah = $coupon?->discountFor($subtotalInRupiah) ?? 0;
+        $appliedCoupon = $discountInRupiah > 0 ? $coupon : null;
+        $discount = $discountInRupiah * 100;
 
         return [
             'items' => $items->map(function (CartItem $item): array {
@@ -149,9 +152,13 @@ class CartService
             'subtotal' => $subtotal,
             'discount' => $discount,
             'total' => $subtotal - $discount,
-            'coupon' => $coupon ? [
-                'code' => $coupon->code,
-                'discount_percentage' => $coupon->discount_percentage,
+            'coupon' => $appliedCoupon ? [
+                'code' => $appliedCoupon->code,
+                'discount_percentage' => $appliedCoupon->discount_percentage,
+                'discount_type' => $appliedCoupon->discount_type,
+                'discount_label' => $appliedCoupon->discount_type === 'fixed'
+                    ? 'Rp '.number_format($appliedCoupon->discount_amount, 0, ',', '.')
+                    : $appliedCoupon->discount_percentage.'%',
             ] : null,
         ];
     }

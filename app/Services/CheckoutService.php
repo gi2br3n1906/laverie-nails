@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\ValueObjects\CartOwner;
@@ -20,7 +21,7 @@ class CheckoutService
     ) {}
 
     /** @param  array<string, string|null>  $customerData */
-    public function placeOrder(CartOwner $owner, array $customerData): Order
+    public function placeOrder(CartOwner $owner, array $customerData, ?int $couponId = null): Order
     {
         $quantity = (int) $owner->scope(CartItem::query())->where('is_selected', true)->sum('quantity');
 
@@ -41,7 +42,7 @@ class CheckoutService
             ]);
         }
 
-        return DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity): Order {
+        return DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity, $couponId): Order {
             $cartItems = $owner->scope(CartItem::query())
                 ->where('is_selected', true)
                 ->orderBy('id')
@@ -63,6 +64,15 @@ class CheckoutService
 
             $subtotal = $this->validateAndCalculateSubtotal($cartItems, $products);
             $shippingCost = (int) $selectedShipping['cost'];
+            $coupon = $couponId === null ? null : Coupon::query()->whereKey($couponId)->lockForUpdate()->first();
+
+            if ($couponId !== null && (! $coupon || ! $coupon->isValidForSubtotal($subtotal) || $coupon->discountFor($subtotal) < 1)) {
+                throw ValidationException::withMessages([
+                    'coupon' => 'Kupon tidak lagi berlaku untuk pesanan ini. Periksa kode, masa berlaku, dan minimum belanja.',
+                ]);
+            }
+
+            $discountAmount = $coupon?->discountFor($subtotal) ?? 0;
             $order = Order::query()->create([
                 ...$owner->orderAttributes(),
                 'customer_name' => $customerData['customer_name'],
@@ -75,7 +85,9 @@ class CheckoutService
                 'courier' => (string) $selectedShipping['key'],
                 'shipping_cost' => $shippingCost,
                 'subtotal' => $subtotal,
-                'grand_total' => $subtotal + $shippingCost,
+                'coupon_code' => $coupon?->code,
+                'discount_amount' => $discountAmount,
+                'grand_total' => $subtotal - $discountAmount + $shippingCost,
             ]);
 
             foreach ($cartItems as $cartItem) {

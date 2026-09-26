@@ -37,6 +37,8 @@ class Order extends Model
         'courier',
         'shipping_cost',
         'subtotal',
+        'coupon_code',
+        'discount_amount',
         'grand_total',
         'payment_status',
         'fulfillment_status',
@@ -59,6 +61,7 @@ class Order extends Model
         return [
             'shipping_cost' => 'integer',
             'subtotal' => 'integer',
+            'discount_amount' => 'integer',
             'grand_total' => 'integer',
             'payment_status' => PaymentStatus::class,
             'fulfillment_status' => FulfillmentStatus::class,

@@ -22,7 +22,7 @@
                     <button class="rounded-full border border-[#0C1C39] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-[#0C1C39] hover:text-white" type="submit">Apply</button>
                 </div>
                 <div class="mt-3 hidden items-center justify-between rounded-2xl bg-emerald-50 px-4 py-3 text-sm" data-cart-coupon-applied>
-                    <span class="font-semibold text-emerald-800"><span data-cart-coupon-label></span> <span class="font-normal">(-<span data-cart-coupon-percent></span>%)</span></span>
+                    <span class="font-semibold text-emerald-800"><span data-cart-coupon-label></span> <span class="font-normal">(−<span data-cart-coupon-percent></span>)</span></span>
                     <button class="text-xs font-semibold text-emerald-800 underline underline-offset-4" type="button" data-cart-coupon-remove>Remove</button>
                 </div>
             </form>

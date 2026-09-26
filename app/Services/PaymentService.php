@@ -15,6 +15,37 @@ class PaymentService
     public function createSnapToken(Order $order): string
     {
         $order->loadMissing('items');
+        $itemDetails = $order->items->map(fn (OrderItem $item): array => [
+            'id' => (string) ($item->product_id ?? $item->id),
+            'price' => $item->product_price,
+            'quantity' => $item->quantity,
+            'name' => mb_substr($item->product_name, 0, 50),
+        ])->all();
+        $itemDetails[] = [
+            'id' => 'SHIPPING',
+            'price' => $order->shipping_cost,
+            'quantity' => 1,
+            'name' => 'Ongkos Kirim',
+        ];
+
+        if ($order->discount_amount > 0) {
+            $itemDetails[] = [
+                'id' => 'DISCOUNT',
+                'price' => -$order->discount_amount,
+                'quantity' => 1,
+                'name' => 'Diskon ('.$order->coupon_code.')',
+            ];
+        }
+
+        $itemDetailsTotal = array_sum(array_map(
+            static fn (array $item): int => $item['price'] * $item['quantity'],
+            $itemDetails,
+        ));
+
+        if ($itemDetailsTotal !== $order->grand_total) {
+            throw new RuntimeException('Jumlah item Midtrans tidak cocok dengan total pesanan.');
+        }
+
         $token = Http::acceptJson()
             ->asJson()
             ->withBasicAuth($this->serverKey(), '')
@@ -36,20 +67,7 @@ class PaymentService
                         'address' => $order->shipping_address,
                     ],
                 ],
-                'item_details' => [
-                    ...$order->items->map(fn (OrderItem $item): array => [
-                        'id' => (string) ($item->product_id ?? $item->id),
-                        'price' => $item->product_price,
-                        'quantity' => $item->quantity,
-                        'name' => mb_substr($item->product_name, 0, 50),
-                    ])->all(),
-                    [
-                        'id' => 'SHIPPING',
-                        'price' => $order->shipping_cost,
-                        'quantity' => 1,
-                        'name' => 'Ongkos Kirim',
-                    ],
-                ],
+                'item_details' => $itemDetails,
             ])
             ->throw()
             ->json('token');

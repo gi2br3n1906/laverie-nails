@@ -32,11 +32,12 @@ class CartController extends Controller
         ]);
 
         $code = strtoupper(trim((string) $validated['code']));
-        $coupon = Coupon::query()->whereRaw('UPPER(code) = ?', [$code])->where('is_active', true)->first();
+        $coupon = Coupon::query()->whereRaw('UPPER(code) = ?', [$code])->first();
+        $subtotal = intdiv($this->cartService->state(CartOwner::fromRequest($request))['subtotal'], 100);
 
-        if (! $coupon) {
+        if (! $coupon || ! $coupon->isValidForSubtotal($subtotal) || $coupon->discountFor($subtotal) < 1) {
             throw ValidationException::withMessages([
-                'code' => 'Kode diskon tidak ditemukan atau sudah tidak aktif.',
+                'code' => 'Kode diskon tidak valid untuk subtotal keranjang saat ini.',
             ]);
         }
 
@@ -133,7 +134,7 @@ class CartController extends Controller
     private function stateFor(Request $request): array
     {
         $couponId = $request->session()->get('cart_coupon_id');
-        $coupon = $couponId ? Coupon::query()->whereKey($couponId)->where('is_active', true)->first() : null;
+        $coupon = $couponId ? Coupon::query()->whereKey($couponId)->first() : null;
 
         return $this->cartService->state(CartOwner::fromRequest($request), $coupon);
     }

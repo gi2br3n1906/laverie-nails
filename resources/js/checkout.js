@@ -43,6 +43,7 @@ const initCheckout = (form) => {
     const submitButton = form.querySelector('[data-place-order-button]');
     const shippingOptionInput = form.querySelector('[data-shipping-option-input]');
     const subtotal = Number.parseInt(form.dataset.subtotal ?? '0', 10);
+    const discount = Number.parseInt(form.dataset.discount ?? '0', 10);
     const oldShippingOption = shippingOptionInput?.value ?? '';
     const orderNotes = form.querySelector('[name="order_notes"]');
 
@@ -56,7 +57,7 @@ const initCheckout = (form) => {
 
     const setTotals = (shippingCost = 0) => {
         shippingTotal.textContent = shippingCost > 0 ? formatRupiah(shippingCost) : 'Belum dipilih';
-        grandTotal.textContent = formatRupiah(subtotal + shippingCost);
+        grandTotal.textContent = formatRupiah(subtotal - discount + shippingCost);
     };
 
     const showShippingMessage = (message) => {

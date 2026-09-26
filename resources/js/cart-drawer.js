@@ -125,7 +125,7 @@ if (drawer) {
         couponInputRow.classList.toggle('hidden', hasCoupon);
         if (hasCoupon) {
             couponLabel.textContent = state.coupon.code;
-            couponPercent.textContent = state.coupon.discount_percentage;
+            couponPercent.textContent = state.coupon.discount_label;
         } else {
             couponInput.value = '';
         }
