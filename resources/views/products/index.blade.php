@@ -47,7 +47,7 @@
     </section>
 
     <section class="mt-8" aria-label="Filter kategori">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Kategori</p>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Filter Kategori</p>
         <nav class="flex flex-wrap gap-2" aria-label="Filter kategori">
             <a
                 @class([
@@ -75,30 +75,6 @@
                 >
                     {{ $category->name }}
                 </a>
-            @endforeach
-        </nav>
-    </section>
-
-    <section class="mt-8" aria-label="Filter ukuran">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Ukuran</p>
-        <nav class="flex flex-wrap gap-2" aria-label="Filter ukuran">
-            <a
-                @class([
-                    'rounded-full px-5 py-2.5 text-sm font-semibold transition',
-                    'bg-[#0C1C39] text-white' => ! $hasActiveSize,
-                    'border border-[#92A1B5]/50 bg-white text-stone-600' => $hasActiveSize,
-                ])
-                href="{{ route('products.index', array_filter(['search' => $searchQuery ?: null, 'category' => $selectedCategory ?: null])) }}"
-            >All</a>
-            @foreach ($sizes as $size)
-                <a
-                    @class([
-                        'rounded-full px-5 py-2.5 text-sm font-semibold transition',
-                        'bg-[#0C1C39] text-white' => $selectedSize === $size,
-                        'border border-[#92A1B5]/50 bg-white text-[#0C1C39]' => $selectedSize !== $size,
-                    ])
-                    href="{{ route('products.index', array_filter(['search' => $searchQuery ?: null, 'size' => $size->value, 'category' => $selectedCategory ?: null])) }}"
-                >{{ $size->value }}</a>
             @endforeach
         </nav>
     </section>

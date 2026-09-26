@@ -23,7 +23,7 @@ class ProductCatalogTest extends TestCase
             ->assertOk()
             ->assertSee('Our Collection')
             ->assertSee('Handpainted press on nails designed to match every mood, occasion, and style')
-            ->assertSee('>All<', false)
+            ->assertSee('>All Styles</a>', false)
             ->assertDontSee('Official Laverie collection')
             ->assertDontSee('Koleksi Press-On Nails')
             ->assertSee('PUBLIC-LAVERIE-CATALOG')
@@ -119,6 +119,25 @@ class ProductCatalogTest extends TestCase
             ->assertSee('Our Collection');
     }
 
+    public function test_catalog_does_not_render_size_pills_but_size_query_still_filters(): void
+    {
+        Product::factory()->create(['name' => 'PILL-M', 'available_sizes' => ['M']]);
+        Product::factory()->create(['name' => 'PILL-S', 'available_sizes' => ['S']]);
+
+        // UI no longer exposes the size pill navigation...
+        $this->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('Filter Kategori')
+            ->assertDontSee('aria-label="Filter ukuran"', false)
+            ->assertDontSee('>Ukuran</p>', false);
+
+        // ...but the backend still honours ?size= for recommendation links.
+        $this->get(route('products.index', ['size' => 'M']))
+            ->assertOk()
+            ->assertSee('PILL-M')
+            ->assertDontSee('PILL-S');
+    }
+
     public function test_inactive_products_cannot_be_opened_directly(): void
     {
         $inactive = Product::factory()->inactive()->create();
@@ -131,7 +150,7 @@ class ProductCatalogTest extends TestCase
         $this->seed(SizeStandardSeeder::class);
 
         $standard = $this->post(route('measurements.store'), [
-            'right_hand_data' => $this->hand(16, 12, 13, 12, 10),
+            'right_hand_data' => $this->hand(16, 11.5, 13, 12, 9.5),
         ]);
 
         $standard
@@ -157,15 +176,15 @@ class ProductCatalogTest extends TestCase
         Product::factory()->create(['name' => 'RESULT-NO-MATCH', 'available_sizes' => ['S']]);
 
         $this->post(route('measurements.store'), [
-            'right_hand_data' => $this->hand(16, 12, 13, 12, 10),
+            'right_hand_data' => $this->hand(16, 11.5, 13, 12, 9.5),
         ])->assertOk()
             ->assertSee('Recommended for your size')
             ->assertSee('RESULT-MATCH')
             ->assertDontSee('RESULT-NO-MATCH');
     }
 
-    /** @return array{jempol: int, telunjuk: int, tengah: int, manis: int, kelingking: int} */
-    private function hand(int $jempol, int $telunjuk, int $tengah, int $manis, int $kelingking): array
+    /** @return array{jempol: float, telunjuk: float, tengah: float, manis: float, kelingking: float} */
+    private function hand(float $jempol, float $telunjuk, float $tengah, float $manis, float $kelingking): array
     {
         return compact('jempol', 'telunjuk', 'tengah', 'manis', 'kelingking');
     }
