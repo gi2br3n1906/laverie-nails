@@ -15,7 +15,7 @@ class SizeStandardSeeder extends Seeder
             [
                 'size_name' => 'XS',
                 'jempol' => 14.0,
-                'telunjuk' => 10.0,
+                'telunjuk' => 9.0,
                 'tengah' => 11.0,
                 'manis' => 10.0,
                 'kelingking' => 8.0,
@@ -26,23 +26,23 @@ class SizeStandardSeeder extends Seeder
                 'telunjuk' => 11.0,
                 'tengah' => 12.0,
                 'manis' => 11.0,
-                'kelingking' => 9.0,
+                'kelingking' => 8.0,
             ],
             [
                 'size_name' => 'M',
                 'jempol' => 16.0,
-                'telunjuk' => 12.0,
+                'telunjuk' => 11.5,
                 'tengah' => 13.0,
                 'manis' => 12.0,
-                'kelingking' => 10.0,
+                'kelingking' => 9.5,
             ],
             [
                 'size_name' => 'L',
                 'jempol' => 17.0,
-                'telunjuk' => 13.0,
+                'telunjuk' => 12.5,
                 'tengah' => 14.0,
                 'manis' => 13.0,
-                'kelingking' => 11.0,
+                'kelingking' => 10.0,
             ],
         ];
 

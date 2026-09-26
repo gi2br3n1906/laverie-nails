@@ -23,10 +23,10 @@ class NailClassifierServiceTest extends TestCase
 
         $result = $this->service()->classifyHand([
             'jempol' => 16.0,
-            'telunjuk' => 12.0,
+            'telunjuk' => 11.5,
             'tengah' => 13.0,
             'manis' => 12.0,
-            'kelingking' => 10.0,
+            'kelingking' => 9.5,
         ]);
 
         $this->assertSame([
@@ -107,10 +107,10 @@ class NailClassifierServiceTest extends TestCase
 
         $result = $this->service()->classifyHand([
             'jempol' => 14.5,
-            'telunjuk' => 10.5,
+            'telunjuk' => 10.0,
             'tengah' => 11.5,
             'manis' => 10.5,
-            'kelingking' => 8.5,
+            'kelingking' => 8.0,
         ]);
 
         $this->assertSame('XS', $result['size']);

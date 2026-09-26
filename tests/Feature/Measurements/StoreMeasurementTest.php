@@ -21,8 +21,8 @@ class StoreMeasurementTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->postJson(route('measurements.store'), [
-            'right_hand_data' => $this->hand(16.0, 12.0, 13.0, 12.0, 10.0),
-            'left_hand_data' => $this->hand(14.0, 10.0, 11.0, 10.0, 8.0),
+            'right_hand_data' => $this->hand(16.0, 11.5, 13.0, 12.0, 9.5),
+            'left_hand_data' => $this->hand(14.0, 9.0, 11.0, 10.0, 8.0),
         ]);
 
         $measurement = Measurement::query()->sole();
@@ -34,8 +34,8 @@ class StoreMeasurementTest extends TestCase
             ->assertJsonPath('data.classified_size_left', 'XS');
 
         $this->assertSame($user->id, $measurement->user_id);
-        $this->assertEquals($this->hand(16.0, 12.0, 13.0, 12.0, 10.0), $measurement->right_hand_data);
-        $this->assertEquals($this->hand(14.0, 10.0, 11.0, 10.0, 8.0), $measurement->left_hand_data);
+        $this->assertEquals($this->hand(16.0, 11.5, 13.0, 12.0, 9.5), $measurement->right_hand_data);
+        $this->assertEquals($this->hand(14.0, 9.0, 11.0, 10.0, 8.0), $measurement->left_hand_data);
         $this->assertSame('M', $measurement->classified_size_right);
         $this->assertSame('XS', $measurement->classified_size_left);
         $this->assertSame('100.00', $measurement->confidence_score_right);

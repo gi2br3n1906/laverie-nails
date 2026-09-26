@@ -106,8 +106,8 @@ class UserJourneyViewTest extends TestCase
         ]);
 
         $response = $this->post(route('measurements.store'), [
-            'right_hand_data' => $this->hand(16.0, 12.0, 13.0, 12.0, 10.0),
-            'left_hand_data' => $this->hand(14.0, 10.0, 11.0, 10.0, 8.0),
+            'right_hand_data' => $this->hand(16.0, 11.5, 13.0, 12.0, 9.5),
+            'left_hand_data' => $this->hand(14.0, 9.0, 11.0, 10.0, 8.0),
         ]);
 
         $measurement = Measurement::query()->sole();
