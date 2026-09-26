@@ -37,6 +37,7 @@ class ProductCrudTest extends TestCase
             'price' => '175000.00',
             'stock' => 12,
             'available_sizes' => ['XS', 'M'],
+            'available_lengths' => ['Short', 'Long'],
             'is_active' => '1',
             'images' => [
                 UploadedFile::fake()->image('front.jpg'),
@@ -49,6 +50,7 @@ class ProductCrudTest extends TestCase
         $images = $product->images()->orderBy('sequence')->get();
         $this->assertSame('pearl-muse', $product->slug);
         $this->assertSame(['XS', 'M'], $product->available_sizes);
+        $this->assertSame(['Short', 'Long'], $product->available_lengths);
         $this->assertCount(2, $images);
         $this->assertFalse($images[0]->is_primary);
         $this->assertTrue($images[1]->is_primary);

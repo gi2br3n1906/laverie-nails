@@ -33,6 +33,8 @@ class UpdateProductRequest extends FormRequest
             'stock' => ['required', 'integer', 'min:0', 'max:1000000'],
             'available_sizes' => ['nullable', 'array'],
             'available_sizes.*' => ['string', Rule::in(['XS', 'S', 'M', 'L'])],
+            'available_lengths' => ['nullable', 'array'],
+            'available_lengths.*' => ['string', Rule::in(['Short', 'Medium', 'Long'])],
             'is_active' => ['sometimes', 'boolean'],
             'images' => ['nullable', 'array', 'max:8'],
             'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],

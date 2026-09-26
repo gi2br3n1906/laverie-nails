@@ -26,6 +26,7 @@ class Product extends Model
         'price',
         'stock',
         'available_sizes',
+        'available_lengths',
         'is_active',
     ];
 
@@ -36,6 +37,7 @@ class Product extends Model
             'price' => 'decimal:2',
             'stock' => 'integer',
             'available_sizes' => 'array',
+            'available_lengths' => 'array',
             'is_active' => 'boolean',
         ];
     }
