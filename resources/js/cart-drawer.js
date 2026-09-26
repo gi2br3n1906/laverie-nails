@@ -11,6 +11,15 @@ if (drawer) {
     const checkout = drawer.querySelector('[data-cart-drawer-checkout]');
     const status = drawer.querySelector('[data-cart-drawer-status]');
     const note = drawer.querySelector('[data-cart-order-note]');
+    const couponForm = drawer.querySelector('[data-cart-coupon-form]');
+    const couponInputRow = drawer.querySelector('[data-cart-coupon-input-row]');
+    const couponInput = drawer.querySelector('[data-cart-coupon-code]');
+    const couponApplied = drawer.querySelector('[data-cart-coupon-applied]');
+    const couponLabel = drawer.querySelector('[data-cart-coupon-label]');
+    const couponPercent = drawer.querySelector('[data-cart-coupon-percent]');
+    const couponRemoveButton = drawer.querySelector('[data-cart-coupon-remove]');
+    const discountRow = drawer.querySelector('[data-cart-drawer-discount-row]');
+    const discountLabel = drawer.querySelector('[data-cart-drawer-discount]');
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
     let lastFocusedElement = null;
 
@@ -105,7 +114,21 @@ if (drawer) {
         itemsContainer.classList.toggle('hidden', state.items.length === 0);
         quantityLabel.textContent = String(state.quantity);
         totalLabel.textContent = formatRupiah(state.total);
-        subtotalLabel.textContent = formatRupiah(state.total);
+        subtotalLabel.textContent = formatRupiah(state.subtotal ?? state.total);
+
+        const hasCoupon = Boolean(state.coupon);
+        discountRow.classList.toggle('hidden', !hasCoupon);
+        discountRow.classList.toggle('flex', hasCoupon);
+        if (hasCoupon) discountLabel.textContent = formatRupiah(state.discount);
+        couponApplied.classList.toggle('hidden', !hasCoupon);
+        couponApplied.classList.toggle('flex', hasCoupon);
+        couponInputRow.classList.toggle('hidden', hasCoupon);
+        if (hasCoupon) {
+            couponLabel.textContent = state.coupon.code;
+            couponPercent.textContent = state.coupon.discount_percentage;
+        } else {
+            couponInput.value = '';
+        }
         checkout.classList.toggle('pointer-events-none', state.items.length === 0);
         checkout.classList.toggle('opacity-50', state.items.length === 0);
         checkout.setAttribute('aria-disabled', state.items.length === 0 ? 'true' : 'false');
@@ -178,6 +201,30 @@ if (drawer) {
     drawer.querySelectorAll('[data-cart-drawer-close]').forEach((button) => button.addEventListener('click', close));
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && drawer.getAttribute('aria-hidden') === 'false') close();
+    });
+
+    couponForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const code = couponInput.value.trim();
+        if (!code) return;
+
+        try {
+            await request(drawer.dataset.couponApplyUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({code}),
+            });
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    });
+
+    couponRemoveButton.addEventListener('click', async () => {
+        try {
+            await request(drawer.dataset.couponRemoveUrl, {method: 'DELETE'});
+        } catch (error) {
+            showMessage(error.message, true);
+        }
     });
 
     itemsContainer.addEventListener('click', async (event) => {

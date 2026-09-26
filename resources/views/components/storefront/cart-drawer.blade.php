@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-[80] hidden" id="cart-drawer" data-cart-drawer data-state-url="{{ route('cart.state') }}" data-store-url="{{ route('cart.store') }}" aria-hidden="true">
+<div class="fixed inset-0 z-[80] hidden" id="cart-drawer" data-cart-drawer data-state-url="{{ route('cart.state') }}" data-store-url="{{ route('cart.store') }}" data-coupon-apply-url="{{ route('cart.coupon.apply') }}" data-coupon-remove-url="{{ route('cart.coupon.remove') }}" aria-hidden="true">
     <button class="absolute inset-0 cursor-default bg-[#081329]/45 opacity-0 backdrop-blur-sm transition-opacity duration-300" type="button" aria-label="Tutup keranjang" data-cart-drawer-close data-cart-drawer-backdrop></button>
     <aside class="absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-white text-[#0C1C39] shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" tabindex="-1" data-cart-drawer-panel>
         <header class="flex items-center justify-between border-b border-stone-200 px-5 py-5 sm:px-7">
@@ -15,14 +15,28 @@
                 <div><p class="font-display text-2xl">Your cart is empty</p><a class="mt-4 inline-flex text-sm font-semibold underline underline-offset-4" href="{{ route('products.index') }}">Explore the collection</a></div>
             </div>
 
-            <details class="mt-8 border-y border-stone-200 py-4" data-cart-drawer-notes>
+            <form class="mt-8" data-cart-coupon-form>
+                <label class="text-sm font-semibold uppercase tracking-[0.12em]" for="cart-coupon-code">Discount Code</label>
+                <div class="mt-3 flex gap-2" data-cart-coupon-input-row>
+                    <input class="min-w-0 flex-1 rounded-full border border-stone-300 bg-stone-50 px-4 py-2.5 text-sm uppercase outline-none focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" id="cart-coupon-code" name="code" maxlength="50" placeholder="SAVE10" data-cart-coupon-code>
+                    <button class="rounded-full border border-[#0C1C39] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-[#0C1C39] hover:text-white" type="submit">Apply</button>
+                </div>
+                <div class="mt-3 hidden items-center justify-between rounded-2xl bg-emerald-50 px-4 py-3 text-sm" data-cart-coupon-applied>
+                    <span class="font-semibold text-emerald-800"><span data-cart-coupon-label></span> <span class="font-normal">(-<span data-cart-coupon-percent></span>%)</span></span>
+                    <button class="text-xs font-semibold text-emerald-800 underline underline-offset-4" type="button" data-cart-coupon-remove>Remove</button>
+                </div>
+            </form>
+
+            <details class="mt-6 border-y border-stone-200 py-4" data-cart-drawer-notes>
                 <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold uppercase tracking-[0.12em]">Add order notes <span aria-hidden="true">+</span></summary>
                 <label class="sr-only" for="cart-order-note">Order notes</label>
                 <textarea class="mt-4 min-h-24 w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-sm outline-none focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" id="cart-order-note" maxlength="500" placeholder="Special requests for your order" data-cart-order-note></textarea>
             </details>
         </div>
 
-        <footer class="border-t border-stone-200 bg-white p-5 sm:p-7" data-cart-drawer-footer><div class="mb-4 flex items-center justify-between text-sm font-semibold"><span>Subtotal</span><span data-cart-drawer-subtotal>Rp 0</span></div>
+        <footer class="border-t border-stone-200 bg-white p-5 sm:p-7" data-cart-drawer-footer>
+            <div class="mb-2 flex items-center justify-between text-sm font-semibold"><span>Subtotal</span><span data-cart-drawer-subtotal>Rp 0</span></div>
+            <div class="mb-4 hidden items-center justify-between text-sm font-semibold text-emerald-700" data-cart-drawer-discount-row><span>Discount</span><span>−<span data-cart-drawer-discount>Rp 0</span></span></div>
             <a class="flex min-h-13 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48]" href="{{ route('checkout.create') }}" data-cart-drawer-checkout>CHECKOUT • <span class="ml-1" data-cart-drawer-total>Rp 0</span></a>
         </footer>
     </aside>

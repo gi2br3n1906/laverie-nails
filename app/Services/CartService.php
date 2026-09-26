@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\ValueObjects\CartOwner;
 use App\ValueObjects\CartSize;
@@ -111,9 +112,12 @@ class CartService
     }
 
     /** @return array{items: list<array<string, int|string|null>>, quantity: int, total: int} */
-    public function state(CartOwner $owner): array
+    public function state(CartOwner $owner, ?Coupon $coupon = null): array
     {
         $items = $this->items($owner);
+        $selectedItems = $items->where('is_selected', true);
+        $subtotal = $this->grandTotalInCents($selectedItems);
+        $discount = $coupon ? intdiv($subtotal * $coupon->discount_percentage, 100) : 0;
 
         return [
             'items' => $items->map(function (CartItem $item): array {
@@ -141,8 +145,14 @@ class CartService
                     'remove_url' => route('cart.destroy', $item),
                 ];
             })->values()->all(),
-            'quantity' => (int) $items->where('is_selected', true)->sum('quantity'),
-            'total' => $this->grandTotalInCents($items->where('is_selected', true)),
+            'quantity' => (int) $selectedItems->sum('quantity'),
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'total' => $subtotal - $discount,
+            'coupon' => $coupon ? [
+                'code' => $coupon->code,
+                'discount_percentage' => $coupon->discount_percentage,
+            ] : null,
         ];
     }
 
