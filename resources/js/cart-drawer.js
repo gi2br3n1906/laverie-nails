@@ -45,10 +45,25 @@ if (drawer) {
         }
 
         const details = element('div', 'min-w-0');
+        const titleRow = element('div', 'flex items-start gap-3');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'mt-1.5 size-4 shrink-0 accent-[#0C1C39]';
+        checkbox.checked = item.is_selected !== false;
+        checkbox.dataset.cartAction = 'selection';
+        checkbox.dataset.url = item.selection_url;
+        checkbox.setAttribute('aria-label', `Pilih ${item.name} untuk checkout`);
         const title = element('a', 'font-display text-lg leading-tight');
         title.href = item.product_url;
         title.textContent = item.name;
-        details.append(title, element('p', 'mt-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-stone-500', item.size_label));
+        titleRow.append(checkbox, title);
+
+        const badges = element('div', 'mt-2 flex flex-wrap gap-1.5');
+        badges.append(element('span', 'rounded-full bg-stone-100 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-stone-600', item.size_label));
+        if (item.length_label) {
+            badges.append(element('span', 'rounded-full bg-stone-100 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-stone-600', item.length_label));
+        }
+        details.append(titleRow, badges);
         details.append(element('p', 'mt-2 text-sm font-semibold', formatRupiah(item.unit_price)));
 
         const actions = element('div', 'mt-4 flex items-center justify-between gap-3');
@@ -168,6 +183,21 @@ if (drawer) {
     itemsContainer.addEventListener('click', async (event) => {
         const button = event.target.closest('[data-cart-action]');
         if (!button) return;
+
+        if (button.dataset.cartAction === 'selection') {
+            try {
+                await request(button.dataset.url, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({is_selected: button.checked}),
+                });
+            } catch (error) {
+                button.checked = !button.checked;
+                showMessage(error.message, true);
+            }
+            return;
+        }
+
         button.disabled = true;
 
         try {

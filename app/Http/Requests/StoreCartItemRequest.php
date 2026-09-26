@@ -28,6 +28,7 @@ class StoreCartItemRequest extends FormRequest
                 Rule::exists('products', 'id')->where('is_active', true),
             ],
             'quantity' => ['required', 'integer', 'min:1'],
+            'length' => ['nullable', 'string', Rule::in(['Short', 'Medium', 'Long'])],
             'size_type' => ['required', Rule::enum(CartSizeType::class)],
             'standard_size' => ['nullable', 'required_if:size_type,standard', Rule::enum(CatalogSize::class)],
             'custom_measurements' => ['nullable', 'required_if:size_type,custom', 'array:right_hand,left_hand'],

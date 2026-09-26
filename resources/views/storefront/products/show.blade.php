@@ -68,6 +68,20 @@
                     </fieldset>
 
                     <fieldset>
+                        <legend class="text-sm font-semibold text-[#0C1C39]">Nail Length</legend>
+                        <p class="mt-1 text-xs leading-5 text-stone-500">Pilih varian panjang yang tersedia untuk produk ini.</p>
+                        <div class="mt-4 grid grid-cols-3 gap-3">
+                            @foreach ($product->available_lengths ?? ['Short', 'Medium', 'Long'] as $length)
+                                <label class="grid cursor-pointer place-items-center rounded-xl border border-[#92A1B5]/60 bg-white px-3 py-3 text-sm font-semibold transition has-checked:border-[#0C1C39] has-checked:bg-[#0C1C39] has-checked:text-white">
+                                    <input class="sr-only" name="length" type="radio" value="{{ $length }}" @checked(old('length', 'Medium') === $length)>
+                                    {{ $length }}
+                                </label>
+                            @endforeach
+                        </div>
+                        <x-input-error :messages="$errors->get('length')" />
+                    </fieldset>
+
+                    <fieldset>
                         <legend class="text-sm font-semibold text-[#0C1C39]">Custom Measurements</legend>
                         <p class="mt-1 text-xs leading-5 text-stone-500">Masukkan lebar setiap kuku dalam milimeter (0–25 mm) untuk kedua tangan.</p>
                         @if ($savedMeasurements)

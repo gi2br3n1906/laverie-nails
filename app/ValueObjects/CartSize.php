@@ -26,7 +26,7 @@ final readonly class CartSize
     {
         $type = CartSizeType::from((string) $validated['size_type']);
         $payload = $type === CartSizeType::Standard
-            ? ['size' => (string) $validated['standard_size']]
+            ? ['size' => (string) $validated['standard_size'], 'length' => (string) ($validated['length'] ?? 'Medium')]
             : self::canonicalCustomPayload($validated['custom_measurements']);
         $encodedPayload = json_encode($payload, JSON_PRESERVE_ZERO_FRACTION | JSON_THROW_ON_ERROR);
 

@@ -19,6 +19,8 @@ class CartItem extends Model
         'size_type',
         'size_payload',
         'size_signature',
+        'length',
+        'is_selected',
     ];
 
     /** @return array<string, string> */
@@ -28,6 +30,7 @@ class CartItem extends Model
             'quantity' => 'integer',
             'size_type' => CartSizeType::class,
             'size_payload' => 'array',
+            'is_selected' => 'boolean',
         ];
     }
 

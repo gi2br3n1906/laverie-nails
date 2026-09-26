@@ -89,7 +89,7 @@ class CheckoutFlowTest extends TestCase
             'quantity' => 2,
             'size_type' => 'standard',
         ]);
-        $this->assertSame(['size' => 'M'], $order->items()->sole()->size_payload);
+        $this->assertSame(['size' => 'M', 'length' => 'Medium'], $order->items()->sole()->size_payload);
         $this->assertSame(6, $product->refresh()->stock);
         $this->assertDatabaseMissing('cart_items', ['session_id' => $guestId]);
         $this->assertDatabaseHas('cart_items', ['session_id' => 'another-browser']);
@@ -100,6 +100,35 @@ class CheckoutFlowTest extends TestCase
             && $request['transaction_details']['gross_amount'] === 518000
             && $request['item_details'][0]['price'] === 250000
             && $request['item_details'][1]['id'] === 'SHIPPING');
+    }
+
+    public function test_checkout_only_carries_selected_items_and_leaves_unselected_in_cart(): void
+    {
+        $this->fakeGateways();
+        $selectedProduct = Product::factory()->create(['price' => '200000.00', 'stock' => 5]);
+        $skippedProduct = Product::factory()->create(['price' => '90000.00', 'stock' => 5]);
+
+        $this->post('/cart-items', $this->cartPayload($selectedProduct, 1));
+        $this->post('/cart-items', [
+            'product_id' => $skippedProduct->id,
+            'quantity' => 1,
+            'size_type' => 'standard',
+            'standard_size' => 'S',
+        ]);
+
+        $skipped = CartItem::query()->where('product_id', $skippedProduct->id)->sole();
+        $this->patchJson("/cart-items/{$skipped->id}/selection", ['is_selected' => false])->assertOk();
+
+        $response = $this->post('/checkout', $this->checkoutPayload());
+
+        $order = Order::query()->sole();
+        $response->assertRedirect(route('checkout.payment', $order));
+        $this->assertSame(200000, $order->subtotal);
+        $this->assertSame(1, $order->items()->count());
+        $this->assertSame($selectedProduct->id, $order->items()->sole()->product_id);
+        $this->assertSame(4, $selectedProduct->refresh()->stock);
+        $this->assertSame(5, $skippedProduct->refresh()->stock);
+        $this->assertDatabaseHas('cart_items', ['id' => $skipped->id, 'is_selected' => false]);
     }
 
     public function test_authenticated_checkout_records_the_user_without_a_guest_owner(): void

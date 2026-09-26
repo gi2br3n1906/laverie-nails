@@ -62,6 +62,24 @@ class CartController extends Controller
         return to_route('home')->with('status', 'Jumlah produk diperbarui.');
     }
 
+    public function selection(Request $request, CartItem $cartItem): JsonResponse
+    {
+        $validated = $request->validate([
+            'is_selected' => ['required', 'boolean'],
+        ]);
+
+        $this->cartService->setSelected(
+            CartOwner::fromRequest($request),
+            $cartItem->id,
+            (bool) $validated['is_selected'],
+        );
+
+        return response()->json([
+            'message' => 'Pilihan produk diperbarui.',
+            'data' => $this->cartService->state(CartOwner::fromRequest($request)),
+        ]);
+    }
+
     public function destroy(Request $request, CartItem $cartItem): RedirectResponse|JsonResponse
     {
         $this->cartService->remove(CartOwner::fromRequest($request), $cartItem->id);

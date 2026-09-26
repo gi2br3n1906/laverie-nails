@@ -34,6 +34,7 @@ Route::get('/koleksi/{product:slug}', [StorefrontProductController::class, 'show
 Route::get('/cart-state', [CartController::class, 'state'])->name('cart.state');
 Route::post('/cart-items', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart-items/{cartItem}', [CartController::class, 'update'])->name('cart.update');
+Route::patch('/cart-items/{cartItem}/selection', [CartController::class, 'selection'])->name('cart.selection');
 Route::delete('/cart-items/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');

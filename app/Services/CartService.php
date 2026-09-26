@@ -50,6 +50,7 @@ class CartService
                 'size_type' => $size->type,
                 'size_payload' => $size->payload,
                 'size_signature' => $size->signature,
+                'length' => $size->payload['length'] ?? null,
             ]);
         });
     }
@@ -81,6 +82,20 @@ class CartService
         });
     }
 
+    public function setSelected(CartOwner $owner, int $cartItemId, bool $isSelected): CartItem
+    {
+        return DB::transaction(function () use ($owner, $cartItemId, $isSelected): CartItem {
+            $cartItem = $this->ownedQuery($owner)
+                ->whereKey($cartItemId)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $cartItem->update(['is_selected' => $isSelected]);
+
+            return $cartItem->refresh();
+        });
+    }
+
     /** @return Collection<int, CartItem> */
     public function items(CartOwner $owner): Collection
     {
@@ -104,6 +119,7 @@ class CartService
             'items' => $items->map(function (CartItem $item): array {
                 $product = $item->product;
                 $standardSize = $item->size_payload['size'] ?? null;
+                $length = $item->length ?? ($item->size_payload['length'] ?? null);
 
                 return [
                     'id' => $item->id,
@@ -113,16 +129,20 @@ class CartService
                         ? Storage::disk('public')->url($product->primaryImage->image_path)
                         : null,
                     'size_label' => $standardSize ? 'SIZE: '.strtoupper((string) $standardSize) : 'SIZE: CUSTOM',
+                    'length' => $length,
+                    'length_label' => $length ? 'LENGTH: '.strtoupper((string) $length) : null,
                     'unit_price' => intdiv($item->subtotalInCents(), $item->quantity),
                     'subtotal' => $item->subtotalInCents(),
                     'quantity' => $item->quantity,
                     'max_quantity' => $product->stock,
                     'update_url' => route('cart.update', $item),
+                    'selection_url' => route('cart.selection', $item),
+                    'is_selected' => (bool) $item->is_selected,
                     'remove_url' => route('cart.destroy', $item),
                 ];
             })->values()->all(),
-            'quantity' => (int) $items->sum('quantity'),
-            'total' => $this->grandTotalInCents($items),
+            'quantity' => (int) $items->where('is_selected', true)->sum('quantity'),
+            'total' => $this->grandTotalInCents($items->where('is_selected', true)),
         ];
     }
 

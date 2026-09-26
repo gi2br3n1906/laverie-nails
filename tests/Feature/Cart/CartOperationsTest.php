@@ -22,6 +22,7 @@ class CartOperationsTest extends TestCase
             'product_id' => $product->id,
             'size_type' => 'standard',
             'standard_size' => 'M',
+            'length' => 'Medium',
         ])->assertRedirect('/');
 
         $cartItem = CartItem::query()->sole();
@@ -31,8 +32,48 @@ class CartOperationsTest extends TestCase
         $this->assertSame($product->id, $cartItem->product_id);
         $this->assertSame(1, $cartItem->quantity);
         $this->assertSame('standard', $cartItem->size_type->value);
-        $this->assertSame(['size' => 'M'], $cartItem->size_payload);
+        $this->assertSame(['size' => 'M', 'length' => 'Medium'], $cartItem->size_payload);
+        $this->assertSame('Medium', $cartItem->length);
         $this->assertSame(64, strlen($cartItem->size_signature));
+    }
+
+    public function test_length_must_be_one_of_the_supported_variants(): void
+    {
+        $product = Product::factory()->create(['stock' => 5]);
+
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+            'length' => 'Extra Long',
+        ])->assertSessionHasErrors('length');
+    }
+
+    public function test_same_product_size_and_length_increment_one_row_but_different_length_is_separate(): void
+    {
+        $product = Product::factory()->create(['stock' => 10]);
+
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+            'length' => 'Short',
+        ])->assertRedirect('/');
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+            'length' => 'Short',
+        ])->assertRedirect('/');
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'size_type' => 'standard',
+            'standard_size' => 'M',
+            'length' => 'Long',
+        ])->assertRedirect('/');
+
+        $this->assertSame(2, CartItem::query()->count());
+        $this->assertSame(2, CartItem::query()->where('length', 'Short')->sole()->quantity);
     }
 
     public function test_authenticated_user_cart_item_has_an_exclusive_user_owner(): void

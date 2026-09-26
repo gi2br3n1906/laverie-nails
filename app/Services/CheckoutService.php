@@ -22,7 +22,7 @@ class CheckoutService
     /** @param  array<string, string|null>  $customerData */
     public function placeOrder(CartOwner $owner, array $customerData): Order
     {
-        $quantity = (int) $owner->scope(CartItem::query())->sum('quantity');
+        $quantity = (int) $owner->scope(CartItem::query())->where('is_selected', true)->sum('quantity');
 
         if ($quantity < 1) {
             throw ValidationException::withMessages(['cart' => 'Keranjang belanja Anda masih kosong.']);
@@ -43,6 +43,7 @@ class CheckoutService
 
         return DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity): Order {
             $cartItems = $owner->scope(CartItem::query())
+                ->where('is_selected', true)
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->get();
@@ -95,7 +96,7 @@ class CheckoutService
                 $product->decrement('stock', $cartItem->quantity);
             }
 
-            $owner->scope(CartItem::query())->delete();
+            $owner->scope(CartItem::query())->where('is_selected', true)->delete();
             $order->setRelation('items', $order->items()->get());
             $order->update(['snap_token' => $this->paymentService->createSnapToken($order)]);
 
