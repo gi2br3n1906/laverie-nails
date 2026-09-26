@@ -8,6 +8,7 @@
         'manis' => 'Ring',
         'kelingking' => 'Pinky',
     ];
+    $tipConverter = new \App\Services\NailSizeConverter;
 @endphp
 
 <article class="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-200/50">
@@ -27,7 +28,8 @@
         @foreach ($labels as $finger => $label)
             <div class="bg-white p-4 text-center">
                 <dt class="text-xs font-medium text-stone-500">{{ $label }}</dt>
-                <dd class="mt-2 font-semibold tabular-nums text-stone-900">{{ number_format((float) $data[$finger], 1) }} mm</dd>
+                <dd class="mt-2 font-semibold tabular-nums text-stone-900">Tip #{{ $tipConverter->toTipNumber((float) $data[$finger]) }}</dd>
+                <dd class="mt-1 text-xs tabular-nums text-stone-400">{{ number_format((float) $data[$finger], 1) }} mm</dd>
             </div>
         @endforeach
     </dl>
