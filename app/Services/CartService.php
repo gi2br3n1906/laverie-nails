@@ -142,10 +142,10 @@ class CartService
                     'subtotal' => $item->subtotalInCents(),
                     'quantity' => $item->quantity,
                     'max_quantity' => $product->stock,
-                    'update_url' => route('cart.update', $item),
-                    'selection_url' => route('cart.selection', $item),
+                    'update_url' => route('cart.update', $item, absolute: false),
+                    'selection_url' => route('cart.selection', $item, absolute: false),
                     'is_selected' => (bool) $item->is_selected,
-                    'remove_url' => route('cart.destroy', $item),
+                    'remove_url' => route('cart.destroy', $item, absolute: false),
                 ];
             })->values()->all(),
             'quantity' => (int) $selectedItems->sum('quantity'),

@@ -26,7 +26,11 @@ class CartViewTest extends TestCase
         $this->assertStringContainsString('data-cart-drawer-notes', $content);
         $this->assertStringContainsString('data-cart-drawer-checkout', $content);
         $this->assertStringContainsString('Subtotal', $content);
-        $this->assertStringContainsString(route('cart.state'), $content);
+        $this->assertStringContainsString('data-state-url="/cart-state"', $content);
+        $this->assertStringContainsString('data-store-url="/cart-items"', $content);
+        $this->assertStringContainsString('data-coupon-apply-url="/cart-coupon"', $content);
+        $this->assertStringContainsString('data-coupon-remove-url="/cart-coupon"', $content);
+        $this->assertStringNotContainsString('data-state-url="http://', $content);
         $this->assertStringContainsString(route('checkout.create'), $content);
     }
 
@@ -47,8 +51,9 @@ class CartViewTest extends TestCase
 
         $this->getJson(route('cart.state'))->assertOk()
             ->assertJsonPath('data.items.0.size_label', 'SIZE: S')
-            ->assertJsonPath('data.items.0.update_url', route('cart.update', $item))
-            ->assertJsonPath('data.items.0.remove_url', route('cart.destroy', $item));
+            ->assertJsonPath('data.items.0.update_url', '/cart-items/'.$item->id)
+            ->assertJsonPath('data.items.0.selection_url', '/cart-items/'.$item->id.'/selection')
+            ->assertJsonPath('data.items.0.remove_url', '/cart-items/'.$item->id);
 
         $this->deleteJson(route('cart.destroy', $item))->assertOk()
             ->assertJsonPath('data.quantity', 0)->assertJsonCount(0, 'data.items');
@@ -99,7 +104,7 @@ class CartViewTest extends TestCase
             ->assertSee('data-cart-drawer', false)
             ->assertSee('data-cart-drawer-trigger', false)
             ->assertSee('aria-controls="cart-drawer"', false)
-            ->assertSee(route('cart.state'), false)
+            ->assertSee('data-state-url="/cart-state"', false)
             ->assertSee(route('checkout.create'), false);
 
         $this->assertDoesNotMatchRegularExpression('/\sstyle\s*=/i', $response->getContent());
@@ -113,7 +118,7 @@ class CartViewTest extends TestCase
             ->assertSee('data-cart-drawer', false)
             ->assertSee('data-cart-drawer-trigger', false)
             ->assertSee('aria-controls="cart-drawer"', false)
-            ->assertSee(route('cart.state'), false);
+            ->assertSee('data-state-url="/cart-state"', false);
     }
 
     public function test_homepage_editorial_product_card_links_to_the_editorial_detail_route(): void
@@ -135,7 +140,7 @@ class CartViewTest extends TestCase
             ->assertOk()
             ->assertSee('data-cart-drawer', false)
             ->assertSee('data-cart-drawer-trigger', false)
-            ->assertSee(route('cart.state'), false);
+            ->assertSee('data-state-url="/cart-state"', false);
     }
 
     /** @return array<string, array<string, float>> */
