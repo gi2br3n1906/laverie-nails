@@ -62,6 +62,27 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertStringNotContainsString('>Find your size</a>', $content);
     }
 
+    public function test_search_and_cart_buttons_are_visible_and_accessible_on_the_light_navbar(): void
+    {
+        $content = $this->get(route('products.index'))->assertOk()->getContent();
+
+        preg_match('/<button\\b[^>]*data-navbar-search-button[^>]*>/', $content, $searchButton);
+        preg_match('/<button\\b[^>]*data-navbar-cart-button[^>]*>/', $content, $cartButton);
+
+        $this->assertNotEmpty($searchButton, 'The search button should have a stable selector.');
+        $this->assertNotEmpty($cartButton, 'The cart button should have a stable selector.');
+        $this->assertStringContainsString('size-11', $searchButton[0]);
+        $this->assertStringContainsString('text-[#0C1C39]', $searchButton[0]);
+        $this->assertStringContainsString('hover:bg-[#EAF0F6]', $searchButton[0]);
+        $this->assertStringContainsString('focus-visible:outline-2', $searchButton[0]);
+        $this->assertStringContainsString('size-11', $cartButton[0]);
+        $this->assertStringContainsString('text-[#0C1C39]', $cartButton[0]);
+        $this->assertStringContainsString('bg-[#EAF0F6]', $cartButton[0]);
+        $this->assertStringContainsString('border-[#92A1B5]/50', $cartButton[0]);
+        $this->assertStringContainsString('hover:bg-[#DDE6F0]', $cartButton[0]);
+        $this->assertStringContainsString('focus-visible:outline-2', $cartButton[0]);
+    }
+
     public function test_authenticated_and_admin_pages_share_the_premium_chrome(): void
     {
         $user = User::factory()->create();
