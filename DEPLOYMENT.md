@@ -125,6 +125,15 @@ Retry failed jobs after fixing credentials:
 docker compose exec -T php-fpm php artisan queue:retry all
 ```
 
+### Email account ownership
+
+The Brevo account is the store's sending identity, not a developer asset. The free plan allows a single user, so access cannot be shared.
+
+- Send from `admin@laverie.web.id`; never use a personal mailbox as the From address.
+- At handover, change the login email under **Settings → Profile**, then rotate the SMTP key and update `MAIL_PASSWORD` in the server `.env`.
+- The DNS records (Brevo code TXT, `brevo1._domainkey`, `brevo2._domainkey`, DMARC) stay unchanged when only the login email changes.
+- If the store opens its own Brevo account instead, the domain must be re-authenticated: the Brevo code and both DKIM CNAME targets are account-specific, so they must be replaced, and `MAIL_USERNAME`/`MAIL_PASSWORD` change with them.
+
 ## Health and operations
 
 Check container health:
