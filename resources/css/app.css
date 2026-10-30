@@ -110,20 +110,64 @@ body .ts-wrapper.focus .ts-control {
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] {
     background: rgb(255 255 255 / 92%);
+    box-shadow: 0 1px 0 rgb(12 28 57 / 6%), 0 14px 30px -26px rgb(12 28 57 / 40%);
     color: #0c1c39;
     backdrop-filter: blur(16px) saturate(140%);
 }
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-brand],
-[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-left] summary,
-[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a {
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-left] summary {
     color: #0c1c39;
     filter: none;
 }
 
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a {
+    color: #53647b;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a[aria-current='true'] {
+    background-color: #0c1c39;
+    color: #fff;
+}
+
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-left] summary:hover,
-[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a:hover {
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a:not([aria-current='true']):hover {
     background-color: #f1f4f8;
+    color: #0c1c39;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-language-switcher] {
+    border-color: rgb(12 28 57 / 18%);
+    background-color: #fff;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button],
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-cart-button] {
+    border-color: transparent;
+    background-color: #0c1c39;
+    color: #fff;
+    box-shadow: 0 6px 16px -8px rgb(12 28 57 / 55%);
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button]:hover,
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-cart-button]:hover {
+    background-color: #192b48;
+}
+
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button]:focus-visible,
+[data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-cart-button]:focus-visible {
+    outline-color: #0c1c39;
+}
+
+button:not(:disabled),
+summary,
+[role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled='true'] {
+    cursor: not-allowed;
 }
 
 [data-navbar-search-form] input[type='search']::-webkit-search-cancel-button,
