@@ -20,14 +20,35 @@ class OrderNotifier
      */
     public function send(Order $order, Notification $notification): void
     {
-        $email = $order->customer_email;
+        $this->sendTo($order->customer_email, $order, $notification);
+    }
 
+    /**
+     * Alert the shop owner/operator about a new order.
+     *
+     * The recipient is intentionally configurable instead of being taken from
+     * an arbitrary admin account, so local test accounts never receive
+     * production order mail.
+     */
+    public function sendToAdmin(Order $order, Notification $notification): void
+    {
+        $email = config('laverie.admin.email');
+
+        if (! is_string($email)) {
+            return;
+        }
+
+        $this->sendTo($email, $order, $notification);
+    }
+
+    private function sendTo(?string $email, Order $order, Notification $notification): void
+    {
         if (! is_string($email) || trim($email) === '') {
             return;
         }
 
         try {
-            NotificationFacade::route('mail', $email)->notify($notification);
+            NotificationFacade::route('mail', trim($email))->notify($notification);
         } catch (Throwable $exception) {
             Log::warning('Unable to queue an order notification.', [
                 'order_id' => $order->getKey(),

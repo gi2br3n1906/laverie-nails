@@ -9,6 +9,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Notifications\AdminOrderPlaced;
 use App\Notifications\OrderPlaced;
 use App\ValueObjects\CartOwner;
 use Illuminate\Database\Eloquent\Collection;
@@ -146,6 +147,7 @@ class CheckoutService
         }, 3);
 
         $this->notifier->send($order, new OrderPlaced($order));
+        $this->notifier->sendToAdmin($order, new AdminOrderPlaced($order));
 
         return $order;
     }

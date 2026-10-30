@@ -13,4 +13,8 @@ return [
         'instagram_url' => env('LAVERIE_INSTAGRAM_URL', 'https://www.instagram.com/'),
         'tiktok_url' => env('LAVERIE_TIKTOK_URL', 'https://www.tiktok.com/'),
     ],
+
+    'admin' => [
+        'email' => env('LAVERIE_ADMIN_EMAIL'),
+    ],
 ];

@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
+use App\Notifications\AdminOrderPlaced;
 use App\Notifications\OrderPaid;
 use App\Notifications\OrderPlaced;
 use App\Notifications\OrderShipped;
@@ -42,6 +43,7 @@ class OrderNotificationsTest extends TestCase
     public function test_placing_an_order_queues_a_receipt_with_a_signed_payment_link(): void
     {
         Notification::fake();
+        config()->set('laverie.admin.email', 'owner@example.com');
         $this->fakeGateways();
 
         $user = User::factory()->create();
@@ -82,6 +84,13 @@ class OrderNotificationsTest extends TestCase
                 && $notifiable->routes['mail'] === 'alya@example.com',
         );
 
+        Notification::assertSentOnDemand(
+            AdminOrderPlaced::class,
+            fn (AdminOrderPlaced $notification, array $channels, AnonymousNotifiable $notifiable): bool => $notification->order->getKey() === $order->getKey()
+                && $channels === ['mail']
+                && $notifiable->routes['mail'] === 'owner@example.com',
+        );
+
         $rendered = (string) (new OrderPlaced($order))->toMail(new AnonymousNotifiable)->render();
 
         $this->assertStringContainsString($order->getKey(), $rendered);
@@ -89,6 +98,12 @@ class OrderNotificationsTest extends TestCase
         $this->assertStringContainsString('Ongkos kirim: Rp 15.000', $rendered);
         $this->assertStringContainsString('Total: Rp 224.000', $rendered);
         $this->assertStringContainsString('signature=', $rendered);
+
+        $adminRendered = (string) (new AdminOrderPlaced($order))->toMail(new AnonymousNotifiable)->render();
+
+        $this->assertStringContainsString($order->getKey(), $adminRendered);
+        $this->assertStringContainsString('Alya Putri', $adminRendered);
+        $this->assertStringContainsString(route('admin.orders.show', $order), $adminRendered);
     }
 
     public function test_settlement_emails_the_customer_exactly_once(): void
