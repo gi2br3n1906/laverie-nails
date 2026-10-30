@@ -11,8 +11,11 @@ use App\Services\CartService;
 use App\Services\CheckoutService;
 use App\Services\LogisticsService;
 use App\ValueObjects\CartOwner;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -54,11 +57,21 @@ class CheckoutController extends Controller
             'city_id',
             'shipping_option',
         ]);
-        $order = $checkoutService->placeOrder(
-            CartOwner::fromRequest($request),
-            $data,
-            $request->session()->get('cart_coupon_id') ? (int) $request->session()->get('cart_coupon_id') : null,
-        );
+        $couponId = $request->session()->get('cart_coupon_id');
+        $couponId = $couponId === null ? null : (int) $couponId;
+        $lock = Cache::lock('checkout:user:'.$request->user()?->getAuthIdentifier(), 10);
+
+        try {
+            $order = $lock->block(
+                5,
+                fn (): Order => $checkoutService->placeOrder(CartOwner::fromRequest($request), $data, $couponId),
+            );
+        } catch (LockTimeoutException) {
+            throw ValidationException::withMessages([
+                'cart' => 'Pesanan Anda sedang diproses. Tunggu sebentar, lalu cek riwayat pesanan sebelum mencoba lagi.',
+            ]);
+        }
+
         $request->session()->forget('cart_coupon_id');
 
         return redirect()->route('checkout.payment', $order);

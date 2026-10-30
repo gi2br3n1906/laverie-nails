@@ -111,7 +111,19 @@ class CheckoutService
                     'size_type' => $cartItem->size_type,
                     'size_payload' => $cartItem->size_payload,
                 ]);
-                $product->decrement('stock', $cartItem->quantity);
+
+                // Conditional decrement keeps SQLite (which ignores row locks) from overselling
+                // when two checkouts read the same stock before either writes.
+                $decremented = Product::query()
+                    ->whereKey($product->id)
+                    ->where('stock', '>=', $cartItem->quantity)
+                    ->decrement('stock', $cartItem->quantity);
+
+                if ($decremented !== 1) {
+                    throw ValidationException::withMessages([
+                        'cart' => "Stok {$product->name} berubah saat checkout. Silakan periksa kembali.",
+                    ]);
+                }
             }
 
             $owner->scope(CartItem::query())->where('is_selected', true)->delete();

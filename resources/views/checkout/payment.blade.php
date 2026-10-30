@@ -58,18 +58,30 @@
                         </div>
                     </dl>
 
-                    <div
-                        class="mt-6"
-                        data-payment-snap
-                        data-snap-token="{{ $order->snap_token }}"
-                        data-snap-url="{{ $snapJsUrl }}"
-                        data-client-key="{{ $midtransClientKey }}"
-                    >
-                        <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48] disabled:cursor-not-allowed disabled:opacity-60" type="button" data-pay-button>
-                            Bayar Sekarang
-                        </button>
-                        <p class="mt-3 text-center text-xs leading-5 text-stone-500" data-payment-status>Snap Midtrans akan terbuka dengan metode pembayaran pilihan Anda.</p>
-                    </div>
+                    @if ($order->payment_status === \App\Enums\PaymentStatus::Pending && $order->stock_restored_at === null)
+                        <div
+                            class="mt-6"
+                            data-payment-snap
+                            data-snap-token="{{ $order->snap_token }}"
+                            data-snap-url="{{ $snapJsUrl }}"
+                            data-client-key="{{ $midtransClientKey }}"
+                        >
+                            <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48] disabled:cursor-not-allowed disabled:opacity-60" type="button" data-pay-button>
+                                Bayar Sekarang
+                            </button>
+                            <p class="mt-3 text-center text-xs leading-5 text-stone-500" data-payment-status>Snap Midtrans akan terbuka dengan metode pembayaran pilihan Anda.</p>
+                        </div>
+                    @else
+                        <div class="mt-6 rounded-2xl border border-[#92A1B5]/40 bg-white p-5 text-sm leading-6 text-stone-600" data-payment-unavailable>
+                            @if ($order->payment_status === \App\Enums\PaymentStatus::Paid)
+                                <p class="font-semibold text-[#0C1C39]">Pembayaran sudah diterima.</p>
+                            @else
+                                <p class="font-semibold text-[#0C1C39]">Pembayaran tidak dapat dilanjutkan.</p>
+                            @endif
+                            <p class="mt-2">Status pesanan: {{ $order->payment_status->label() }}.@if ($order->stock_restored_at !== null) Stok sudah dikembalikan; silakan buat pesanan baru.@endif</p>
+                            <a class="mt-3 inline-flex font-semibold text-[#0C1C39] underline underline-offset-4" href="{{ route('products.index') }}">Lihat koleksi</a>
+                        </div>
+                    @endif
                 </aside>
             </div>
         </div>

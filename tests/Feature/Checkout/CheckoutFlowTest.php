@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -103,6 +104,30 @@ class CheckoutFlowTest extends TestCase
             && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 518000
             && $request['item_details'][0]['price'] === 250000
             && $request['item_details'][1]['id'] === 'SHIPPING');
+    }
+
+    public function test_a_second_checkout_submission_is_rejected_while_the_first_is_processing(): void
+    {
+        $this->fakeGateways();
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['stock' => 3]);
+
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product, 1));
+
+        $lock = Cache::lock('checkout:user:'.$user->id, 10);
+        $this->assertTrue($lock->get());
+
+        try {
+            $this->actingAs($user)
+                ->post('/checkout', $this->checkoutPayload())
+                ->assertSessionHasErrors('cart');
+        } finally {
+            $lock->release();
+        }
+
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertSame(3, $product->refresh()->stock);
+        $this->assertDatabaseHas('cart_items', ['user_id' => $user->id]);
     }
 
     public function test_local_mock_shipping_allows_checkout_without_a_rajaongkir_api_key(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Checkout;
 
+use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -136,5 +137,20 @@ class CheckoutViewTest extends TestCase
         $content = (string) $response->getContent();
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $content);
         $this->assertStringNotContainsString('style=', $content);
+    }
+
+    public function test_expired_payment_page_hides_the_snap_button(): void
+    {
+        $order = Order::factory()->create([
+            'payment_status' => PaymentStatus::Expired,
+            'stock_restored_at' => now(),
+        ]);
+        $this->withSession(['cart.guest_id' => $order->guest_id]);
+
+        $this->get(route('checkout.payment', $order))
+            ->assertOk()
+            ->assertDontSee('data-payment-snap', false)
+            ->assertDontSee('Bayar Sekarang')
+            ->assertSee('Pembayaran tidak dapat dilanjutkan.');
     }
 }

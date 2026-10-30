@@ -13,6 +13,7 @@ use App\Services\OrderNotifier;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MidtransNotificationController extends Controller
 {
@@ -35,6 +36,12 @@ class MidtransNotificationController extends Controller
 
             // Stock was already released, so a late settlement must not turn this into a paid order.
             if ($order->stock_restored_at !== null && $incomingStatus === PaymentStatus::Paid) {
+                Log::critical('Midtrans reported payment after stock was released; manual refund and reconciliation required.', [
+                    'order_id' => $order->getKey(),
+                    'gross_amount' => $payload['gross_amount'],
+                    'transaction_status' => $payload['transaction_status'],
+                ]);
+
                 return null;
             }
 
