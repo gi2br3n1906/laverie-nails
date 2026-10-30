@@ -91,21 +91,6 @@ services:
     networks:
       - laverie
 
-  # Host networking is mandatory on the LXC host: Docker bridge DNS/routing is
-  # unreliable there, and cloudflared must reach the loopback-published Nginx.
-  # QUIC is disabled with --protocol http2 because UDP is often dropped in LXC.
-  # Enable with: docker compose --profile tunnel up -d cloudflare-tunnel
-  cloudflare-tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: laverie-cloudflared
-    restart: unless-stopped
-    network_mode: host
-    profiles: ["tunnel"]
-    command: ["tunnel", "--no-autoupdate", "--protocol", "http2", "run", "--token", "${TUNNEL_TOKEN}"]
-    depends_on:
-      nginx:
-        condition: service_healthy
-
 networks:
   laverie:
     driver: bridge
