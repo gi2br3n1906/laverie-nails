@@ -58,15 +58,17 @@ LOG_LEVEL=warning
 
 # Transactional email (Brevo SMTP relay). Keep MAIL_MAILER=log only for local work.
 MAIL_MAILER=smtp
-MAIL_SCHEME=tls
+MAIL_SCHEME=null
 MAIL_HOST=smtp-relay.brevo.com
 MAIL_PORT=587
 MAIL_USERNAME=<Brevo account login email>
-MAIL_PASSWORD=<Brevo SMTP key, not the account password>
+MAIL_PASSWORD=<Brevo SMTP key starting with xsmtpsib->
 MAIL_FROM_ADDRESS=admin@laverie.web.id
 MAIL_FROM_NAME="Laverie Nails"
 QUEUE_CONNECTION=database
 ```
+
+`MAIL_SCHEME` must be `null` (port 587, STARTTLS auto-negotiated) or `smtps` (port 465). Laravel passes this value straight to Symfony as the DSN scheme, so `tls` raises `UnsupportedSchemeException`.
 
 Generate `APP_KEY` on a trusted machine or with a one-off PHP command. Never reuse a development key and never commit `.env`.
 
