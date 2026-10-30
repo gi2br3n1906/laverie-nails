@@ -84,7 +84,9 @@ class HomepageTest extends TestCase
         $this->assertStringNotContainsString('bg-white/65', $heroMatch[0]);
         $this->assertStringContainsString('>OUR COLLECTION<', $heroMatch[0]);
         $this->assertStringContainsString('>SIZING<', $heroMatch[0]);
-        $this->assertStringContainsString('whitespace-nowrap', $heroMatch[0]);
+        $this->assertStringContainsString('font-script text-[2.5rem]', $heroMatch[0]);
+        $this->assertStringContainsString('sm:text-6xl', $heroMatch[0]);
+        $this->assertStringNotContainsString('whitespace-nowrap', $heroMatch[0]);
         $this->assertStringContainsString('-mt-2 text-sm', $heroMatch[0]);
         $this->assertStringContainsString('sm:text-base', $heroMatch[0]);
         $this->assertStringContainsString(route('products.index'), $heroMatch[0]);
