@@ -54,7 +54,7 @@
                         </div>
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset data-size-panel="standard" @if (old('size_type') === 'custom') hidden @endif>
                         <legend class="text-sm font-semibold text-[#0C1C39]">Standard Size</legend>
                         <p class="mt-1 text-xs leading-5 text-stone-500">Pilih XS, S, M, atau L jika Anda sudah mengetahui ukuran Laverie.</p>
                         <div class="mt-4 grid grid-cols-4 gap-3">
@@ -81,7 +81,7 @@
                         <x-input-error :messages="$errors->get('length')" />
                     </fieldset>
 
-                    <fieldset>
+                    <fieldset data-size-panel="custom" @if (old('size_type') !== 'custom') hidden @endif>
                         <legend class="text-sm font-semibold text-[#0C1C39]">Custom Measurements</legend>
                         <p class="mt-1 text-xs leading-5 text-stone-500">Masukkan lebar setiap kuku dalam milimeter (0–25 mm) untuk kedua tangan.</p>
                         @if ($savedMeasurements)

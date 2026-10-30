@@ -154,6 +154,17 @@ class ProductCatalogTest extends TestCase
             ->assertSee('value="standard" checked', false);
     }
 
+    public function test_product_page_only_reveals_the_panel_for_the_selected_size_type(): void
+    {
+        $product = Product::factory()->create(['is_active' => true, 'stock' => 5]);
+
+        $html = preg_replace('/\s+/', ' ', $this->get(route('storefront.products.show', $product))->assertOk()->getContent());
+
+        $this->assertStringContainsString('data-size-panel="standard"', $html);
+        $this->assertStringNotContainsString('data-size-panel="standard" hidden', $html);
+        $this->assertStringContainsString('data-size-panel="custom" hidden', $html);
+    }
+
     public function test_standard_measurement_result_links_to_matching_products_and_custom_keeps_whatsapp(): void
     {
         $this->seed(SizeStandardSeeder::class);
