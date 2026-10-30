@@ -17,6 +17,49 @@ use Illuminate\Validation\ValidationException;
 
 class CartService
 {
+    public function claimGuestCart(int $userId, ?string $guestSessionId): void
+    {
+        if (! is_string($guestSessionId) || $guestSessionId === '') {
+            return;
+        }
+
+        DB::transaction(function () use ($userId, $guestSessionId): void {
+            $guestItems = CartItem::query()
+                ->whereNull('user_id')
+                ->where('session_id', $guestSessionId)
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($guestItems as $guestItem) {
+                $existing = CartItem::query()
+                    ->where('user_id', $userId)
+                    ->whereNull('session_id')
+                    ->where('product_id', $guestItem->product_id)
+                    ->where('size_type', $guestItem->size_type)
+                    ->where('size_signature', $guestItem->size_signature)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($existing === null) {
+                    $guestItem->update(['user_id' => $userId, 'session_id' => null]);
+
+                    continue;
+                }
+
+                $stock = (int) Product::query()->whereKey($guestItem->product_id)->value('stock');
+                $combined = min($stock, $existing->quantity + $guestItem->quantity);
+
+                if ($combined < 1) {
+                    $existing->delete();
+                } else {
+                    $existing->update(['quantity' => $combined]);
+                }
+
+                $guestItem->delete();
+            }
+        });
+    }
+
     public function add(CartOwner $owner, int $productId, CartSize $size, int $quantity): CartItem
     {
         return DB::transaction(function () use ($owner, $productId, $size, $quantity): CartItem {
