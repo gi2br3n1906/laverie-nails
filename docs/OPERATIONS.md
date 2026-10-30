@@ -115,15 +115,19 @@ copy on the same VPS is not a disaster-recovery backup.
 
 Example crontab for a deployment at `/opt/laverie`:
 
-```cron
-MAILTO=laverienails@gmail.com
-15 2 * * * cd /opt/laverie && BACKUP_RCLONE_REMOTE=b2:laverie-backups ./scripts/backup-data.sh >> storage/logs/backup.log 2>&1
-*/15 * * * * cd /opt/laverie && ./scripts/ops-check.sh >> storage/logs/ops-check.log 2>&1
+```bash
+sudo install -d -o "$USER" -g "$USER" /var/log/laverie
 ```
 
-`storage/logs` is inside a container volume; use a host path such as
-`/var/log/laverie` for cron output if you prefer logs on the host. Ensure the
-cron user can run Docker and can write the log directory.
+```cron
+MAILTO=laverienails@gmail.com
+15 2 * * * cd /opt/laverie && BACKUP_RCLONE_REMOTE=b2:laverie-backups ./scripts/backup-data.sh >> /var/log/laverie/backup.log 2>&1
+*/15 * * * * cd /opt/laverie && ./scripts/ops-check.sh >> /var/log/laverie/ops-check.log 2>&1
+```
+
+Ensure the cron user can run Docker and can write `/var/log/laverie`. Do not point
+cron output at `storage/logs`; the production application storage is a container
+volume, not the host checkout.
 
 ### Restore drill
 
