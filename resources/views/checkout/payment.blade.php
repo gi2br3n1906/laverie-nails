@@ -42,10 +42,12 @@
                             <dt>Subtotal</dt>
                             <dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd>
                         </div>
-                        <div class="flex justify-between gap-4 text-stone-500">
-                            <dt>Ongkos kirim</dt>
-                            <dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd>
-                        </div>
+                        @if ($order->shipping_cost > 0)
+                            <div class="flex justify-between gap-4 text-stone-500">
+                                <dt>Ongkos kirim</dt>
+                                <dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd>
+                            </div>
+                        @endif
                         @if ($order->discount_amount > 0)
                             <div class="flex justify-between gap-4 text-stone-500">
                                 <dt>Diskon ({{ $order->coupon_code }})</dt>
@@ -53,10 +55,13 @@
                             </div>
                         @endif
                         <div class="border-t border-[#92A1B5]/40 pt-4">
-                            <dt class="font-display text-xl text-[#0C1C39]">Total</dt>
+                            <dt class="font-display text-xl text-[#0C1C39]">Total Produk</dt>
                             <dd class="mt-1 text-xl font-semibold text-[#0C1C39]">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd>
                         </div>
                     </dl>
+                    @if ($order->shipping_cost === 0)
+                        <p class="mt-3 text-xs leading-5 text-stone-500">Belum termasuk ongkir. Biaya ongkir dibayarkan langsung kepada kurir saat paket diterima.</p>
+                    @endif
 
                     @if ($order->payment_status === \App\Enums\PaymentStatus::Pending && $order->stock_restored_at === null)
                         <div

@@ -39,7 +39,6 @@ class CheckoutController extends Controller
             'subtotal' => intdiv($cartState['subtotal'], 100),
             'discount' => intdiv($cartState['discount'], 100),
             'coupon' => $cartState['coupon'],
-            'shippingCost' => max(0, (int) config('shipping.flat_rate', 0)),
         ]);
     }
 

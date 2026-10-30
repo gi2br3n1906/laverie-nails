@@ -37,8 +37,8 @@
         </div>
         <dl class="ml-auto mt-8 max-w-sm space-y-3 border-t border-[#92A1B5]/40 pt-5 text-sm">
             <div class="flex justify-between"><dt>Subtotal</dt><dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd></div>
-            <div class="flex justify-between"><dt>Ongkir</dt><dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd></div>
-            <div class="flex justify-between text-base font-bold text-[#0C1C39]"><dt>Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
+            <div class="flex justify-between"><dt>Ongkir</dt><dd>{{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : 'Dibayar saat terima' }}</dd></div>
+            <div class="flex justify-between text-base font-bold text-[#0C1C39]"><dt>Total Produk</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
         </dl>
     </section>
     <section class="mt-6 rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 sm:p-8" aria-labelledby="shipping-heading">
@@ -48,6 +48,6 @@
             <div><dt class="text-stone-500">Kurir</dt><dd class="mt-1 font-semibold text-[#0C1C39]">{{ $order->courier ? strtoupper(str_replace(':', ' · ', $order->courier)) : 'Belum diisi admin' }}</dd></div>
             <div><dt class="text-stone-500">Nomor resi</dt><dd class="mt-1 break-all font-semibold text-[#0C1C39]">{{ $order->tracking_number ?: 'Belum tersedia' }}</dd></div>
         </dl>
-        <p class="mt-4 text-xs leading-6 text-stone-500">Cek nomor resi langsung di situs resmi kurir. Sistem tidak melakukan pelacakan otomatis.</p>
+        <p class="mt-4 text-xs leading-6 text-stone-500">Cek nomor resi langsung di situs resmi kurir. Sistem tidak melakukan pelacakan otomatis. Ongkos kirim dibayarkan langsung kepada kurir saat paket diterima.</p>
     </section>
 </x-layouts.app>

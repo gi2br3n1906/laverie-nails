@@ -26,7 +26,6 @@ class CheckoutFlowTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('shipping.flat_rate', 18000);
         config()->set('services.midtrans', [
             'server_key' => 'midtrans-server-secret',
             'client_key' => 'midtrans-client-key',
@@ -69,9 +68,9 @@ class CheckoutFlowTest extends TestCase
         $this->assertNull($order->courier);
         $this->assertNull($order->province_id);
         $this->assertNull($order->city_id);
-        $this->assertSame(18000, $order->shipping_cost);
+        $this->assertSame(0, $order->shipping_cost);
         $this->assertSame(500000, $order->subtotal);
-        $this->assertSame(518000, $order->grand_total);
+        $this->assertSame(500000, $order->grand_total);
         $this->assertSame(PaymentStatus::Pending, $order->payment_status);
         $this->assertSame(FulfillmentStatus::Pending, $order->fulfillment_status);
         $this->assertSame('snap-token-for-order', $order->snap_token);
@@ -93,10 +92,11 @@ class CheckoutFlowTest extends TestCase
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
             && $request->hasHeader('Authorization', 'Basic '.base64_encode('midtrans-server-secret:'))
             && $request['transaction_details']['order_id'] === $order->id
-            && $request['transaction_details']['gross_amount'] === 518000
-            && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 518000
+            && $request['transaction_details']['gross_amount'] === 500000
+            && count($request['item_details']) === 1
+            && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 500000
             && $request['item_details'][0]['price'] === 250000
-            && $request['item_details'][1]['id'] === 'SHIPPING');
+            && ! collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING'));
     }
 
     public function test_a_second_checkout_submission_is_rejected_while_the_first_is_processing(): void
@@ -123,7 +123,7 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseHas('cart_items', ['user_id' => $user->id]);
     }
 
-    public function test_flat_shipping_is_charged_and_client_supplied_shipping_costs_are_ignored(): void
+    public function test_checkout_does_not_charge_shipping_and_ignores_client_supplied_shipping_fields(): void
     {
         $this->fakeGateways();
         $user = User::factory()->create();
@@ -138,11 +138,12 @@ class CheckoutFlowTest extends TestCase
 
         $order = Order::query()->sole();
         $this->assertNull($order->courier);
-        $this->assertSame(18000, $order->shipping_cost);
-        $this->assertSame(227000, $order->grand_total);
+        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame(209000, $order->grand_total);
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
             && $request['transaction_details']['order_id'] === $order->id
-            && $request['transaction_details']['gross_amount'] === 227000);
+            && $request['transaction_details']['gross_amount'] === 209000
+            && ! collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING'));
     }
 
     public function test_checkout_applies_percentage_coupon_and_matches_the_snap_item_total(): void
@@ -165,8 +166,8 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame('SAVE10', $order->coupon_code);
         $this->assertSame(50000, $order->discount_amount);
         $this->assertSame(500000, $order->subtotal);
-        $this->assertSame(18000, $order->shipping_cost);
-        $this->assertSame(468000, $order->grand_total);
+        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame(450000, $order->grand_total);
 
         Http::assertSent(function (Request $request) use ($order): bool {
             if ($request->url() !== 'https://midtrans.test/snap/v1/transactions') {
@@ -218,7 +219,7 @@ class CheckoutFlowTest extends TestCase
         $order = $order->fresh();
         $this->assertSame('POTONG25', $order->coupon_code);
         $this->assertSame(25000, $order->discount_amount);
-        $this->assertSame(193000, $order->grand_total);
+        $this->assertSame(175000, $order->grand_total);
         Http::assertSent(fn (Request $request): bool => str_contains($request->url(), 'midtrans.test')
             && collect($request['item_details'])->contains(fn (array $item): bool => $item['id'] === 'DISCOUNT'
                 && $item['price'] === -25000

@@ -75,8 +75,8 @@
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
                     <legend class="px-2 font-display text-2xl text-[#0C1C39]">Pengiriman</legend>
                     <div class="mt-2 rounded-2xl bg-[#F8FAFC] px-5 py-5 text-sm leading-6 text-stone-600">
-                        <p class="font-semibold text-[#0C1C39]">Ongkos kirim flat</p>
-                        <p class="mt-2">Ongkos kirim sebesar <strong class="text-[#0C1C39]">Rp {{ number_format($shippingCost, 0, ',', '.') }}</strong> dibebankan kepada pembeli dan sudah termasuk dalam total pembayaran.</p>
+                        <p class="font-semibold text-[#0C1C39]">Ongkir dibayar saat paket diterima</p>
+                        <p class="mt-2">Halaman ini hanya menagih harga press-on nails. Biaya ongkir <strong class="text-[#0C1C39]">tidak dihitung di checkout</strong> dan dibayarkan langsung kepada kurir saat paket diterima.</p>
                         <p class="mt-2">Kurir dan nomor resi akan diisi oleh admin setelah pesanan diserahkan ke jasa pengiriman. Anda dapat mengecek resi melalui halaman Lacak Pesanan.</p>
                     </div>
                 </fieldset>
@@ -101,10 +101,6 @@
                         <dt>Subtotal</dt>
                         <dd>Rp {{ number_format($subtotal, 0, ',', '.') }}</dd>
                     </div>
-                    <div class="flex justify-between gap-4 text-[#DDE6F0]">
-                        <dt>Ongkos kirim</dt>
-                        <dd>Rp {{ number_format($shippingCost, 0, ',', '.') }}</dd>
-                    </div>
                     @if ($coupon && $discount > 0)
                         <div class="flex justify-between gap-4 text-[#DDE6F0]">
                             <dt>Diskon ({{ $coupon['code'] }})</dt>
@@ -112,17 +108,18 @@
                         </div>
                     @endif
                     <div class="flex items-end justify-between gap-4 border-t border-white/20 pt-5">
-                        <dt class="font-display text-2xl">Grand Total</dt>
-                        <dd class="text-lg font-semibold">Rp {{ number_format($subtotal - $discount + $shippingCost, 0, ',', '.') }}</dd>
+                        <dt class="font-display text-2xl">Total Produk</dt>
+                        <dd class="text-lg font-semibold">Rp {{ number_format($subtotal - $discount, 0, ',', '.') }}</dd>
                     </div>
                 </dl>
+                <p class="mt-4 text-xs leading-5 text-[#DDE6F0]">Belum termasuk ongkir. Biaya ongkir dibayarkan langsung kepada kurir saat paket diterima.</p>
 
                 <button class="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-[0.14em] text-[#0C1C39] transition hover:bg-[#EAF0F6] disabled:cursor-not-allowed disabled:opacity-60" type="submit" data-place-order-button>
                     Buat pesanan
                 </button>
                 <p class="mt-4 flex items-start gap-2 text-xs leading-5 text-[#DDE6F0]">
                     <svg class="mt-0.5 size-4 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect width="14" height="11" x="5" y="10" rx="2" /><path stroke-linecap="round" d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10" /></svg>
-                    Pembayaran diproses melalui halaman aman Midtrans.
+                    Pembayaran diproses melalui halaman aman Midtrans. Ongkir dibayar langsung kepada kurir saat paket diterima.
                 </p>
             </aside>
         </form>

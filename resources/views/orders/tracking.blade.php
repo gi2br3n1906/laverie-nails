@@ -57,9 +57,12 @@
 
                             <dl class="mt-6 space-y-3 text-sm">
                                 <div class="flex justify-between gap-4 text-stone-500"><dt>Subtotal</dt><dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd></div>
-                                <div class="flex justify-between gap-4 text-stone-500"><dt>Ongkos kirim</dt><dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd></div>
-                                <div class="flex justify-between gap-4 border-t border-[#92A1B5]/30 pt-4 font-semibold text-[#0C1C39]"><dt>Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
+                                <div class="flex justify-between gap-4 text-stone-500"><dt>Ongkir</dt><dd>{{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : 'Dibayar saat terima' }}</dd></div>
+                                <div class="flex justify-between gap-4 border-t border-[#92A1B5]/30 pt-4 font-semibold text-[#0C1C39]"><dt>Total Produk</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
                             </dl>
+                            @if ($order->shipping_cost === 0)
+                                <p class="mt-3 text-xs leading-5 text-stone-500">Ongkir tidak dibayar di halaman ini; biaya ongkir dibayarkan langsung kepada kurir saat paket diterima.</p>
+                            @endif
 
                             @if ($order->tracking_number)
                                 <div class="mt-7 rounded-2xl bg-[#0C1C39] p-5 text-white">

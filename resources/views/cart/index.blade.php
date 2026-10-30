@@ -110,7 +110,7 @@
                         <span class="font-display text-2xl">Grand Total</span>
                         <strong class="text-lg">Rp {{ number_format($grandTotalInCents / 100, 0, ',', '.') }}</strong>
                     </div>
-                    <p class="mt-4 text-xs leading-5 text-[#DDE6F0]">Ongkos kirim dan detail pembayaran akan dikonfirmasi pada tahap checkout.</p>
+                    <p class="mt-4 text-xs leading-5 text-[#DDE6F0]">Ongkos kirim dibayarkan langsung kepada kurir saat paket diterima.</p>
                     <a class="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-[0.14em] text-[#0C1C39] transition hover:bg-[#EAF0F6]" href="{{ route('checkout.create') }}">Lanjut ke Checkout</a>
                 </aside>
             </div>

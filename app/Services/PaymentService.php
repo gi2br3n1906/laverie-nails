@@ -21,6 +21,8 @@ class PaymentService
             'quantity' => $item->quantity,
             'name' => mb_substr($item->product_name, 0, 50),
         ])->all();
+        // Legacy orders may include shipping from the old RajaOngkir checkout.
+        // New orders are created with shipping_cost = 0, so this item is omitted.
         if ($order->shipping_cost > 0) {
             $itemDetails[] = [
                 'id' => 'SHIPPING',

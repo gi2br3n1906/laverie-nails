@@ -115,8 +115,8 @@
 
                 <dl class="mt-7 space-y-3 border-t border-white/20 pt-6 text-sm">
                     <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Subtotal</dt><dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd></div>
-                    <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Shipping</dt><dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd></div>
-                    <div class="flex justify-between gap-4 border-t border-white/20 pt-4 font-semibold"><dt>Grand Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
+                    <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Ongkir</dt><dd>{{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : 'Dibayar saat terima' }}</dd></div>
+                    <div class="flex justify-between gap-4 border-t border-white/20 pt-4 font-semibold"><dt>Total Produk</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
                 </dl>
             </aside>
         </div>

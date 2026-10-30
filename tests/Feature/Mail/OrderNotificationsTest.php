@@ -30,7 +30,6 @@ class OrderNotificationsTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('shipping.flat_rate', 18000);
         config()->set('services.midtrans', [
             'server_key' => 'midtrans-server-secret',
             'client_key' => 'midtrans-client-key',
@@ -79,6 +78,7 @@ class OrderNotificationsTest extends TestCase
 
         $this->assertStringContainsString($order->getKey(), $rendered);
         $this->assertStringContainsString('Rp 209.000', $rendered);
+        $this->assertStringContainsString('Dibayar langsung kepada kurir', $rendered);
         $this->assertStringContainsString('signature=', $rendered);
     }
 

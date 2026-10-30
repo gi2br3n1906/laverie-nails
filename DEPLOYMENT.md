@@ -52,9 +52,6 @@ APP_KEY=base64:GENERATE_A_SECURE_KEY
 APP_PORT=8080
 APP_TIMEZONE=Asia/Jakarta
 
-# Flat shipping charged to the buyer, in Rupiah. No shipping API is called.
-SHIPPING_FLAT_RATE=20000
-
 DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/data/database.sqlite
 DB_BUSY_TIMEOUT=5000
@@ -243,7 +240,7 @@ SQLite with WAL is fine for one store and one worker, but it is a single-writer 
 
 ## Checkout safety model
 
-- Payment amounts are recalculated server-side from locked product rows; browser-supplied prices are ignored. Shipping is a flat `SHIPPING_FLAT_RATE` charged to the buyer, and the admin records the courier and tracking number manually after dispatch.
+- Payment amounts are recalculated server-side from locked product rows; browser-supplied prices are ignored. Checkout charges the product price only: shipping is not part of the online payment and is paid by the customer to the courier on delivery. The admin records the courier and tracking number manually after dispatch.
 - Coupons are revalidated at checkout, including expiry and minimum spend.
 - Stock is checked under a transaction and decremented with a conditional `stock >= quantity` update, so SQLite cannot oversell under concurrent checkouts.
 - A per-user cache lock serialises duplicate checkout submissions; `POST /checkout` is also throttled.

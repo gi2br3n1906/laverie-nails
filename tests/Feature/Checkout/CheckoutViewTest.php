@@ -19,7 +19,6 @@ class CheckoutViewTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('shipping.flat_rate', 18000);
         config()->set('services.midtrans.snap_js_url', 'https://midtrans.test/snap/snap.js');
         config()->set('services.midtrans.client_key', 'midtrans-client-key');
     }
@@ -44,9 +43,11 @@ class CheckoutViewTest extends TestCase
             ->assertOk()
             ->assertSee('Pembayaran aman')
             ->assertSee('Moonlit Pearl')
-            ->assertSee('Ongkos kirim flat')
-            ->assertSee('Rp 18.000')
+            ->assertSee('Ongkir dibayar saat paket diterima')
+            ->assertSee('Total Produk')
+            ->assertSee('Rp 350.000')
             ->assertSee('data-checkout-form', false)
+            ->assertDontSee('Ongkos kirim flat')
             ->assertDontSee('data-cities-url', false)
             ->assertDontSee('data-shipping-options-url', false)
             ->assertDontSee('data-grand-total', false)
@@ -74,6 +75,8 @@ class CheckoutViewTest extends TestCase
         $response = $this->get(route('checkout.payment', $order))
             ->assertOk()
             ->assertSee('Selesaikan Pembayaran')
+            ->assertSee('Total Produk')
+            ->assertSee('Belum termasuk ongkir')
             ->assertSee('data-payment-snap', false)
             ->assertSee('data-snap-token="snap-token-123"', false)
             ->assertSee('data-snap-url="https://midtrans.test/snap/snap.js"', false)

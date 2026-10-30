@@ -51,7 +51,6 @@ class CheckoutService
                 ->keyBy('id');
 
             $subtotal = $this->validateAndCalculateSubtotal($cartItems, $products);
-            $shippingCost = max(0, (int) config('shipping.flat_rate', 0));
             $coupon = $couponId === null ? null : Coupon::query()->whereKey($couponId)->lockForUpdate()->first();
 
             if ($couponId !== null) {
@@ -75,11 +74,11 @@ class CheckoutService
                 'province_id' => null,
                 'city_id' => null,
                 'courier' => null,
-                'shipping_cost' => $shippingCost,
+                'shipping_cost' => 0,
                 'subtotal' => $subtotal,
                 'coupon_code' => $coupon?->code,
                 'discount_amount' => $discountAmount,
-                'grand_total' => $subtotal - $discountAmount + $shippingCost,
+                'grand_total' => $subtotal - $discountAmount,
             ]);
 
             foreach ($cartItems as $cartItem) {

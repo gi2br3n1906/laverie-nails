@@ -19,7 +19,6 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         $subtotal = $this->faker->numberBetween(100000, 500000);
-        $shippingCost = $this->faker->numberBetween(10000, 30000);
 
         return [
             'id' => 'ORD-'.now()->format('Ymd').'-'.Str::ulid(),
@@ -29,12 +28,12 @@ class OrderFactory extends Factory
             'customer_email' => $this->faker->safeEmail(),
             'customer_phone' => '081234567890',
             'shipping_address' => $this->faker->address(),
-            'province_id' => '6',
-            'city_id' => '152',
-            'courier' => 'jne:REG',
-            'shipping_cost' => $shippingCost,
+            'province_id' => null,
+            'city_id' => null,
+            'courier' => null,
+            'shipping_cost' => 0,
             'subtotal' => $subtotal,
-            'grand_total' => $subtotal + $shippingCost,
+            'grand_total' => $subtotal,
             'payment_status' => PaymentStatus::Pending,
             'fulfillment_status' => FulfillmentStatus::Pending,
             'tracking_number' => null,

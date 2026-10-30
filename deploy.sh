@@ -117,11 +117,6 @@ if [[ -z "$(env_value TRUSTED_PROXIES)" ]]; then
     exit 1
 fi
 
-if [[ -n "$(env_value SHIPPING_FLAT_RATE)" && ! "$(env_value SHIPPING_FLAT_RATE)" =~ ^[0-9]+$ ]]; then
-    echo "SHIPPING_FLAT_RATE must be a non-negative integer amount in Rupiah." >&2
-    exit 1
-fi
-
 if [[ "$(env_value MIDTRANS_IS_PRODUCTION)" != "true" ]]; then
     echo "WARNING: Midtrans is still in Sandbox mode. Set MIDTRANS_IS_PRODUCTION=true when the store goes live." >&2
 fi
