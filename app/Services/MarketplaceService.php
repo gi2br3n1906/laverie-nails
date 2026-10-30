@@ -27,8 +27,8 @@ class MarketplaceService
                 'category' => $category,
                 'size' => $size,
             ])
-            ->withAvg('reviews', 'rating')
-            ->withCount('reviews')
+            ->withAvg(['reviews as reviews_avg_rating' => fn ($query) => $query->where('is_demo', false)], 'rating')
+            ->withCount(['reviews as reviews_count' => fn ($query) => $query->where('is_demo', false)])
             ->with(['category', 'primaryImage'])
             ->latest()
             ->get();
@@ -39,8 +39,8 @@ class MarketplaceService
     {
         return Product::query()->active()
             ->when($size, fn ($query) => $query->whereJsonContains('available_sizes', $size->value))
-            ->withAvg('reviews', 'rating')
-            ->withCount('reviews')
+            ->withAvg(['reviews as reviews_avg_rating' => fn ($query) => $query->where('is_demo', false)], 'rating')
+            ->withCount(['reviews as reviews_count' => fn ($query) => $query->where('is_demo', false)])
             ->with(['category', 'primaryImage'])
             ->latest()
             ->get();

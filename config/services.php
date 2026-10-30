@@ -40,6 +40,7 @@ return [
     'rajaongkir' => [
         'base_url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
         'api_key' => env('RAJAONGKIR_API_KEY'),
+        'local_mock' => (bool) env('RAJAONGKIR_LOCAL_MOCK', false),
         'origin_city_id' => env('RAJAONGKIR_ORIGIN_CITY_ID', '399'),
         'couriers' => array_values(array_filter(explode(',', (string) env('RAJAONGKIR_COURIERS', 'jne,jnt')))),
         'item_weight_grams' => (int) env('RAJAONGKIR_ITEM_WEIGHT_GRAMS', 500),

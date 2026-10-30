@@ -16,7 +16,8 @@ class StorefrontProductController extends Controller
     {
         abort_unless($product->is_active, 404);
 
-        $product->load(['category', 'primaryImage', 'images', 'reviews.user'])->loadAvg('reviews', 'rating');
+        $product->load(['category', 'primaryImage', 'images', 'reviews.user'])
+            ->loadAvg(['reviews as reviews_avg_rating' => fn ($query) => $query->where('is_demo', false)], 'rating');
 
         return view('storefront.products.show', [
             'product' => $product,

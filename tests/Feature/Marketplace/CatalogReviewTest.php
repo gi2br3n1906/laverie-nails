@@ -32,6 +32,7 @@ class CatalogReviewTest extends TestCase
         $this->assertSame($user->id, $review->user_id);
         $this->assertSame($product->id, $review->product_id);
         $this->assertSame(5, $review->rating);
+        $this->assertFalse($review->is_demo);
 
         $this->actingAs($user)
             ->post(route('storefront.products.reviews.store', $product), [
@@ -97,6 +98,27 @@ class CatalogReviewTest extends TestCase
             ->assertSee('4.0')
             ->assertSee('Five star review')
             ->assertSee('Three star review');
+    }
+
+    public function test_demo_reviews_are_labeled_and_excluded_from_customer_rating_average(): void
+    {
+        $product = Product::factory()->create();
+        CatalogReview::factory()->for($product)->create([
+            'rating' => 3,
+            'comment' => 'Customer review.',
+        ]);
+        CatalogReview::factory()->for($product)->create([
+            'rating' => 5,
+            'comment' => 'Sample demo review.',
+            'is_demo' => true,
+        ]);
+
+        $this->get(route('storefront.products.show', $product))
+            ->assertOk()
+            ->assertSee('3.0 / 5')
+            ->assertSee('Customer review.')
+            ->assertSee('data-review-demo', false)
+            ->assertSee('Sample demo review.');
     }
 
     public function test_database_enforces_unique_reviews_and_reviews_cascade_with_product(): void

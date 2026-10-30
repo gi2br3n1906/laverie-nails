@@ -23,6 +23,16 @@ class CustomerManagementTest extends TestCase
             ->get('/admin/customers')->assertOk()->assertSeeText('Kelola Pelanggan');
     }
 
+    public function test_admin_navigation_is_rendered_once_on_customer_page(): void
+    {
+        $admin = User::factory()->withRole(UserRole::Admin)->create();
+
+        $response = $this->actingAs($admin)->get('/admin/customers');
+
+        $response->assertOk();
+        self::assertSame(1, substr_count($response->getContent(), 'data-admin-navigation'));
+    }
+
     public function test_admin_list_contains_only_customers_with_order_count_and_paid_spend(): void
     {
         $customer = User::factory()->create([

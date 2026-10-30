@@ -1,4 +1,4 @@
-@props(['initials', 'name', 'title', 'text', 'tone' => 'rose'])
+@props(['initials', 'name', 'title', 'text', 'tone' => 'rose', 'isDemo' => false])
 
 @php
     $toneClass = match ($tone) {
@@ -13,7 +13,7 @@
         <span class="grid size-20 place-items-center rounded-full border border-white/70 bg-white/50 font-serif text-3xl">{{ $initials }}</span>
     </div>
     <div class="mt-5 tracking-[0.08em] text-amber-500" aria-label="5 dari 5 bintang">★★★★★</div>
-    <div class="mt-3 flex flex-wrap items-center gap-2"><span class="font-semibold text-stone-900">{{ $name }}</span><span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-emerald-700"><svg class="size-3" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>Verified</span></div>
+    <div class="mt-3 flex flex-wrap items-center gap-2"><span class="font-semibold text-stone-900">{{ $name }}</span>@if ($isDemo)<span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-amber-800" data-review-demo>Demo</span>@else<span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-emerald-700" data-review-verified><svg class="size-3" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd" /></svg>Verified</span>@endif</div>
     <h3 class="mt-4 font-display text-2xl leading-tight tracking-[-0.02em]">{{ $title }}</h3>
     <p class="mt-3 text-sm leading-6 text-stone-600">{{ $text }}</p>
 </article>

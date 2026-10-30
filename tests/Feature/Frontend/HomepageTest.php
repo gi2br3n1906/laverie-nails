@@ -9,6 +9,8 @@ use App\Models\Category;
 use App\Models\HeroBanner;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Services\MarketplaceService;
+use Database\Seeders\PresentationCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -236,5 +238,30 @@ class HomepageTest extends TestCase
             ->getContent();
 
         $this->assertSame(2, substr_count($content, 'data-homepage-product-card'));
+    }
+
+    public function test_demo_reviews_are_clearly_labeled_on_the_homepage(): void
+    {
+        Storage::fake('public');
+        $this->seed(PresentationCatalogSeeder::class);
+
+        $content = $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('data-homepage-reviews-demo', false)
+            ->assertSee('Contoh ulasan untuk pratinjau katalog—bukan ulasan pelanggan asli.')
+            ->assertSee('Alya (Demo)')
+            ->assertSee('data-review-demo', false)
+            ->assertSee('Detail mutiaranya terlihat cantik dan ukurannya pas; nyaman dipakai seharian.')
+            ->assertDontSee('Your story belongs here')
+            ->assertDontSee('Verified')
+            ->getContent();
+
+        $this->assertSame(3, substr_count($content, 'data-homepage-review-card'));
+        $this->assertSame(3, substr_count($content, 'data-review-demo'));
+
+        $seededProduct = app(MarketplaceService::class)->mainProducts(null)->firstWhere('slug', 'demo-presentation-pearl-muse');
+        $this->assertNotNull($seededProduct);
+        $this->assertSame(0, $seededProduct->reviews_count);
+        $this->assertNull($seededProduct->reviews_avg_rating);
     }
 }

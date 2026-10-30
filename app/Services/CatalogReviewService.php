@@ -20,6 +20,7 @@ class CatalogReviewService
             ...$attributes,
             'product_id' => $product->id,
             'user_id' => $user->id,
+            'is_demo' => false,
         ]));
     }
 }

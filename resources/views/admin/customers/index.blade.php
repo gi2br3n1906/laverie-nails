@@ -1,5 +1,4 @@
 <x-layouts.app title="Kelola Pelanggan">
-    <x-admin.navigation />
     <section class="rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="customers-heading">
         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#60738C]">Customer intelligence</p>
         <h1 class="mt-2 font-display text-4xl text-[#0C1C39]" id="customers-heading">Kelola Pelanggan</h1>

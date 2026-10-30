@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
+use App\Models\CatalogReview;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class PresentationCatalogSeeder extends Seeder
@@ -23,21 +28,14 @@ class PresentationCatalogSeeder extends Seeder
         ['name' => 'Grunge', 'slug' => 'grunge'],
     ];
 
-    /** @var array<string, array{background: string, primary: string, secondary: string, accent: string, foreground: string}> */
-    private const PALETTES = [
-        'classy' => ['background' => '#F2EADF', 'primary' => '#D6B59E', 'secondary' => '#F7E4D8', 'accent' => '#A98770', 'foreground' => '#42372F'],
-        'coquette' => ['background' => '#F8E8ED', 'primary' => '#D997AD', 'secondary' => '#F7D8E3', 'accent' => '#A95E79', 'foreground' => '#553747'],
-        'y2k' => ['background' => '#E8EBFA', 'primary' => '#A8B8E8', 'secondary' => '#D8C8F2', 'accent' => '#696BB4', 'foreground' => '#303452'],
-        'floral' => ['background' => '#EDF0E2', 'primary' => '#C5D39D', 'secondary' => '#F7E8C4', 'accent' => '#7B9360', 'foreground' => '#3C4936'],
-        'grunge' => ['background' => '#33323A', 'primary' => '#815461', 'secondary' => '#B88186', 'accent' => '#D6B58D', 'foreground' => '#F4ECE3'],
-    ];
-
-    /** @var list<array{name: string, slug: string, description: string, category: string, price: int, stock: int, sizes: list<string>, lengths: list<string>}> */
+    /** @var list<array{name: string, slug: string, description: string, legacy_description: string, image_asset: string, category: string, price: int, stock: int, sizes: list<string>, lengths: list<string>}> */
     private const PRODUCTS = [
         [
             'name' => 'Pearl Muse',
             'slug' => 'demo-presentation-pearl-muse',
-            'description' => 'An elegant milky-white set with pearl accents and delicate hand-painted details for polished everyday looks.',
+            'description' => 'Press-on bernuansa nude milky dengan hasil glossy dan aksen mutiara yang memberi tampilan elegan untuk acara maupun pemakaian harian.',
+            'legacy_description' => 'An elegant milky-white set with pearl accents and delicate hand-painted details for polished everyday looks.',
+            'image_asset' => 'pearl-muse.jpg',
             'category' => 'classy',
             'price' => 189000,
             'stock' => 12,
@@ -47,7 +45,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Satin Bow',
             'slug' => 'demo-presentation-satin-bow',
-            'description' => 'Soft blush nails finished with miniature ribbon details and a glossy salon-style top coat.',
+            'description' => 'Warna soft blush dengan kilau shimmer halus untuk tampilan manis dan rapi. Mudah dipadukan dengan gaya pastel maupun acara kasual.',
+            'legacy_description' => 'Soft blush nails finished with miniature ribbon details and a glossy salon-style top coat.',
+            'image_asset' => 'satin-bow.jpg',
             'category' => 'coquette',
             'price' => 179000,
             'stock' => 9,
@@ -57,7 +57,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Pixel Star',
             'slug' => 'demo-presentation-pixel-star',
-            'description' => 'A playful Y2K mix of chrome stars, translucent accents, and cool lavender tones.',
+            'description' => 'Perpaduan biru dan lavender dengan aksen grafis berkilau, memberi sentuhan Y2K yang playful tanpa terlihat terlalu ramai.',
+            'legacy_description' => 'A playful Y2K mix of chrome stars, translucent accents, and cool lavender tones.',
+            'image_asset' => 'pixel-star.jpg',
             'category' => 'y2k',
             'price' => 199000,
             'stock' => 8,
@@ -67,7 +69,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Daisy Daydream',
             'slug' => 'demo-presentation-daisy-daydream',
-            'description' => 'Creamy nude press-ons decorated with tiny white daisies and sunny yellow centers.',
+            'description' => 'Dasar nude glossy dengan aksen floral bernuansa emas, cocok untuk tampilan feminin yang tetap lembut.',
+            'legacy_description' => 'Creamy nude press-ons decorated with tiny white daisies and sunny yellow centers.',
+            'image_asset' => 'daisy-daydream.jpg',
             'category' => 'floral',
             'price' => 169000,
             'stock' => 14,
@@ -77,7 +81,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Velvet Thorn',
             'slug' => 'demo-presentation-velvet-thorn',
-            'description' => 'Deep burgundy and charcoal tones with subtle botanical linework for a moody statement set.',
+            'description' => 'Merah cherry glossy dipadukan garis gelombang putih dan sentuhan glitter. Pilihan statement untuk malam atau acara spesial.',
+            'legacy_description' => 'Deep burgundy and charcoal tones with subtle botanical linework for a moody statement set.',
+            'image_asset' => 'velvet-thorn.jpg',
             'category' => 'grunge',
             'price' => 195000,
             'stock' => 6,
@@ -87,7 +93,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Everyday French',
             'slug' => 'demo-presentation-everyday-french',
-            'description' => 'A modern sheer-pink French manicure set designed for a clean, timeless finish.',
+            'description' => 'Gaya French tip klasik dengan dasar pink sheer dan ujung putih bersih; tampilan minimal yang mudah dipadukan.',
+            'legacy_description' => 'A modern sheer-pink French manicure set designed for a clean, timeless finish.',
+            'image_asset' => 'everyday-french.jpg',
             'category' => 'classy',
             'price' => 159000,
             'stock' => 16,
@@ -97,7 +105,9 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Cherry Charm',
             'slug' => 'demo-presentation-cherry-charm',
-            'description' => 'A romantic pink set with tiny cherry motifs and a smooth high-shine finish.',
+            'description' => 'Pink lembut dengan hasil glossy yang terinspirasi suasana cherry blossom—manis, ringan, dan cocok untuk gaya sehari-hari.',
+            'legacy_description' => 'A romantic pink set with tiny cherry motifs and a smooth high-shine finish.',
+            'image_asset' => 'cherry-charm.jpg',
             'category' => 'coquette',
             'price' => 175000,
             'stock' => 10,
@@ -107,12 +117,45 @@ class PresentationCatalogSeeder extends Seeder
         [
             'name' => 'Chrome Orbit',
             'slug' => 'demo-presentation-chrome-orbit',
-            'description' => 'Reflective silver accents and celestial details bring a futuristic Y2K feel to this reusable set.',
+            'description' => 'Kilau chrome warna emas memberi efek metalik futuristik. Cocok jadi statement look tanpa tambahan pola yang terlalu ramai.',
+            'legacy_description' => 'Reflective silver accents and celestial details bring a futuristic Y2K feel to this reusable set.',
+            'image_asset' => 'chrome-orbit.jpg',
             'category' => 'y2k',
             'price' => 209000,
             'stock' => 7,
             'sizes' => ['S', 'M', 'L'],
             'lengths' => ['Medium', 'Long'],
+        ],
+    ];
+
+    /** @var list<array{product_slug: string, product_name: string, category_slug: string, name: string, email: string, rating: int, comment: string}> */
+    private const DEMO_REVIEWS = [
+        [
+            'product_slug' => 'demo-presentation-pearl-muse',
+            'product_name' => 'Pearl Muse',
+            'category_slug' => 'demo-classy',
+            'name' => 'Alya (Demo)',
+            'email' => 'demo.alya@example.test',
+            'rating' => 5,
+            'comment' => 'Detail mutiaranya terlihat cantik dan ukurannya pas; nyaman dipakai seharian.',
+        ],
+        [
+            'product_slug' => 'demo-presentation-satin-bow',
+            'product_name' => 'Satin Bow',
+            'category_slug' => 'demo-coquette',
+            'name' => 'Nadia (Demo)',
+            'email' => 'demo.nadia@example.test',
+            'rating' => 5,
+            'comment' => 'Warnanya lembut dan hasilnya rapi. Mudah dipadukan untuk acara maupun sehari-hari.',
+        ],
+        [
+            'product_slug' => 'demo-presentation-everyday-french',
+            'product_name' => 'Everyday French',
+            'category_slug' => 'demo-classy',
+            'name' => 'Sari (Demo)',
+            'email' => 'demo.sari@example.test',
+            'rating' => 5,
+            'comment' => 'French tip-nya terlihat bersih, proses pasangnya juga praktis.',
         ],
     ];
 
@@ -124,6 +167,7 @@ class PresentationCatalogSeeder extends Seeder
 
         DB::transaction(function (): void {
             $categories = [];
+            $products = [];
 
             foreach (self::CATEGORIES as $category) {
                 $slug = 'demo-'.$category['slug'];
@@ -148,21 +192,15 @@ class PresentationCatalogSeeder extends Seeder
                     ],
                 );
 
-                if ($product->wasRecentlyCreated) {
-                    $imagePath = 'demo-products/'.$productData['slug'].'.svg';
-                    $artwork = $this->makeArtwork($productData['name'], self::PALETTES[$productData['category']]);
+                $this->syncProductImage($product, $productData['slug'], $productData['image_asset']);
+                $products[$productData['slug']] = $product->load(['category', 'primaryImage']);
 
-                    if (! Storage::disk('public')->put($imagePath, $artwork)) {
-                        throw new RuntimeException("Unable to write presentation artwork: {$imagePath}");
-                    }
-
-                    $product->images()->create([
-                        'image_path' => $imagePath,
-                        'is_primary' => true,
-                        'sequence' => 1,
-                    ]);
+                if (! $product->wasRecentlyCreated && $product->description === $productData['legacy_description']) {
+                    $product->update(['description' => $productData['description']]);
                 }
             }
+
+            $this->seedDemoReviews($products);
 
             Coupon::query()->firstOrCreate(
                 ['code' => 'PRESENTASI10'],
@@ -171,51 +209,80 @@ class PresentationCatalogSeeder extends Seeder
         });
     }
 
-    /** @param array{background: string, primary: string, secondary: string, accent: string, foreground: string} $palette */
-    private function makeArtwork(string $name, array $palette): string
+    /** @param array<string, Product> $products */
+    private function seedDemoReviews(array $products): void
     {
-        $escapedName = htmlspecialchars($name, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-        $shapes = $this->nailSetArtwork($palette);
+        foreach (self::DEMO_REVIEWS as $reviewData) {
+            $product = $products[$reviewData['product_slug']] ?? null;
 
-        return <<<SVG
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 900" role="img" aria-label="Illustrated demo preview: {$escapedName}">
-          <defs>
-            <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{$palette['background']}"/><stop offset="1" stop-color="{$palette['secondary']}"/></linearGradient>
-            <linearGradient id="nail" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{$palette['secondary']}"/><stop offset="1" stop-color="{$palette['primary']}"/></linearGradient>
-            <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="{$palette['foreground']}" flood-opacity=".16"/></filter>
-          </defs>
-          <rect width="720" height="900" fill="url(#paper)"/>
-          <circle cx="596" cy="167" r="120" fill="{$palette['secondary']}" opacity=".72"/>
-          <circle cx="114" cy="618" r="146" fill="{$palette['secondary']}" opacity=".55"/>
-          <path d="M0 710C140 646 250 774 392 708s224-40 328-2v194H0Z" fill="{$palette['background']}" opacity=".76"/>
-          <g filter="url(#shadow)">
-            {$shapes}
-          </g>
-          <text x="56" y="88" fill="{$palette['accent']}" font-family="Arial,sans-serif" font-size="17" font-weight="700" letter-spacing="4">LAVERIE · DEMO PREVIEW</text>
-          <text x="56" y="788" fill="{$palette['foreground']}" font-family="Georgia,serif" font-size="43">{$escapedName}</text>
-          <text x="58" y="832" fill="{$palette['accent']}" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="3">PRESENTATION SAMPLE</text>
-        </svg>
-        SVG;
+            if (
+                $product === null
+                || $product->name !== $reviewData['product_name']
+                || $product->category?->slug !== $reviewData['category_slug']
+                || $product->primaryImage?->image_path !== 'demo-products/'.$reviewData['product_slug'].'.jpg'
+            ) {
+                continue;
+            }
+
+            $reviewer = User::query()->firstOrCreate(
+                ['email' => $reviewData['email']],
+                [
+                    'name' => $reviewData['name'],
+                    'password' => Hash::make(Str::random(48)),
+                    'roles' => [UserRole::User->value],
+                ],
+            );
+
+            if ($reviewer->name !== $reviewData['name'] || $reviewer->roles !== [UserRole::User->value]) {
+                continue;
+            }
+
+            CatalogReview::query()->firstOrCreate(
+                ['product_id' => $product->id, 'user_id' => $reviewer->id],
+                [
+                    'rating' => $reviewData['rating'],
+                    'comment' => $reviewData['comment'],
+                    'is_demo' => true,
+                ],
+            );
+        }
     }
 
-    /** @param array{background: string, primary: string, secondary: string, accent: string, foreground: string} $palette */
-    private function nailSetArtwork(array $palette): string
+    private function syncProductImage(Product $product, string $slug, string $assetName): void
     {
-        $nails = '';
+        $imagePath = 'demo-products/'.$slug.'.jpg';
+        $legacyImagePath = 'demo-products/'.$slug.'.svg';
+        $primaryImage = $product->primaryImage;
+        $isLegacyImage = $primaryImage?->image_path === $legacyImagePath;
+        $isSeedImage = $product->wasRecentlyCreated || $isLegacyImage || $primaryImage?->image_path === $imagePath;
 
-        for ($index = 0; $index < 5; $index++) {
-            $x = 115 + ($index * 100);
-            $y = 340 + (abs(2 - $index) * 12);
-            $rotation = ($index - 2) * 7;
-            $nails .= <<<SVG
-            <g transform="rotate({$rotation} {$x} {$y})">
-              <rect x="{$x}" y="{$y}" width="70" height="190" rx="35" fill="url(#nail)" stroke="{$palette['accent']}" stroke-opacity=".32" stroke-width="2"/>
-              <path d="M{$x} {$y}a35 35 0 0 1 70 0v20h-70Z" fill="{$palette['primary']}" opacity=".7"/>
-              <path d="M{$x} {$y}v18h70v-18c0-18-16-32-35-32s-35 14-35 32Z" fill="{$palette['secondary']}" opacity=".72"/>
-            </g>
-            SVG;
+        if (! $isSeedImage) {
+            return;
         }
 
-        return $nails;
+        $disk = Storage::disk('public');
+
+        if ($product->wasRecentlyCreated || $isLegacyImage || ! $disk->exists($imagePath)) {
+            $assetPath = database_path('seeders/assets/products/'.$assetName);
+            $contents = is_file($assetPath) ? file_get_contents($assetPath) : false;
+
+            if (! is_string($contents) || $contents === '') {
+                throw new RuntimeException("Unable to read presentation product photo: {$assetPath}");
+            }
+
+            if (! $disk->put($imagePath, $contents)) {
+                throw new RuntimeException("Unable to write presentation product photo: {$imagePath}");
+            }
+        }
+
+        if ($product->wasRecentlyCreated) {
+            $product->images()->create([
+                'image_path' => $imagePath,
+                'is_primary' => true,
+                'sequence' => 1,
+            ]);
+        } elseif ($isLegacyImage) {
+            $primaryImage->update(['image_path' => $imagePath]);
+        }
     }
 }

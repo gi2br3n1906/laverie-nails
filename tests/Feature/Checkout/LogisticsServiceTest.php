@@ -7,6 +7,7 @@ namespace Tests\Feature\Checkout;
 use App\Services\LogisticsService;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 use Tests\TestCase;
 
 class LogisticsServiceTest extends TestCase
@@ -114,5 +115,42 @@ class LogisticsServiceTest extends TestCase
             && $request['destination'] === '152'
             && $request['weight'] === 1500
             && $request['courier'] === 'jne');
+    }
+
+    public function test_explicit_local_mock_returns_demo_locations_and_shipping_without_http_calls(): void
+    {
+        Http::fake();
+        $this->app->instance('env', 'local');
+        config()->set('services.rajaongkir.api_key', null);
+        config()->set('services.rajaongkir.local_mock', true);
+
+        $service = app(LogisticsService::class);
+
+        $this->assertSame([['id' => '31', 'name' => 'DKI Jakarta (Simulasi Lokal)']], $service->provinces());
+        $this->assertSame([['id' => '152', 'name' => 'Kota Jakarta Pusat (Simulasi Lokal)']], $service->cities('31'));
+        $this->assertSame([[
+            'key' => 'jne:REG',
+            'courier' => 'jne',
+            'courier_name' => 'JNE (Simulasi)',
+            'service' => 'REG',
+            'description' => 'Ongkir simulasi lokal; tidak ada pengiriman fisik.',
+            'cost' => 18000,
+            'etd' => '2-3',
+        ]], $service->shippingOptions('152', 500));
+
+        Http::assertNothingSent();
+    }
+
+    public function test_local_mock_is_never_used_outside_local_environment(): void
+    {
+        Http::fake();
+        $this->app->instance('env', 'production');
+        config()->set('services.rajaongkir.api_key', null);
+        config()->set('services.rajaongkir.local_mock', true);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Konfigurasi RajaOngkir [api_key] belum tersedia.');
+
+        app(LogisticsService::class)->provinces();
     }
 }

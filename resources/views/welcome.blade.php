@@ -107,7 +107,8 @@
 
     <section class="bg-[#EAF0F6] px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="reviews-heading">
         <div class="mx-auto max-w-screen-2xl">
-            <div class="text-center"><h2 class="mx-auto font-script text-6xl leading-none text-[#0C1C39] sm:text-8xl" id="reviews-heading">Speak to Us</h2><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base">Real reviews from those who trust laverie for salon quality nails at home</p></div>
+            @php($hasDemoReviews = $reviews->contains(fn ($review) => $review->is_demo))
+            <div class="text-center"><h2 class="mx-auto font-script text-6xl leading-none text-[#0C1C39] sm:text-8xl" id="reviews-heading">Speak to Us</h2><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base" @if ($hasDemoReviews) data-homepage-reviews-demo @endif>{{ $hasDemoReviews ? 'Contoh ulasan untuk pratinjau katalog—bukan ulasan pelanggan asli.' : 'Real reviews from those who trust laverie for salon quality nails at home' }}</p></div>
             <div class="mt-12 grid gap-5 md:grid-cols-3">
                 @forelse ($reviews as $review)
                     <x-storefront.review-card
@@ -116,6 +117,7 @@
                         :title="'Ulasan untuk '.$review->product->name"
                         :text="$review->comment"
                         :tone="$loop->iteration === 2 ? 'sand' : ($loop->iteration === 3 ? 'sage' : 'rose')"
+                        :is-demo="$review->is_demo"
                     />
                 @empty
                     @for ($card = 0; $card < 3; $card++)<x-storefront.review-placeholder />@endfor

@@ -13,6 +13,10 @@ class LogisticsService
     /** @return list<array{id: string, name: string}> */
     public function provinces(): array
     {
+        if ($this->usesLocalMock()) {
+            return [['id' => '31', 'name' => 'DKI Jakarta (Simulasi Lokal)']];
+        }
+
         $results = $this->client()
             ->get($this->endpoint('province'))
             ->throw()
@@ -34,6 +38,12 @@ class LogisticsService
     /** @return list<array{id: string, name: string}> */
     public function cities(string $provinceId): array
     {
+        if ($this->usesLocalMock()) {
+            return $provinceId === '31'
+                ? [['id' => '152', 'name' => 'Kota Jakarta Pusat (Simulasi Lokal)']]
+                : [];
+        }
+
         $results = $this->client()
             ->get($this->endpoint('city'), ['province' => $provinceId])
             ->throw()
@@ -55,6 +65,18 @@ class LogisticsService
     /** @return list<array{key: string, courier: string, courier_name: string, service: string, description: string, cost: int, etd: string}> */
     public function shippingOptions(string $destinationId, int $weightGrams): array
     {
+        if ($this->usesLocalMock()) {
+            return $destinationId === '152' ? [[
+                'key' => 'jne:REG',
+                'courier' => 'jne',
+                'courier_name' => 'JNE (Simulasi)',
+                'service' => 'REG',
+                'description' => 'Ongkir simulasi lokal; tidak ada pengiriman fisik.',
+                'cost' => 18000,
+                'etd' => '2-3',
+            ]] : [];
+        }
+
         $options = [];
 
         foreach ($this->couriers() as $courier) {
@@ -117,6 +139,11 @@ class LogisticsService
     public function itemWeightGrams(): int
     {
         return max(1, (int) config('services.rajaongkir.item_weight_grams', 500));
+    }
+
+    private function usesLocalMock(): bool
+    {
+        return app()->environment('local') && (bool) config('services.rajaongkir.local_mock', false);
     }
 
     private function client(): PendingRequest

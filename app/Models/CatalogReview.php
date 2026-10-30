@@ -16,12 +16,15 @@ class CatalogReview extends Model
     use HasFactory;
 
     /** @var list<string> */
-    protected $fillable = ['product_id', 'user_id', 'rating', 'comment'];
+    protected $fillable = ['product_id', 'user_id', 'rating', 'comment', 'is_demo'];
 
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['rating' => 'integer'];
+        return [
+            'rating' => 'integer',
+            'is_demo' => 'boolean',
+        ];
     }
 
     /** @return BelongsTo<Product, $this> */
