@@ -61,12 +61,14 @@ MAIL_MAILER=smtp
 MAIL_SCHEME=null
 MAIL_HOST=smtp-relay.brevo.com
 MAIL_PORT=587
-MAIL_USERNAME=<Brevo account login email>
+MAIL_USERNAME=<SMTP login shown on Brevo's SMTP settings page>
 MAIL_PASSWORD=<Brevo SMTP key starting with xsmtpsib->
 MAIL_FROM_ADDRESS=admin@laverie.web.id
 MAIL_FROM_NAME="Laverie Nails"
 QUEUE_CONNECTION=database
 ```
+
+`MAIL_USERNAME` is the **Login** value from Brevo's SMTP settings, which for newer accounts is an `@smtp-brevo.com` address rather than the account email. Using the account email returns `535 Authentication failed`. If the key has an IP allow-list, sending from an unlisted IP returns `525 Unauthorized IP address`.
 
 `MAIL_SCHEME` must be `null` (port 587, STARTTLS auto-negotiated) or `smtps` (port 465). Laravel passes this value straight to Symfony as the DSN scheme, so `tls` raises `UnsupportedSchemeException`.
 
