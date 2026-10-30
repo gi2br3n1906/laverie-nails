@@ -81,6 +81,13 @@ class MidtransWebhookTest extends TestCase
         $this->assertSame(PaymentStatus::Pending, $order->refresh()->payment_status);
     }
 
+    public function test_invalid_payload_returns_json_instead_of_redirecting(): void
+    {
+        $this->post('/api/payments/midtrans/notification', [])
+            ->assertStatus(422)
+            ->assertHeader('content-type', 'application/json');
+    }
+
     public function test_unknown_order_is_rejected_after_signature_validation(): void
     {
         $payload = [
