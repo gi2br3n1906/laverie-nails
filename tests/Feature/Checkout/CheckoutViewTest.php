@@ -56,7 +56,7 @@ class CheckoutViewTest extends TestCase
 
         $response = $this->get('/checkout')
             ->assertOk()
-            ->assertSee('Secure checkout')
+            ->assertSee('Pembayaran aman')
             ->assertSee('Moonlit Pearl')
             ->assertSee('Jawa Tengah')
             ->assertSee('data-checkout-form', false)

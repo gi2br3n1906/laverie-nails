@@ -27,8 +27,8 @@
                             <p class="text-base font-bold text-[#0C1C39]">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</p>
                         </div>
                         <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                            <div><dt class="text-xs uppercase tracking-[0.1em] text-stone-500">Pembayaran</dt><dd class="mt-1 font-semibold capitalize">{{ $order->payment_status->value }}</dd></div>
-                            <div><dt class="text-xs uppercase tracking-[0.1em] text-stone-500">Pengiriman</dt><dd class="mt-1 font-semibold capitalize">{{ $order->fulfillment_status->value }}</dd></div>
+                            <div><dt class="text-xs uppercase tracking-[0.1em] text-stone-500">Pembayaran</dt><dd class="mt-1 font-semibold">{{ $order->payment_status->label() }}</dd></div>
+                            <div><dt class="text-xs uppercase tracking-[0.1em] text-stone-500">Pengiriman</dt><dd class="mt-1 font-semibold">{{ $order->fulfillment_status->label() }}</dd></div>
                             <div><dt class="text-xs uppercase tracking-[0.1em] text-stone-500">Nomor resi</dt><dd class="mt-1 font-semibold">{{ $order->tracking_number ?: 'Belum tersedia' }}</dd></div>
                         </dl>
                         <a class="mt-5 inline-flex min-h-10 items-center justify-center rounded-full border border-[#0C1C39] px-5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-[#0C1C39] hover:text-white" href="{{ route('dashboard.orders.show', $order) }}">Lihat item</a>

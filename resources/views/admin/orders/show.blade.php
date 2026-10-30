@@ -14,8 +14,8 @@
                 <p class="mt-3 text-sm text-stone-500">Dibuat {{ $order->created_at?->format('d M Y, H:i') }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <span class="rounded-full bg-[#EAF0F6] px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#0C1C39]">Payment · {{ $order->payment_status->value }}</span>
-                <span class="rounded-full border border-[#92A1B5]/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#60738C]">Fulfillment · {{ $order->fulfillment_status->value }}</span>
+                <span class="rounded-full bg-[#EAF0F6] px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#0C1C39]">Pembayaran · {{ $order->payment_status->label() }}</span>
+                <span class="rounded-full border border-[#92A1B5]/50 px-4 py-2 text-xs font-bold uppercase tracking-[0.1em] text-[#60738C]">Pengerjaan · {{ $order->fulfillment_status->label() }}</span>
             </div>
         </div>
 
@@ -33,13 +33,13 @@
             <div class="space-y-7">
                 <div class="grid gap-5 md:grid-cols-2">
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6">
-                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Customer details</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Detail pelanggan</p>
                         <p class="mt-4 text-lg font-semibold text-[#0C1C39]">{{ $order->customer_name }}</p>
                         <p class="mt-2 text-sm text-stone-600">{{ $order->customer_email }}</p>
                         <p class="mt-1 text-sm text-stone-600">{{ $order->customer_phone }}</p>
                     </article>
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6">
-                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Shipping details</p>
+                        <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Detail pengiriman</p>
                         <p class="mt-4 font-semibold text-[#0C1C39]">{{ strtoupper($courierCode) }} · {{ $courierService }}</p>
                         <p class="mt-2 text-sm leading-6 text-stone-600">{{ $order->shipping_address }}</p>
                         <p class="mt-2 text-xs text-stone-400">Province {{ $order->province_id }} · City {{ $order->city_id }}</p>
@@ -90,10 +90,10 @@
                     @csrf
                     @method('PATCH')
                     <div>
-                        <label class="text-sm font-semibold" for="fulfillment_status">Fulfillment status</label>
+                        <label class="text-sm font-semibold" for="fulfillment_status">Status pengerjaan</label>
                         <select class="mt-2 block min-h-12 w-full rounded-xl border border-white/30 bg-white px-4 text-sm text-[#0C1C39]" id="fulfillment_status" name="fulfillment_status" required>
                             @foreach ($fulfillmentStatuses as $status)
-                                <option value="{{ $status->value }}" @selected(old('fulfillment_status', $order->fulfillment_status->value) === $status->value)>{{ ucfirst($status->value) }}</option>
+                                <option value="{{ $status->value }}" @selected(old('fulfillment_status', $order->fulfillment_status->value) === $status->value)>{{ $status->label() }}</option>
                             @endforeach
                         </select>
                     </div>

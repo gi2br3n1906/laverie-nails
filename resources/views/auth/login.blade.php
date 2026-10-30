@@ -1,5 +1,5 @@
 <x-layouts.auth title="Login">
-    <x-auth-card title="Welcome back" subtitle="Sign in to access your saved Laverie Nails account.">
+    <x-auth-card title="Selamat datang kembali" subtitle="Masuk untuk mengakses akun Laverie Nails Anda yang tersimpan.">
         <form class="space-y-5" method="POST" action="{{ route('login') }}">
             @csrf
 

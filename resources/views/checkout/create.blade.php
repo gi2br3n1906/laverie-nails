@@ -5,7 +5,7 @@
         <div class="mx-auto max-w-screen-xl px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
             <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
-                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#60738C]">Secure checkout</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#60738C]">Pembayaran aman</p>
                     <h1 class="mt-3 font-display text-4xl tracking-[-0.03em] text-[#0C1C39] sm:text-6xl" id="checkout-heading">Detail pesanan Anda</h1>
                     <p class="mt-4 max-w-xl text-sm leading-7 text-stone-600">Lengkapi alamat pengiriman, pilih kurir, lalu lanjutkan ke pembayaran aman melalui Midtrans.</p>
                 </div>
@@ -45,7 +45,7 @@
 
             <div class="space-y-6">
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
-                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Customer details</legend>
+                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Detail pelanggan</legend>
                     <div class="mt-2 grid gap-5 sm:grid-cols-2">
                         <div class="sm:col-span-2">
                             <label class="text-sm font-semibold text-[#0C1C39]" for="customer_name">Nama lengkap</label>
@@ -66,7 +66,7 @@
                 </fieldset>
 
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
-                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Shipping details</legend>
+                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Detail pengiriman</legend>
                     <div class="mt-2 grid gap-5 sm:grid-cols-2">
                         <div>
                             <label class="text-sm font-semibold text-[#0C1C39]" for="province_id">Provinsi</label>
@@ -124,7 +124,7 @@
                         <dd>Rp {{ number_format($subtotal, 0, ',', '.') }}</dd>
                     </div>
                     <div class="flex justify-between gap-4 text-[#DDE6F0]">
-                        <dt>Shipping</dt>
+                        <dt>Ongkos kirim</dt>
                         <dd data-shipping-total>Belum dipilih</dd>
                     </div>
                     @if ($coupon && $discount > 0)
@@ -140,7 +140,7 @@
                 </dl>
 
                 <button class="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-[0.14em] text-[#0C1C39] transition hover:bg-[#EAF0F6] disabled:cursor-not-allowed disabled:opacity-60" type="submit" data-place-order-button>
-                    Place order
+                    Buat pesanan
                 </button>
                 <p class="mt-4 flex items-start gap-2 text-xs leading-5 text-[#DDE6F0]">
                     <svg class="mt-0.5 size-4 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect width="14" height="11" x="5" y="10" rx="2" /><path stroke-linecap="round" d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10" /></svg>

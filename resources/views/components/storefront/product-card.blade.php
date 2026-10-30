@@ -19,7 +19,7 @@
         <h3 class="mt-2 font-display text-xl leading-tight tracking-[-0.02em] text-[#0C1C39] sm:text-2xl"><a class="transition hover:text-[#60738C]" href="{{ route('storefront.products.show', $product) }}">{{ $product->name }}</a></h3>
         <p class="mt-2 text-sm font-semibold text-stone-800">Rp {{ number_format((float) $product->price, 0, ',', '.') }}</p>
         @if (($product->reviews_count ?? 0) > 0)<p class="mt-1 text-xs font-medium text-stone-500">★ {{ number_format((float) $product->reviews_avg_rating, 1) }}</p>@endif
-        <p class="mt-1 text-xs uppercase tracking-[0.12em] text-stone-400">{{ $product->stock > 0 ? $product->stock.' in stock' : 'Out of stock' }}</p>
-        <a class="mt-4 inline-flex rounded-full bg-[#0C1C39] px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white" href="{{ route('storefront.products.show', $product) }}">View / Add</a>
+        <p class="mt-1 text-xs uppercase tracking-[0.12em] text-stone-400">{{ $product->stock > 0 ? $product->stock.' tersedia' : 'Stok habis' }}</p>
+        <a class="mt-4 inline-flex rounded-full bg-[#0C1C39] px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-white" href="{{ route('storefront.products.show', $product) }}">Lihat / Tambah</a>
     </div>
 </article>

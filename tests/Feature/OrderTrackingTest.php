@@ -45,8 +45,8 @@ class OrderTrackingTest extends TestCase
         ])->assertOk()
             ->assertSeeText($order->id)
             ->assertSeeText('Cloud French Set')
-            ->assertSeeText('Paid')
-            ->assertSeeText('Shipped')
+            ->assertSeeText('Lunas')
+            ->assertSeeText('Dikirim')
             ->assertSeeText('JNT-TRACK-445566');
     }
 

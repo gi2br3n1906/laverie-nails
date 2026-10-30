@@ -7,8 +7,8 @@
         <h1 class="mt-3 break-all font-mono text-xl font-bold sm:text-2xl">{{ $order->id }}</h1>
         <div class="mt-6 grid gap-4 text-sm sm:grid-cols-3">
             <p><span class="block text-[#B9C8DB]">Tanggal</span>{{ $order->created_at->translatedFormat('d M Y, H.i') }}</p>
-            <p><span class="block text-[#B9C8DB]">Pembayaran</span><span class="capitalize">{{ $order->payment_status->value }}</span></p>
-            <p><span class="block text-[#B9C8DB]">Pengiriman</span><span class="capitalize">{{ $order->fulfillment_status->value }}</span></p>
+            <p><span class="block text-[#B9C8DB]">Pembayaran</span><span>{{ $order->payment_status->label() }}</span></p>
+            <p><span class="block text-[#B9C8DB]">Pengiriman</span><span>{{ $order->fulfillment_status->label() }}</span></p>
         </div>
     </section>
     <section class="mt-8 rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 sm:p-8" aria-labelledby="items-heading">

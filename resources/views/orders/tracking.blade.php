@@ -37,11 +37,11 @@
                 @elseif ($order)
                     <article class="overflow-hidden rounded-[2rem] border border-[#92A1B5]/35 bg-white" aria-labelledby="tracked-order-heading">
                         <div class="bg-[#EAF0F6] p-6 sm:p-8">
-                            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#60738C]">Order found</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#60738C]">Pesanan ditemukan</p>
                             <h2 class="mt-2 break-all font-display text-2xl text-[#0C1C39] sm:text-3xl" id="tracked-order-heading">{{ $order->id }}</h2>
                             <div class="mt-5 flex flex-wrap gap-2">
-                                <span class="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#0C1C39]">Payment · {{ ucfirst($order->payment_status->value) }}</span>
-                                <span class="rounded-full border border-[#92A1B5]/50 bg-white px-4 py-2 text-xs font-bold text-[#60738C]">Fulfillment · {{ ucfirst($order->fulfillment_status->value) }}</span>
+                                <span class="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#0C1C39]">Pembayaran · {{ $order->payment_status->label() }}</span>
+                                <span class="rounded-full border border-[#92A1B5]/50 bg-white px-4 py-2 text-xs font-bold text-[#60738C]">Pengerjaan · {{ $order->fulfillment_status->label() }}</span>
                             </div>
                         </div>
 
@@ -57,8 +57,8 @@
 
                             <dl class="mt-6 space-y-3 text-sm">
                                 <div class="flex justify-between gap-4 text-stone-500"><dt>Subtotal</dt><dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd></div>
-                                <div class="flex justify-between gap-4 text-stone-500"><dt>Shipping</dt><dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd></div>
-                                <div class="flex justify-between gap-4 border-t border-[#92A1B5]/30 pt-4 font-semibold text-[#0C1C39]"><dt>Grand Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
+                                <div class="flex justify-between gap-4 text-stone-500"><dt>Ongkos kirim</dt><dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd></div>
+                                <div class="flex justify-between gap-4 border-t border-[#92A1B5]/30 pt-4 font-semibold text-[#0C1C39]"><dt>Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
                             </dl>
 
                             @if ($order->tracking_number)

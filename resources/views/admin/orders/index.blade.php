@@ -47,8 +47,8 @@
                                 </td>
                                 <td class="px-5 py-4 font-medium text-stone-700">{{ $order->customer_name }}</td>
                                 <td class="px-5 py-4 font-semibold text-[#0C1C39]">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
-                                <td class="px-5 py-4"><span class="rounded-full bg-[#EAF0F6] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#0C1C39]">{{ $order->payment_status->value }}</span></td>
-                                <td class="px-5 py-4"><span class="rounded-full border border-[#92A1B5]/50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#60738C]">{{ $order->fulfillment_status->value }}</span></td>
+                                <td class="px-5 py-4"><span class="rounded-full bg-[#EAF0F6] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#0C1C39]">{{ $order->payment_status->label() }}</span></td>
+                                <td class="px-5 py-4"><span class="rounded-full border border-[#92A1B5]/50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#60738C]">{{ $order->fulfillment_status->label() }}</span></td>
                                 <td class="px-5 py-4"><a class="font-semibold text-[#0C1C39] underline decoration-[#92A1B5] underline-offset-4" href="{{ route('admin.orders.show', $order) }}">Detail</a></td>
                             </tr>
                         @empty

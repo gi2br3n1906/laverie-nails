@@ -4,17 +4,17 @@
             <div class="bg-[#0C1C39] px-6 py-10 text-white sm:px-10 sm:py-12">
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#DDE6F0]">Order confirmed</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#DDE6F0]">Pesanan dikonfirmasi</p>
                         <h1 class="mt-3 font-display text-4xl tracking-[-0.03em] sm:text-5xl" id="payment-heading">Selesaikan Pembayaran</h1>
                         <p class="mt-4 max-w-xl text-sm leading-7 text-[#DDE6F0]">Pesanan Anda telah diamankan. Lanjutkan pembayaran agar tim Laverie dapat segera memproses nail set pilihan Anda.</p>
                     </div>
-                    <span class="w-fit rounded-full border border-white/25 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#DDE6F0]">{{ $order->payment_status->value }}</span>
+                    <span class="w-fit rounded-full border border-white/25 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#DDE6F0]">{{ $order->payment_status->label() }}</span>
                 </div>
             </div>
 
             <div class="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#60738C]">Order number</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#60738C]">Nomor pesanan</p>
                     <p class="mt-2 break-all font-display text-2xl text-[#0C1C39]">{{ $order->id }}</p>
 
                     <div class="mt-8 space-y-4">
@@ -43,7 +43,7 @@
                             <dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd>
                         </div>
                         <div class="flex justify-between gap-4 text-stone-500">
-                            <dt>Shipping</dt>
+                            <dt>Ongkos kirim</dt>
                             <dd>Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</dd>
                         </div>
                         @if ($order->discount_amount > 0)
