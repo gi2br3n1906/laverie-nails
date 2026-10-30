@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Support\Str;
 
+// In-memory databases (the test suite) cannot and must not use WAL.
+$sqliteInMemory = env('DB_DATABASE') === ':memory:';
+
 return [
 
     /*
@@ -39,8 +42,8 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
+            'busy_timeout' => $sqliteInMemory ? null : (int) env('DB_BUSY_TIMEOUT', 5000),
+            'journal_mode' => $sqliteInMemory ? null : env('DB_JOURNAL_MODE', 'WAL'),
             'synchronous' => null,
         ],
 

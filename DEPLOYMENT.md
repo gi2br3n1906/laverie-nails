@@ -55,6 +55,17 @@ DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/data/database.sqlite
 LOG_CHANNEL=stderr
 LOG_LEVEL=warning
+
+# Transactional email (Brevo SMTP relay). Keep MAIL_MAILER=log only for local work.
+MAIL_MAILER=smtp
+MAIL_SCHEME=tls
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=<Brevo account login email>
+MAIL_PASSWORD=<Brevo SMTP key, not the account password>
+MAIL_FROM_ADDRESS=admin@laverie.web.id
+MAIL_FROM_NAME="Laverie Nails"
+QUEUE_CONNECTION=database
 ```
 
 Generate `APP_KEY` on a trusted machine or with a one-off PHP command. Never reuse a development key and never commit `.env`.
@@ -70,7 +81,7 @@ The deployment script performs these steps in order:
 
 1. Fast-forwards the checked-out server branch from its configured Git upstream. Set `DEPLOY_PULL_LATEST=false` only when source synchronization is handled externally.
 2. Validates Docker, Compose, `.env`, `APP_KEY`, and required static assets.
-3. Builds current PHP-FPM and Nginx images, then force-recreates both containers. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
+3. Builds current PHP-FPM and Nginx images, then force-recreates PHP-FPM, Nginx, and the queue worker. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
 4. Creates the persistent SQLite file and Laravel runtime directories.
 5. Applies `www-data` ownership and group-writable directory/file permissions.
 6. Clears stale file-based bootstrap caches without querying a fresh database.
@@ -93,6 +104,26 @@ curl -fsS http://127.0.0.1:${APP_PORT:-8080}/ | grep -o 'images/hero-banner.png?
 ```
 
 All three checksums must match. The final command must show a `?v=` value. If the local origin is correct but the public domain is stale, the remaining cache is outside Docker (usually a Cloudflare Cache Everything rule); purge it once and preserve the HTML bypass rule.
+
+## Transactional email
+
+Order emails (received, paid, shipped) are queued into the `jobs` table and delivered by the `worker` service. Without that worker running, nothing is sent, even with valid SMTP credentials.
+
+The sender domain must stay authenticated in Brevo: the Brevo code TXT record, the `brevo1._domainkey` and `brevo2._domainkey` CNAMEs, and a DMARC record. Switching `MAIL_FROM_ADDRESS` to an unauthenticated domain or a free mailbox (Gmail, Yahoo) sends mail to spam or gets it rejected.
+
+Inspect the worker and the queue:
+
+```bash
+docker compose ps worker
+docker compose logs --tail=50 worker
+docker compose exec -T php-fpm php artisan queue:failed
+```
+
+Retry failed jobs after fixing credentials:
+
+```bash
+docker compose exec -T php-fpm php artisan queue:retry all
+```
 
 ## Health and operations
 
