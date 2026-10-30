@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Measurements;
 
-use App\Models\Measurement;
 use Database\Seeders\SizeStandardSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
