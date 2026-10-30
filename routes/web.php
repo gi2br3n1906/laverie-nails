@@ -35,6 +35,7 @@ Route::get('/healthz', HealthController::class)->name('healthz');
 Route::get('/readyz', HealthController::class)->name('readyz');
 
 Route::view('/panduan', 'guidance')->name('guidance');
+Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/input-data', 'measurements.create')->name('measurements.create');
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
 Route::get('/koleksi/{product:slug}', [StorefrontProductController::class, 'show'])->name('storefront.products.show');

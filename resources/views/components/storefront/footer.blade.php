@@ -6,6 +6,7 @@
                 <div class="mt-5 grid gap-3 text-sm text-stone-600">
                     <a class="transition hover:text-[#0C1C39]" href="{{ route('measurements.create') }}">{{ __('ui.footer.sizing') }}</a>
                     <a class="transition hover:text-[#0C1C39]" href="{{ route('guidance') }}">{{ __('ui.footer.measurement_guide') }}</a>
+                    <a class="transition hover:text-[#0C1C39]" href="{{ route('privacy') }}">{{ __('ui.footer.privacy') }}</a>
                 </div>
             </div>
             <div class="text-center">

@@ -41,6 +41,7 @@ return [
         'customer_service' => 'CUSTOMER SERVICE',
         'sizing' => 'Sizing',
         'measurement_guide' => 'Measurement guide',
+        'privacy' => 'Privacy Policy',
         'newsletter' => 'NEWSLETTER',
         'newsletter_copy' => 'Sign up to save measurement history and get 10% off for your first order.',
         'email' => 'Email address',

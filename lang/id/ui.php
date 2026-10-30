@@ -41,6 +41,7 @@ return [
         'customer_service' => 'LAYANAN PELANGGAN',
         'sizing' => 'Ukuran',
         'measurement_guide' => 'Panduan ukuran',
+        'privacy' => 'Kebijakan Privasi',
         'newsletter' => 'BUILETIN',
         'newsletter_copy' => 'Daftar untuk menyimpan riwayat pengukuran dan dapatkan diskon 10% untuk pesanan pertama Anda.',
         'email' => 'Alamat email',
