@@ -88,6 +88,8 @@ Route::middleware(['auth', 'role:user'])->group(function (): void {
     Route::patch('/dashboard/measurements', [CustomerPortalController::class, 'updateMeasurements'])->name('dashboard.measurements.update');
 });
 
+Route::redirect('/admin', '/admin/orders');
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function (): void {
     Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('dashboard');
     Route::resource('size-standards', SizeStandardController::class);
