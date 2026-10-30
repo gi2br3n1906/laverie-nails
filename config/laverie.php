@@ -17,4 +17,10 @@ return [
     'admin' => [
         'email' => env('LAVERIE_ADMIN_EMAIL'),
     ],
+
+    'demo_seed' => [
+        // Production normally refuses the demo catalog. Set this only for a
+        // deliberate presentation/demo database, then turn it off again.
+        'allowed' => env('LAVERIE_ALLOW_DEMO_SEED', false),
+    ],
 ];

@@ -161,7 +161,7 @@ class PresentationCatalogSeeder extends Seeder
 
     public function run(): void
     {
-        if (app()->environment('production')) {
+        if (! $this->demoSeedingAllowed()) {
             throw new RuntimeException('Presentation catalog seeding is not allowed in production.');
         }
 
@@ -246,6 +246,21 @@ class PresentationCatalogSeeder extends Seeder
                 ],
             );
         }
+    }
+
+    private function demoSeedingAllowed(): bool
+    {
+        if (! app()->environment('production')) {
+            return true;
+        }
+
+        if (config('laverie.demo_seed.allowed', false)) {
+            return true;
+        }
+
+        // Read the live environment too: a config cache must not force this
+        // one-off presentation seed to require a full cache rebuild.
+        return filter_var(env('LAVERIE_ALLOW_DEMO_SEED', false), FILTER_VALIDATE_BOOLEAN);
     }
 
     private function syncProductImage(Product $product, string $slug, string $assetName): void

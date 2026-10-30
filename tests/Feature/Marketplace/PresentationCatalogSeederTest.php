@@ -137,6 +137,26 @@ class PresentationCatalogSeederTest extends TestCase
         app(PresentationCatalogSeeder::class)->run();
     }
 
+    public function test_demo_seeder_runs_in_production_when_explicitly_allowed(): void
+    {
+        Storage::fake('public');
+        config(['app.env' => 'production']);
+        $this->app->instance('env', 'production');
+        $_ENV['LAVERIE_ALLOW_DEMO_SEED'] = 'true';
+        $_SERVER['LAVERIE_ALLOW_DEMO_SEED'] = 'true';
+
+        try {
+            $this->artisan('db:seed', [
+                '--class' => PresentationCatalogSeeder::class,
+                '--force' => true,
+            ])->assertExitCode(0);
+        } finally {
+            unset($_ENV['LAVERIE_ALLOW_DEMO_SEED'], $_SERVER['LAVERIE_ALLOW_DEMO_SEED']);
+        }
+
+        $this->assertDatabaseHas('products', ['slug' => 'demo-presentation-pearl-muse']);
+    }
+
     public function test_regular_database_seeder_does_not_load_demo_catalog_or_coupon(): void
     {
         $this->seed(DatabaseSeeder::class);

@@ -188,12 +188,15 @@ cd /var/www/laverie
 
 sudo -u www-data php artisan laverie:create-admin admin@laverie.web.id
 
-# Only for the presentation/demo database:
-sudo -u www-data php artisan db:seed --class=PresentationCatalogSeeder --force
+# Only for a deliberate presentation/demo database. The production guard is
+# bypassed for this one command; do not enable it permanently.
+sudo -u www-data env LAVERIE_ALLOW_DEMO_SEED=true \
+  php artisan db:seed --class=PresentationCatalogSeeder --force
 ```
 
-The admin command asks for a password interactively. Do not pass a password in a
-shared shell history.
+The admin command asks for a password interactively. It must be at least 12
+characters; if it is shorter, the command exits without creating the account.
+Do not pass a password in a shared shell history.
 
 ## 7. Connect Cloudflare Tunnel
 
