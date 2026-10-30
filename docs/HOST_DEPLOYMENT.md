@@ -24,8 +24,8 @@ Git, and Node:
 sudo apt update
 sudo apt install -y \
   nginx git unzip curl \
-  php8.2-fpm php8.2-cli php8.2-sqlite3 php8.2-mbstring php8.2-xml \
-  php8.2-curl php8.2-zip php8.2-intl php8.2-bcmath php8.2-gd php8.2-opcache \
+  php8.3-fpm php8.3-cli php8.3-sqlite3 php8.3-mbstring php8.3-xml \
+  php8.3-curl php8.3-zip php8.3-intl php8.3-bcmath php8.3-gd php8.3-opcache \
   nodejs npm
 
 php -v
@@ -34,7 +34,7 @@ composer --version
 node --version
 ```
 
-If the server uses another PHP version, replace `php8.2` everywhere and use the
+If the server uses another PHP version, replace `php8.3` everywhere and use the
 matching `/run/php/phpX.Y-fpm.sock` path.
 
 Install Composer if it is missing:
@@ -124,8 +124,8 @@ sudo systemctl reload nginx
 ```
 
 The config listens on `127.0.0.1:8080`, not public port 80/443. Cloudflare Tunnel
-connects to that loopback address. If PHP-FPM is not 8.2, update the
-`fastcgi_pass unix:/run/php/php8.2-fpm.sock;` line.
+connects to that loopback address. The config already targets PHP-FPM 8.3:
+`fastcgi_pass unix:/run/php/php8.3-fpm.sock;`.
 
 If Nginx is already serving another site on port 80, leave it alone; Laverie uses
 its own loopback port.
@@ -155,7 +155,7 @@ The cron entry runs `schedule:run` every minute. It replaces the Docker
 ## 5. Build and deploy
 
 ```bash
-sudo ./scripts/deploy-host.sh
+sudo PHP_BIN=php8.3 ./scripts/deploy-host.sh
 ```
 
 The host deploy script:

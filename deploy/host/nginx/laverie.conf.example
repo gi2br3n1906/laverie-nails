@@ -1,6 +1,6 @@
 # Host-native Nginx config for a Laverie VPS/LXC without Docker.
 # Install at /etc/nginx/sites-available/laverie, then symlink into sites-enabled.
-# Change php8.2-fpm.sock if the server runs another PHP-FPM version.
+# Change php8.3-fpm.sock if the server runs another PHP-FPM version.
 
 map $http_cf_connecting_ip $laverie_client_ip {
     default $http_cf_connecting_ip;
@@ -57,7 +57,7 @@ server {
     }
 
     location ~ ^/index\.php(/|$) {
-        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
         fastcgi_split_path_info ^(.+\.php)(/.*)$;
         include fastcgi_params;
         fastcgi_param HTTP_X_FORWARDED_FOR $laverie_client_ip;
