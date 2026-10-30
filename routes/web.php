@@ -16,6 +16,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CheckoutLogisticsController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\HasilKlasifikasiController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeasurementHistoryController;
 use App\Http\Controllers\OrderTrackingController;
@@ -26,6 +27,7 @@ use App\Models\Measurement;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/healthz', HealthController::class)->name('healthz');
 
 Route::view('/panduan', 'guidance')->name('guidance');
 Route::view('/input-data', 'measurements.create')->name('measurements.create');
@@ -39,7 +41,7 @@ Route::post('/cart-coupon', [CartController::class, 'applyCoupon'])->name('cart.
 Route::delete('/cart-coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 Route::delete('/cart-items/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/checkout', [CheckoutController::class, 'create'])->middleware('auth')->name('checkout.create');
-Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('auth')->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(['auth', 'throttle:20,1'])->name('checkout.store');
 Route::get('/checkout/logistics/cities', [CheckoutLogisticsController::class, 'cities'])->middleware('auth')->name('checkout.logistics.cities');
 Route::get('/checkout/logistics/shipping-options', [CheckoutLogisticsController::class, 'shippingOptions'])->middleware('auth')->name('checkout.logistics.shipping-options');
 Route::get('/checkout/{order}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
