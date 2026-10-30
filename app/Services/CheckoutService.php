@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
+use App\Notifications\OrderPlaced;
 use App\ValueObjects\CartOwner;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,7 @@ class CheckoutService
     public function __construct(
         private readonly LogisticsService $logisticsService,
         private readonly PaymentService $paymentService,
+        private readonly OrderNotifier $notifier,
     ) {}
 
     /** @param  array<string, string|null>  $customerData */
@@ -42,7 +44,7 @@ class CheckoutService
             ]);
         }
 
-        return DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity, $couponId): Order {
+        $order = DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity, $couponId): Order {
             $cartItems = $owner->scope(CartItem::query())
                 ->where('is_selected', true)
                 ->orderBy('id')
@@ -114,6 +116,10 @@ class CheckoutService
 
             return $order->refresh()->load('items');
         }, 3);
+
+        $this->notifier->send($order, new OrderPlaced($order));
+
+        return $order;
     }
 
     /**

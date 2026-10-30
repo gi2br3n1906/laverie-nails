@@ -66,7 +66,11 @@ class CheckoutController extends Controller
 
     public function payment(Request $request, Order $order): View
     {
-        abort_unless(CartOwner::fromRequest($request)->ownsOrder($order), 404);
+        // Signed links in transactional email let a customer reopen payment from another device.
+        abort_unless(
+            $request->hasValidSignature() || CartOwner::fromRequest($request)->ownsOrder($order),
+            404,
+        );
 
         return view('checkout.payment', [
             'order' => $order->load('items'),

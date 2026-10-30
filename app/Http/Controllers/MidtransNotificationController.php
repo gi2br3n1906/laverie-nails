@@ -8,29 +8,34 @@ use App\Enums\PaymentStatus;
 use App\Http\Requests\MidtransNotificationRequest;
 use App\Models\Order;
 use App\Models\Product;
+use App\Notifications\OrderPaid;
+use App\Services\OrderNotifier;
 use App\Services\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 class MidtransNotificationController extends Controller
 {
-    public function __invoke(MidtransNotificationRequest $request, PaymentService $paymentService): JsonResponse
-    {
+    public function __invoke(
+        MidtransNotificationRequest $request,
+        PaymentService $paymentService,
+        OrderNotifier $notifier,
+    ): JsonResponse {
         $payload = $request->validated();
         abort_unless($paymentService->hasValidSignature($payload), 403, 'Invalid Midtrans signature.');
 
         $incomingStatus = $paymentService->statusFromNotification($payload);
 
-        DB::transaction(function () use ($payload, $incomingStatus): void {
+        $paidOrder = DB::transaction(function () use ($payload, $incomingStatus): ?Order {
             $order = Order::query()->lockForUpdate()->findOrFail((string) $payload['order_id']);
 
             if ($order->payment_status === PaymentStatus::Paid) {
-                return;
+                return null;
             }
 
             // Stock was already released, so a late settlement must not turn this into a paid order.
             if ($order->stock_restored_at !== null && $incomingStatus === PaymentStatus::Paid) {
-                return;
+                return null;
             }
 
             if (in_array($incomingStatus, [PaymentStatus::Expired, PaymentStatus::Failed], true)) {
@@ -54,15 +59,21 @@ class MidtransNotificationController extends Controller
                 $order->payment_status = $incomingStatus;
                 $order->save();
 
-                return;
+                return null;
             }
 
             if ($incomingStatus === PaymentStatus::Pending && $order->payment_status !== PaymentStatus::Pending) {
-                return;
+                return null;
             }
 
             $order->update(['payment_status' => $incomingStatus]);
+
+            return $incomingStatus === PaymentStatus::Paid ? $order : null;
         }, 3);
+
+        if ($paidOrder instanceof Order) {
+            $notifier->send($paidOrder, new OrderPaid($paidOrder));
+        }
 
         return response()->json(['message' => 'Notification processed.']);
     }

@@ -6,11 +6,14 @@ namespace App\Services;
 
 use App\Enums\FulfillmentStatus;
 use App\Models\Order;
+use App\Notifications\OrderShipped;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class OrderManagementService
 {
+    public function __construct(private readonly OrderNotifier $notifier) {}
+
     /** @return LengthAwarePaginator<int, Order> */
     public function paginate(?string $paymentStatus): LengthAwarePaginator
     {
@@ -28,7 +31,9 @@ class OrderManagementService
 
     public function updateFulfillment(Order $order, FulfillmentStatus $status, ?string $trackingNumber): Order
     {
-        return DB::transaction(function () use ($order, $status, $trackingNumber): Order {
+        $previousStatus = $order->fulfillment_status;
+
+        $updated = DB::transaction(function () use ($order, $status, $trackingNumber): Order {
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->getKey());
             $lockedOrder->update([
                 'fulfillment_status' => $status,
@@ -37,6 +42,12 @@ class OrderManagementService
 
             return $lockedOrder->refresh();
         });
+
+        if ($status === FulfillmentStatus::Shipped && $previousStatus !== FulfillmentStatus::Shipped) {
+            $this->notifier->send($updated, new OrderShipped($updated));
+        }
+
+        return $updated;
     }
 
     public function track(string $orderId, string $email): ?Order
