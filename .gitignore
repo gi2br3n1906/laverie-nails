@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /database/*.sqlite*
+/backups/
 /storage/app/public/*
 !/storage/app/public/.gitignore
 /storage/*.key

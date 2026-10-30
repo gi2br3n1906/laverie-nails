@@ -68,6 +68,25 @@ else
     exit 1
 fi
 
+wait_for_services() {
+    local service attempt
+
+    for service in "$@"; do
+        for attempt in {1..15}; do
+            if "${COMPOSE[@]}" ps --services --filter status=running 2>/dev/null | grep -qx "${service}"; then
+                break
+            fi
+
+            if (( attempt == 15 )); then
+                echo "Service ${service} did not reach the running state after deployment." >&2
+                exit 1
+            fi
+
+            sleep 1
+        done
+    done
+}
+
 if [[ ! -f .env ]]; then
     echo "Missing .env. Copy .env.example, set production values, and generate APP_KEY before deploying." >&2
     exit 1
@@ -207,6 +226,9 @@ echo "Verifying application health..."
 curl --fail --silent --show-error "http://127.0.0.1:${app_port}/healthz" >/dev/null
 curl --fail --silent --show-error "http://127.0.0.1:${app_port}/readyz" >/dev/null
 curl --fail --silent --show-error "http://127.0.0.1:${app_port}/up" >/dev/null
+
+echo "Verifying the web, queue, and scheduler containers are running..."
+wait_for_services "${APP_SERVICE}" "${WEB_SERVICE}" worker scheduler
 
 echo "Verifying immutable source and static assets inside both application images..."
 host_hero_checksum="$(sha256sum "${HERO_ASSET}" | awk '{print $1}')"

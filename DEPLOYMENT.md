@@ -6,6 +6,8 @@ This runbook describes the sealed Laravel 12 production stack implemented by `Do
 
 - **Nginx 1.27 Alpine** serves static/Vite assets and proxies `index.php` to PHP-FPM.
 - **PHP 8.4 FPM Alpine** runs Laravel with OPcache and the required SQLite, Intl, Mbstring, ZIP, cURL, BCMath, and PCNTL extensions.
+- **Queue worker** delivers queued transactional email and other jobs.
+- **Scheduler** runs `schedule:work`, including the Midtrans pending-payment reconciliation.
 - Application source and dependencies are built into immutable images. Production does not bind-mount the repository.
 - Nginx and PHP-FPM run with read-only root filesystems. Only explicit named volumes and temporary filesystems are writable.
 
@@ -86,6 +88,8 @@ Generate `APP_KEY` on a trusted machine or with a one-off PHP command. Never reu
 
 ## Deploy
 
+See [`docs/OPERATIONS.md`](docs/OPERATIONS.md) for the operational runbook, backup/restore drill, monitoring, scheduler, and incident checklist.
+
 ```bash
 chmod +x deploy.sh
 ./deploy.sh
@@ -95,7 +99,7 @@ The deployment script performs these steps in order:
 
 1. Fast-forwards the checked-out server branch from its configured Git upstream. Set `DEPLOY_PULL_LATEST=false` only when source synchronization is handled externally.
 2. Validates Docker, Compose, `.env`, `APP_KEY`, and required static assets.
-3. Builds current PHP-FPM and Nginx images, then force-recreates PHP-FPM, Nginx, and the queue worker. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
+3. Builds current PHP-FPM and Nginx images, then force-recreates PHP-FPM, Nginx, the queue worker, and the scheduler. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
 4. Creates the persistent SQLite file and Laravel runtime directories.
 5. Applies `www-data` ownership and group-writable directory/file permissions.
 6. Clears stale file-based bootstrap caches without querying a fresh database.
@@ -216,7 +220,7 @@ Do not add cloudflared to the `laverie` bridge network, and do not point its ing
 
 ```bash
 ss -ltnp | grep 8080          # must show 127.0.0.1:8080, not 0.0.0.0:8080
-docker compose ps              # php-fpm, nginx, worker only
+docker compose ps              # php-fpm, nginx, worker, scheduler
 curl -I http://127.0.0.1:8080/healthz
 curl -I http://127.0.0.1:8080/readyz
 curl -I https://your-domain.example/
@@ -226,13 +230,13 @@ If `ss` shows `0.0.0.0:8080`, fix `docker-compose.yml` before exposing the tunne
 
 ### Backups off the server
 
-`deploy.sh` writes a pre-migration SQLite backup into the `sqlite_data` volume under `/var/www/data/backups`, verifies it with `PRAGMA integrity_check`, and keeps 14 days. Volume-only backups do not survive a lost VPS. Copy them off the server regularly, for example:
+`deploy.sh` writes a pre-migration SQLite snapshot into the `sqlite_data` volume and verifies it with `PRAGMA integrity_check`. For daily off-site backups (database plus catalog uploads, checksums, and optional rclone upload), use the host script documented in [`docs/OPERATIONS.md`](docs/OPERATIONS.md#backups):
 
 ```bash
-docker compose exec -T php-fpm sh -c 'cat /var/www/data/backups/database-*.sqlite' > laverie-backup.sqlite
+BACKUP_RCLONE_REMOTE=b2:laverie-backups ./scripts/backup-data.sh
 ```
 
-Better: run `restic`/`rclone` on the host against that volume and test a restore. Uploaded catalog images live in the `public_uploads` volume and need the same treatment.
+Uploaded catalog images live in the `public_uploads` volume and are included in that archive.
 
 ### Single-node constraint
 

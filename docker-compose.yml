@@ -1,5 +1,11 @@
 name: laverie-nails
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
 services:
   php-fpm:
     build:
@@ -8,6 +14,7 @@ services:
       target: php-fpm
     image: laverie-nails/php-fpm:${APP_IMAGE_TAG:-latest}
     restart: unless-stopped
+    logging: *default-logging
     env_file:
       - .env
     environment:
@@ -41,6 +48,7 @@ services:
       target: nginx
     image: laverie-nails/nginx:${APP_IMAGE_TAG:-latest}
     restart: unless-stopped
+    logging: *default-logging
     depends_on:
       php-fpm:
         condition: service_healthy
@@ -66,7 +74,37 @@ services:
   worker:
     image: laverie-nails/php-fpm:${APP_IMAGE_TAG:-latest}
     restart: unless-stopped
+    logging: *default-logging
     command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    stop_grace_period: 30s
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/www/data/database.sqlite
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    volumes:
+      - sqlite_data:/var/www/data
+      - runtime_storage:/var/www/html/storage
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+      - public_uploads:/var/www/html/storage/app/public
+    depends_on:
+      php-fpm:
+        condition: service_healthy
+    networks:
+      - laverie
+
+  scheduler:
+    image: laverie-nails/php-fpm:${APP_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    logging: *default-logging
+    command: ["php", "artisan", "schedule:work"]
     stop_grace_period: 30s
     env_file:
       - .env
