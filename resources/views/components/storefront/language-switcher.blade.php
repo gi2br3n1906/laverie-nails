@@ -12,7 +12,7 @@
 >
     <a
         @class([
-            'rounded-full px-2 py-1.5 transition',
+            'rounded-full px-1.5 py-1.5 transition sm:px-2',
             'bg-white text-[#0C1C39]' => $overlay && app()->getLocale() === 'en',
             'text-white/70 hover:text-white' => $overlay && app()->getLocale() !== 'en',
             'bg-[#0C1C39] text-white' => ! $overlay && app()->getLocale() === 'en',
@@ -25,7 +25,7 @@
     >EN</a>
     <a
         @class([
-            'rounded-full px-2 py-1.5 transition',
+            'rounded-full px-1.5 py-1.5 transition sm:px-2',
             'bg-white text-[#0C1C39]' => $overlay && app()->getLocale() === 'id',
             'text-white/70 hover:text-white' => $overlay && app()->getLocale() !== 'id',
             'bg-[#0C1C39] text-white' => ! $overlay && app()->getLocale() === 'id',

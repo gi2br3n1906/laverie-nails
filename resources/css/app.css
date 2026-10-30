@@ -125,3 +125,9 @@ body .ts-wrapper.focus .ts-control {
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-right] a:hover {
     background-color: #f1f4f8;
 }
+
+[data-navbar-search-form] input[type='search']::-webkit-search-cancel-button,
+[data-products-search] input[type='search']::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+}

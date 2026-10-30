@@ -25,11 +25,18 @@ if (searchForm) {
         }
     };
 
-    trigger?.addEventListener('click', (event) => {
-        if (panel?.classList.contains('hidden')) {
-            event.preventDefault();
-            setSearchOpen(true);
+    trigger?.addEventListener('click', () => {
+        const catalogInput = document.querySelector('[data-products-search] input[name="search"]');
+
+        if (catalogInput) {
+            catalogInput.scrollIntoView({ behavior: 'auto', block: 'center' });
+            catalogInput.focus({ preventScroll: true });
+            setSearchOpen(false);
+
+            return;
         }
+
+        setSearchOpen(panel?.classList.contains('hidden') ?? false);
     });
 
     document.addEventListener('click', (event) => {
