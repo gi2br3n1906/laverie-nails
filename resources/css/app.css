@@ -110,7 +110,6 @@ body .ts-wrapper.focus .ts-control {
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] {
     background: rgb(255 255 255 / 92%);
-    box-shadow: 0 1px 0 rgb(12 28 57 / 6%), 0 14px 30px -26px rgb(12 28 57 / 40%);
     color: #0c1c39;
     backdrop-filter: blur(16px) saturate(140%);
 }
@@ -144,14 +143,15 @@ body .ts-wrapper.focus .ts-control {
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button],
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-cart-button] {
     border-color: transparent;
-    background-color: #0c1c39;
-    color: #fff;
-    box-shadow: 0 6px 16px -8px rgb(12 28 57 / 55%);
+    background-color: transparent;
+    color: #0c1c39;
+    box-shadow: none;
 }
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button]:hover,
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-cart-button]:hover {
-    background-color: #192b48;
+    background-color: #f1f4f8;
+    color: #0c1c39;
 }
 
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] [data-navbar-search-button]:focus-visible,
