@@ -21,7 +21,7 @@
         <div class="absolute inset-0 -z-20" data-hero-slides>
             @foreach ($heroSlides as $slide)
                 <div @class(['absolute inset-0 transition-opacity duration-700 ease-out', 'opacity-100' => $loop->first, 'pointer-events-none opacity-0' => ! $loop->first]) aria-hidden="{{ $loop->first ? 'false' : 'true' }}" aria-label="Slide {{ $loop->iteration }} of {{ count($heroSlides) }}" data-hero-slide>
-                    <img class="h-full w-full object-cover object-center" src="{{ $slide['url'] }}{{ $slide['versioned'] ? '?v='.$heroBannerVersion : '' }}" alt="{{ $slide['alt'] }}" @if (! $loop->first) loading="lazy" @endif>
+                    <img class="h-full w-full object-cover object-left sm:object-center" src="{{ $slide['url'] }}{{ $slide['versioned'] ? '?v='.$heroBannerVersion : '' }}" alt="{{ $slide['alt'] }}" @if (! $loop->first) loading="lazy" @endif>
                 </div>
             @endforeach
         </div>
