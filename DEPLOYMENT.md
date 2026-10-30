@@ -25,7 +25,7 @@ Never run `docker compose down -v` in production unless permanent deletion of th
 1. Linux server with Docker Engine and Docker Compose.
 2. The repository checked out on the server.
 3. A production `.env` file that is not committed to Git.
-4. Inbound traffic routed to `${APP_PORT:-8080}` directly or through the approved Cloudflare Tunnel.
+4. Inbound traffic routed through Cloudflare Tunnel to the loopback-bound `${APP_PORT:-8080}`. The port is not published on a public interface.
 
 Verify Docker is running:
 
@@ -50,11 +50,19 @@ APP_DEBUG=false
 APP_URL=https://your-domain.example
 APP_KEY=base64:GENERATE_A_SECURE_KEY
 APP_PORT=8080
+APP_TIMEZONE=Asia/Jakarta
 
 DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/data/database.sqlite
+DB_BUSY_TIMEOUT=5000
+DB_JOURNAL_MODE=WAL
 LOG_CHANNEL=stderr
 LOG_LEVEL=warning
+
+# Cloudflare Tunnel terminates HTTPS before the origin.
+TRUSTED_PROXIES=*
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
 
 # Transactional email (Brevo SMTP relay). Keep MAIL_MAILER=log only for local work.
 MAIL_MAILER=smtp
@@ -67,6 +75,8 @@ MAIL_FROM_ADDRESS=admin@laverie.web.id
 MAIL_FROM_NAME="Laverie Nails"
 QUEUE_CONNECTION=database
 ```
+
+`TRUSTED_PROXIES=*` is only safe because the compose port is bound to `127.0.0.1`. If the origin is ever exposed on a public interface, replace `*` with the proxy IPs/CIDRs.
 
 `MAIL_USERNAME` is the **Login** value from Brevo's SMTP settings, which for newer accounts is an `@smtp-brevo.com` address rather than the account email. Using the account email returns `535 Authentication failed`. If the key has an IP allow-list, sending from an unlisted IP returns `525 Unauthorized IP address`.
 
@@ -89,12 +99,14 @@ The deployment script performs these steps in order:
 4. Creates the persistent SQLite file and Laravel runtime directories.
 5. Applies `www-data` ownership and group-writable directory/file permissions.
 6. Clears stale file-based bootstrap caches without querying a fresh database.
-7. Runs `php artisan migrate --force`.
-8. Synchronizes the canonical XS/S/M/L records using the idempotent `SizeStandardSeeder`.
-9. Clears remaining caches, then runs `php artisan optimize` and `php artisan view:cache`.
-10. Verifies that the hero asset SHA-256 checksum is identical in the server checkout, PHP-FPM image, and Nginx image.
-11. Downloads the cache-busted hero URL directly from the local Nginx origin and verifies its checksum.
-12. Prints final container status.
+7. Backs up the SQLite database with `VACUUM INTO` before any schema change.
+8. Runs `php artisan migrate --force`.
+9. Synchronizes the canonical XS/S/M/L records using the idempotent `SizeStandardSeeder`.
+10. Clears remaining caches, then runs `php artisan optimize` and `php artisan view:cache`.
+11. Restarts the queue worker and checks `/healthz` plus `/up` on the local origin.
+12. Verifies that the hero asset SHA-256 checksum is identical in the server checkout, PHP-FPM image, and Nginx image.
+13. Downloads the cache-busted hero URL directly from the local Nginx origin and verifies its checksum.
+14. Prints final container status.
 
 Production does not bind-mount the repository. Editing or uploading a file directly into the host checkout does not alter a running container until the images are rebuilt and containers are recreated. Public image URLs include a content-derived query version so a changed image bypasses existing browser or CDN entries. Dynamic HTML responses are marked `no-store`; if Cloudflare has an explicit Cache Everything rule that ignores origin headers, purge that rule/cache once and exclude application HTML from edge caching.
 
@@ -164,10 +176,59 @@ Copy the backup from the named volume using an approved server backup process. U
 
 ## Cloudflare Tunnel
 
-When Cloudflare Tunnel is used, map the public hostname to:
+The compose stack publishes Nginx on `127.0.0.1:${APP_PORT}` only. Cloudflare Tunnel is the only public entry point; do not open port 8080 in the VPS firewall.
+
+### Tunnel ingress
+
+Run `cloudflared` on the host:
 
 ```text
 http://127.0.0.1:8080
 ```
 
-TLS terminates at Cloudflare. Do not expose the Docker port publicly if the server firewall and tunnel architecture are intended to keep origin traffic private.
+Or run it as a container on the same compose network and point the ingress at `http://nginx:80`. In that case the published port is unnecessary; keep it loopback-only anyway.
+
+Create the tunnel and public hostname in the Cloudflare dashboard (or with `cloudflared tunnel route dns`). The token is a secret: install it as a systemd service or an env var, never in Git.
+
+### Required Cloudflare settings
+
+1. **SSL/TLS → Always Use HTTPS** on. TLS terminates at Cloudflare; the origin speaks HTTP inside the tunnel.
+2. **WAF / Bot Fight Mode exception for the payment webhook.** Add a rule that skips WAF, Bot Fight, and managed challenges for `POST` on `/api/payments/midtrans/notification`. Otherwise Midtrans notifications can be challenged and orders will stay `pending`. The endpoint still verifies the Midtrans signature. Set the notification URL in Midtrans to `https://<your-domain>/api/payments/midtrans/notification`; the route is registered under `/api`.
+3. **Cloudflare Access for `/admin*`.** Tunnel alone does not authenticate anyone. Protect the admin area with an Access policy (email OTP or service token). Do not put Access in front of the Midtrans webhook.
+4. **Cache rules.** Bypass cache for `/checkout*`, `/admin*`, `/payments*`, `/lacak-pesanan*`, `/keranjang*`, and all HTML. Cache only `/build/*`, `/storage/*`, and `/images/*`.
+5. **Rate limiting (optional).** Add edge rules for `/login`, `/register`, and `/lacak-pesanan` if the store is targeted; Laravel also throttles these, using the real visitor IP after `TRUSTED_PROXIES` is set.
+
+### Verify the origin is private
+
+```bash
+ss -ltnp | grep 8080          # must show 127.0.0.1:8080, not 0.0.0.0:8080
+curl -I http://127.0.0.1:8080/healthz
+curl -I https://your-domain.example/
+```
+
+If `ss` shows `0.0.0.0:8080`, fix `docker-compose.yml` before exposing the tunnel.
+
+### Backups off the server
+
+`deploy.sh` writes a pre-migration SQLite backup into the `sqlite_data` volume under `/var/www/data/backups` and keeps 14 days. Volume-only backups do not survive a lost VPS. Copy them off the server regularly, for example:
+
+```bash
+docker compose exec -T php-fpm sh -c 'cat /var/www/data/backups/database-*.sqlite' > laverie-backup.sqlite
+```
+
+Better: run `restic`/`rclone` on the host against that volume and test a restore. Uploaded catalog images live in the `public_uploads` volume and need the same treatment.
+
+### Single-node constraint
+
+SQLite with WAL is fine for one store and one worker, but it is a single-writer database. Keep exactly one PHP-FPM/Nginx deployment and one worker; do not scale replicas horizontally. If traffic or admin concurrency grows, migrate to PostgreSQL/MySQL before adding replicas.
+
+## Checkout safety model
+
+- Payment amounts are recalculated server-side from locked product rows; browser-supplied prices and shipping costs are ignored.
+- Coupons are revalidated at checkout, including expiry and minimum spend.
+- Stock is checked under a transaction and decremented with a conditional `stock >= quantity` update, so SQLite cannot oversell under concurrent checkouts.
+- A per-user cache lock serialises duplicate checkout submissions; `POST /checkout` is also throttled.
+- Midtrans notifications require a valid SHA-512 signature; stale `pending` notifications cannot regress a paid order.
+- Paid notifications arriving after stock was released are logged at `critical` and left unpaid for manual refund/reconciliation. Refunds and chargebacks are not automated.
+- Duplicate paid notifications do not resend the paid email.
+- The payment page is visible only to the order owner or through a signed email link, and guest tracking requires order ID plus matching email.

@@ -102,6 +102,30 @@ if [[ -z "${app_url}" || "${app_url}" =~ ^https?://(localhost|127\.0\.0\.1)([:/]
     exit 1
 fi
 
+if [[ ! "${app_url}" =~ ^https:// ]]; then
+    echo "APP_URL must use https; Cloudflare Tunnel terminates TLS for the origin." >&2
+    exit 1
+fi
+
+if [[ "$(env_value SESSION_SECURE_COOKIE)" != "true" ]]; then
+    echo "SESSION_SECURE_COOKIE must be true in production, otherwise session cookies can leak over HTTP." >&2
+    exit 1
+fi
+
+if [[ -z "$(env_value TRUSTED_PROXIES)" ]]; then
+    echo "TRUSTED_PROXIES is required behind Cloudflare Tunnel. Use '*' only while the origin port is loopback-only." >&2
+    exit 1
+fi
+
+if [[ "$(env_value RAJAONGKIR_LOCAL_MOCK)" == "true" ]]; then
+    echo "RAJAONGKIR_LOCAL_MOCK must be false in production." >&2
+    exit 1
+fi
+
+if [[ "$(env_value MIDTRANS_IS_PRODUCTION)" != "true" ]]; then
+    echo "WARNING: Midtrans is still in Sandbox mode. Set MIDTRANS_IS_PRODUCTION=true when the store goes live." >&2
+fi
+
 echo "Starting Laverie Nails production deployment..."
 
 build_args=(build --pull)
@@ -158,6 +182,9 @@ artisan route:clear
 artisan view:clear
 artisan event:clear
 
+echo "Backing up SQLite before migrations..."
+"${COMPOSE[@]}" exec -T --user www-data "${APP_SERVICE}" sh /var/www/html/docker/backup-sqlite.sh
+
 echo "Running database migrations..."
 artisan migrate --force
 
@@ -168,6 +195,13 @@ echo "Building Laravel production caches..."
 artisan optimize:clear
 artisan optimize
 artisan view:cache
+
+echo "Restarting queue workers so they load the new release..."
+artisan queue:restart
+
+echo "Verifying application health..."
+curl --fail --silent --show-error "http://127.0.0.1:${app_port}/healthz" >/dev/null
+curl --fail --silent --show-error "http://127.0.0.1:${app_port}/up" >/dev/null
 
 echo "Verifying immutable source and static assets inside both application images..."
 host_hero_checksum="$(sha256sum "${HERO_ASSET}" | awk '{print $1}')"
