@@ -2,6 +2,8 @@
 
 This runbook describes the sealed Laravel 12 production stack implemented by `Dockerfile`, `docker-compose.yml`, and `deploy.sh`.
 
+If Docker cannot start containers because the VPS is an unprivileged LXC container (`runc ... net.ipv4.ip_unprivileged_port_start ... permission denied`), use the host-native path in [`docs/HOST_DEPLOYMENT.md`](docs/HOST_DEPLOYMENT.md) instead. Do not run both runtimes against the same SQLite database.
+
 ## Architecture
 
 - **Nginx 1.27 Alpine** serves static/Vite assets and proxies `index.php` to PHP-FPM.
