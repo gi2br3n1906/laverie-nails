@@ -9,6 +9,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Services\ShippingRateService;
 use App\ValueObjects\CartOwner;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,10 @@ use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
+    public function __construct(
+        private readonly ShippingRateService $shippingRates,
+    ) {}
+
     public function create(Request $request, CartService $cartService): View|RedirectResponse
     {
         $owner = CartOwner::fromRequest($request);
@@ -26,19 +31,39 @@ class CheckoutController extends Controller
 
         if ($items->isEmpty()) {
             return redirect()->route('home')->withErrors([
-                'cart' => 'Pilih setidaknya satu produk sebelum checkout.',
+                'cart' => __('ui.checkout.empty_error'),
             ]);
         }
 
         $couponId = $request->session()->get('cart_coupon_id');
         $coupon = $couponId ? Coupon::query()->whereKey($couponId)->first() : null;
         $cartState = $cartService->state($owner, $coupon);
+        $user = $request->user();
+        $selectedRegion = [
+            'province_code' => $request->old('province_code', $user?->province_code),
+            'province_name' => $request->old('province_name', $user?->province_name),
+            'regency_code' => $request->old('regency_code', $user?->regency_code),
+            'regency_name' => $request->old('regency_name', $user?->regency_name),
+            'district_code' => $request->old('district_code', $user?->district_code),
+            'district_name' => $request->old('district_name', $user?->district_name),
+            'village_code' => $request->old('village_code', $user?->village_code),
+            'village_name' => $request->old('village_name', $user?->village_name),
+        ];
+        $provinceCode = (string) ($selectedRegion['province_code'] ?? '');
+        $shippingQuote = $provinceCode !== '' && array_key_exists($provinceCode, config('regions.provinces', []))
+            ? $this->shippingRates->quote($provinceCode)
+            : null;
 
         return view('checkout.create', [
             'items' => $items,
             'subtotal' => intdiv($cartState['subtotal'], 100),
             'discount' => intdiv($cartState['discount'], 100),
             'coupon' => $cartState['coupon'],
+            'provinces' => config('regions.provinces', []),
+            'selectedRegion' => $selectedRegion,
+            'shippingQuote' => $shippingQuote,
+            'shippingRates' => $this->shippingRates->rates(),
+            'javaProvinces' => config('shipping.java_provinces', []),
         ]);
     }
 
@@ -51,6 +76,14 @@ class CheckoutController extends Controller
             'customer_phone',
             'shipping_address',
             'order_notes',
+            'province_code',
+            'province_name',
+            'regency_code',
+            'regency_name',
+            'district_code',
+            'district_name',
+            'village_code',
+            'village_name',
         ]);
         $couponId = $request->session()->get('cart_coupon_id');
         $couponId = $couponId === null ? null : (int) $couponId;

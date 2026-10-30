@@ -175,6 +175,8 @@ class CartOperationsTest extends TestCase
 
     public function test_cart_validation_messages_are_in_indonesian(): void
     {
+        $this->withSession(['locale' => 'id']);
+
         $product = Product::factory()->create(['stock' => 5]);
 
         $this->post('/cart-items', ['product_id' => $product->id])

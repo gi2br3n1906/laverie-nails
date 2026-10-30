@@ -19,9 +19,9 @@ class AuthNavigationTest extends TestCase
         $user = User::factory()->create(['name' => 'Alya Account']);
         $this->actingAs($user)->get('/')
             ->assertOk()
-            ->assertSeeText('Akun')
+            ->assertSeeText('Account')
             ->assertSeeText('Dashboard')
-            ->assertSeeText('Pengaturan Akun')
+            ->assertSeeText('Account settings')
             ->assertSee('action="'.route('logout').'"', false)
             ->assertSee('method="POST"', false)
             ->assertSeeText('Logout');

@@ -51,12 +51,12 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertStringContainsString('window.scrollY > 0', $navbarScript);
         $this->assertStringContainsString('navbarScrolled', $navbarScript);
         $this->assertMatchesRegularExpression('/grid-cols-\[1fr_auto_1fr\]/', $content);
-        $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Buka menu".*?data-navbar-brand/s', $content);
+        $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Open menu".*?data-navbar-brand/s', $content);
         $this->assertMatchesRegularExpression('/data-navbar-brand[^>]*>Laverie Nails<\/a>.*?data-navbar-right/s', $content);
         $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>Laverie Nails<\/a>/', $content);
-        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Cari produk"/', $content);
-        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Tas belanja"/', $content);
-        $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Buka menu"/', $content);
+        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Search products"/', $content);
+        $this->assertMatchesRegularExpression('/<button[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Shopping bag"/', $content);
+        $this->assertMatchesRegularExpression('/<summary[^>]*class="[^"]*text-white[^"]*"[^>]*aria-label="Open menu"/', $content);
         $this->assertSame(3, preg_match_all('/<svg[^>]*class="[^"]*drop-shadow-lg[^"]*"[^>]*data-navbar-icon="(?:menu|search|cart)"/', $content));
         $this->assertStringContainsString('>Sizing</a>', $content);
         $this->assertStringNotContainsString('>Find your size</a>', $content);
@@ -66,8 +66,13 @@ class GlobalPremiumUiTest extends TestCase
     {
         $content = $this->get(route('products.index'))->assertOk()->getContent();
 
-        preg_match('/<button\\b[^>]*data-navbar-search-button[^>]*>/', $content, $searchButton);
-        preg_match('/<button\\b[^>]*data-navbar-cart-button[^>]*>/', $content, $cartButton);
+        $this->assertStringContainsString('data-navbar-search-panel', $content);
+        $this->assertStringContainsString('id="navbar-search-input"', $content);
+        $this->assertStringContainsString('name="search"', $content);
+        $this->assertStringContainsString('aria-controls="navbar-search-panel"', $content);
+
+        preg_match('/<button\b[^>]*data-navbar-search-button[^>]*>/', $content, $searchButton);
+        preg_match('/<button\b[^>]*data-navbar-cart-button[^>]*>/', $content, $cartButton);
 
         $this->assertNotEmpty($searchButton, 'The search button should have a stable selector.');
         $this->assertNotEmpty($cartButton, 'The cart button should have a stable selector.');

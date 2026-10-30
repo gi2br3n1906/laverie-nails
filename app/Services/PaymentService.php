@@ -21,8 +21,8 @@ class PaymentService
             'quantity' => $item->quantity,
             'name' => mb_substr($item->product_name, 0, 50),
         ])->all();
-        // Legacy orders may include shipping from the old RajaOngkir checkout.
-        // New orders are created with shipping_cost = 0, so this item is omitted.
+        // Shipping is charged at checkout for every new order. Legacy orders with
+        // shipping_cost = 0 simply omit this line item.
         if ($order->shipping_cost > 0) {
             $itemDetails[] = [
                 'id' => 'SHIPPING',
@@ -50,6 +50,18 @@ class PaymentService
             throw new RuntimeException('Jumlah item Midtrans tidak cocok dengan total pesanan.');
         }
 
+        $shippingAddress = [
+            'first_name' => $order->customer_name,
+            'email' => $order->customer_email,
+            'phone' => $order->customer_phone,
+            'address' => $order->fullShippingAddress(),
+            'country_code' => 'IDN',
+        ];
+
+        if (filled($order->regency_name)) {
+            $shippingAddress['city'] = $order->regency_name;
+        }
+
         $token = Http::acceptJson()
             ->asJson()
             ->withBasicAuth($this->serverKey(), '')
@@ -64,12 +76,7 @@ class PaymentService
                     'first_name' => $order->customer_name,
                     'email' => $order->customer_email,
                     'phone' => $order->customer_phone,
-                    'shipping_address' => [
-                        'first_name' => $order->customer_name,
-                        'email' => $order->customer_email,
-                        'phone' => $order->customer_phone,
-                        'address' => $order->shipping_address,
-                    ],
+                    'shipping_address' => $shippingAddress,
                 ],
                 'item_details' => $itemDetails,
             ])

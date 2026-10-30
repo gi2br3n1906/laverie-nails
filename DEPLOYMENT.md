@@ -240,7 +240,9 @@ SQLite with WAL is fine for one store and one worker, but it is a single-writer 
 
 ## Checkout safety model
 
-- Payment amounts are recalculated server-side from locked product rows; browser-supplied prices are ignored. Checkout charges the product price only: shipping is not part of the online payment and is paid by the customer to the courier on delivery. The admin records the courier and tracking number manually after dispatch.
+- Payment amounts are recalculated server-side from locked product rows; browser-supplied prices are ignored. Checkout charges the product price plus shipping based on the destination province: Rp15.000 for Java and Rp20.000 outside Java by default. Admins can change both rates under Admin → Ongkir; each order snapshots the rate and region used at checkout. The admin records the courier and tracking number manually after dispatch.
+- Province, regency, district, and village are selected from a server-side proxy of `wilayah.id` (cached for 30 days); the street-level detail stays in one free-text field. The selected region is saved to the customer account for repeat purchases.
+- The region proxy accepts only well-formed hierarchical codes; shipping always uses the validated `province_code`, never a client-supplied amount.
 - Coupons are revalidated at checkout, including expiry and minimum spend.
 - Stock is checked under a transaction and decremented with a conditional `stock >= quantity` update, so SQLite cannot oversell under concurrent checkouts.
 - A per-user cache lock serialises duplicate checkout submissions; `POST /checkout` is also throttled.

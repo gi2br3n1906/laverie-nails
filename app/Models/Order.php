@@ -34,6 +34,15 @@ class Order extends Model
         'order_notes',
         'province_id',
         'city_id',
+        'province_code',
+        'province_name',
+        'regency_code',
+        'regency_name',
+        'district_code',
+        'district_name',
+        'village_code',
+        'village_name',
+        'shipping_zone',
         'courier',
         'shipping_cost',
         'subtotal',
@@ -80,5 +89,26 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function fullShippingAddress(): string
+    {
+        return collect([
+            $this->shipping_address,
+            $this->village_name,
+            $this->district_name,
+            $this->regency_name,
+            $this->province_name,
+        ])->filter(fn (mixed $value): bool => filled($value))->implode(', ');
+    }
+
+    public function shippingRegionLabel(): string
+    {
+        return collect([
+            $this->village_name,
+            $this->district_name,
+            $this->regency_name,
+            $this->province_name,
+        ])->filter(fn (mixed $value): bool => filled($value))->implode(', ');
     }
 }

@@ -82,7 +82,7 @@ class CustomerPortalTest extends TestCase
             ->assertSee('name="custom_measurements[right_hand][jempol]"', false)
             ->assertSee('value="14.0"', false)
             ->assertSee('value="8.5"', false)
-            ->assertSeeText('Ukuran tersimpan telah diisi otomatis.');
+            ->assertSeeText('Your saved measurements were filled in automatically.');
     }
 
     /** @return array<string, array<string, float|int|string>> */

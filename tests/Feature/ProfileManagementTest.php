@@ -23,14 +23,16 @@ class ProfileManagementTest extends TestCase
         $this->get('/profile')->assertRedirect(route('login'));
         $this->actingAs($user)->get('/profile')
             ->assertOk()
-            ->assertSeeText('Pengaturan Akun')
-            ->assertSeeText('Informasi Pribadi')
-            ->assertSeeText('Ganti Password')
-            ->assertSeeText('Alamat Pengiriman')
+            ->assertSeeText('Account Settings')
+            ->assertSeeText('Personal Information')
+            ->assertSeeText('Change Password')
+            ->assertSeeText('Shipping Address')
             ->assertSee('name="address"', false)
+            ->assertSee('name="province_code"', false)
+            ->assertSee('data-region-form', false)
+            ->assertSeeText('Jawa Tengah')
             ->assertDontSee('data-profile-address-form', false)
-            ->assertDontSee('data-cities-url=', false)
-            ->assertDontSeeText('Jawa Tengah');
+            ->assertDontSee('data-cities-url=', false);
 
         $source = file_get_contents(resource_path('views/profile/edit.blade.php'));
         $this->assertIsString($source);
@@ -66,12 +68,24 @@ class ProfileManagementTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->patch('/profile/address', [
-            'address' => 'Jl. Melati No. 8, Banyumanik',
+            'address' => 'Jl. Melati No. 8, RT 03/RW 04, 50268',
+            'province_code' => '33',
+            'province_name' => 'Jawa Tengah',
+            'regency_code' => '33.74',
+            'regency_name' => 'Kota Semarang',
+            'district_code' => '33.74.11',
+            'district_name' => 'Banyumanik',
+            'village_code' => '33.74.11.1001',
+            'village_name' => 'Pudakpayung',
         ])->assertRedirect(route('profile.edit'))->assertSessionHas('status');
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'address' => 'Jl. Melati No. 8, Banyumanik',
+            'address' => 'Jl. Melati No. 8, RT 03/RW 04, 50268',
+            'province_code' => '33',
+            'regency_code' => '33.74',
+            'district_code' => '33.74.11',
+            'village_code' => '33.74.11.1001',
         ]);
     }
 
@@ -94,19 +108,49 @@ class ProfileManagementTest extends TestCase
         $this->assertTrue(Hash::check('New-password-123', $user->refresh()->password));
     }
 
+    public function test_google_only_user_can_create_a_password_without_the_current_password(): void
+    {
+        $user = User::factory()->create([
+            'password' => null,
+            'provider' => 'google',
+            'provider_id' => 'google-profile-1',
+        ]);
+
+        $this->actingAs($user)->get('/profile')
+            ->assertOk()
+            ->assertSeeText('Create Password')
+            ->assertDontSee('name="current_password"', false);
+
+        $this->actingAs($user)->put('/profile/password', [
+            'password' => 'New-password-123',
+            'password_confirmation' => 'New-password-123',
+        ])->assertRedirect(route('profile.edit'))->assertSessionHas('status');
+
+        $this->assertTrue(Hash::check('New-password-123', $user->refresh()->password));
+    }
+
     public function test_profile_columns_exist_and_are_nullable(): void
     {
-        $this->assertTrue(Schema::hasColumns('users', ['phone', 'address', 'province_id', 'city_id']));
+        $this->assertTrue(Schema::hasColumns('users', ['phone', 'address', 'province_id', 'city_id', 'province_code', 'regency_code', 'district_code', 'village_code']));
         $user = User::factory()->create();
         $this->assertNull($user->phone);
         $this->assertNull($user->address);
+        $this->assertNull($user->province_code);
     }
 
     public function test_saved_account_details_prefill_authenticated_checkout(): void
     {
         $user = User::factory()->create([
-            'phone' => '+628111111111',
+            'phone' => '+628****1111',
             'address' => 'Jl. Default Checkout No. 1',
+            'province_code' => '31',
+            'province_name' => 'DKI Jakarta',
+            'regency_code' => '31.74',
+            'regency_name' => 'Kota Administrasi Jakarta Selatan',
+            'district_code' => '31.74.09',
+            'district_name' => 'Setiabudi',
+            'village_code' => '31.74.09.1002',
+            'village_name' => 'Kuningan Barat',
         ]);
         $product = Product::factory()->create(['price' => 100000, 'stock' => 2, 'is_active' => true]);
         CartItem::query()->create([
@@ -120,8 +164,10 @@ class ProfileManagementTest extends TestCase
 
         $this->actingAs($user)->get('/checkout')
             ->assertOk()
-            ->assertSee('+628111111111')
+            ->assertSee('+628****1111')
             ->assertSee('Jl. Default Checkout No. 1')
+            ->assertSee('value="31" selected', false)
+            ->assertSee('value="31.74" selected', false)
             ->assertDontSee('data-old-value="399"', false)
             ->assertDontSee('value="10" selected', false);
     }

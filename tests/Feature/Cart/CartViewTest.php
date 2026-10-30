@@ -74,7 +74,7 @@ class CartViewTest extends TestCase
             ->assertOk()
             ->assertSee('Midnight Pearl Edit')
             ->assertSee('Rp 185.000')
-            ->assertSee('7 tersedia')
+            ->assertSee('7 available')
             ->assertSee('Standard Size')
             ->assertSee('Custom Measurements')
             ->assertSeeInOrder(['XS', 'S', 'M', 'L'])
@@ -83,7 +83,7 @@ class CartViewTest extends TestCase
             ->assertSee('custom_measurements[left_hand][jempol]', false)
             ->assertSee('custom_measurements[left_hand][kelingking]', false)
             ->assertSee('action="'.route('cart.store').'"', false)
-            ->assertSee('Tambah ke Keranjang');
+            ->assertSee('Add to Cart');
 
         $this->assertDoesNotMatchRegularExpression('/\sstyle\s*=/i', $response->getContent());
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $response->getContent());
@@ -100,7 +100,7 @@ class CartViewTest extends TestCase
     {
         $response = $this->get(route('measurements.create'))
             ->assertOk()
-            ->assertSee('Input Data Pengukuran')
+            ->assertSee('Measurement Input')
             ->assertSee('data-cart-drawer', false)
             ->assertSee('data-cart-drawer-trigger', false)
             ->assertSee('aria-controls="cart-drawer"', false)

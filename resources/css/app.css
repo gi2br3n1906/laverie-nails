@@ -43,6 +43,71 @@
     transition: background 350ms ease, color 300ms ease, backdrop-filter 350ms ease;
 }
 
+.ts-wrapper {
+    width: 100%;
+}
+
+body .ts-wrapper .ts-control {
+    min-height: 3rem;
+    border: 1px solid rgb(146 161 181 / 60%);
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    padding: 0.65rem 1rem;
+    color: #0c1c39;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+    box-shadow: none;
+}
+
+body .ts-wrapper.focus .ts-control {
+    border-color: #0c1c39;
+    box-shadow: 0 0 0 4px rgb(146 161 181 / 20%);
+}
+
+.ts-wrapper .ts-control > input {
+    color: #0c1c39;
+    font-size: 0.875rem;
+}
+
+.ts-wrapper.single .ts-control::after {
+    border-color: #60738c transparent transparent !important;
+}
+
+.ts-wrapper.disabled .ts-control {
+    cursor: not-allowed;
+    background: #f1f5f9;
+    opacity: 0.6;
+}
+
+.ts-wrapper .ts-dropdown {
+    margin-top: 0.25rem;
+    border: 1px solid rgb(146 161 181 / 45%);
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 18px 40px rgb(12 28 57 / 12%);
+    color: #0c1c39;
+    font-size: 0.875rem;
+    overscroll-behavior: contain;
+}
+
+.ts-wrapper .ts-dropdown-content {
+    overscroll-behavior: contain;
+}
+
+.ts-wrapper .ts-dropdown .option {
+    padding: 0.65rem 0.875rem;
+}
+
+.ts-wrapper .ts-dropdown .option.active {
+    background: #eaf0f6;
+    color: #0c1c39;
+}
+
+.ts-wrapper .ts-dropdown .option.selected {
+    background: #0c1c39;
+    color: #fff;
+}
+
 [data-overlay-navigation='true'][data-navbar-scrolled='true'] {
     background: rgb(255 255 255 / 92%);
     color: #0c1c39;

@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use App\Notifications\OrderPlaced;
 use App\ValueObjects\CartOwner;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,9 +20,10 @@ class CheckoutService
     public function __construct(
         private readonly PaymentService $paymentService,
         private readonly OrderNotifier $notifier,
+        private readonly ShippingRateService $shippingRates,
     ) {}
 
-    /** @param  array<string, string|null>  $customerData */
+    /** @param  array{province_code: string, province_name: string, regency_code: string, regency_name: string, district_code: string, district_name: string, village_code: string, village_name: string, customer_name: string, customer_email: string, customer_phone: string, shipping_address: string, order_notes?: string|null}  $customerData */
     public function placeOrder(CartOwner $owner, array $customerData, ?int $couponId = null): Order
     {
         $quantity = (int) $owner->scope(CartItem::query())->where('is_selected', true)->sum('quantity');
@@ -64,6 +66,7 @@ class CheckoutService
             }
 
             $discountAmount = $coupon?->discountFor($subtotal) ?? 0;
+            $shipping = $this->shippingRates->quote($customerData['province_code']);
             $order = Order::query()->create([
                 ...$owner->orderAttributes(),
                 'customer_name' => $customerData['customer_name'],
@@ -73,12 +76,21 @@ class CheckoutService
                 'order_notes' => $customerData['order_notes'] ?? null,
                 'province_id' => null,
                 'city_id' => null,
+                'province_code' => $customerData['province_code'],
+                'province_name' => $customerData['province_name'],
+                'regency_code' => $customerData['regency_code'],
+                'regency_name' => $customerData['regency_name'],
+                'district_code' => $customerData['district_code'],
+                'district_name' => $customerData['district_name'],
+                'village_code' => $customerData['village_code'],
+                'village_name' => $customerData['village_name'],
+                'shipping_zone' => $shipping['zone']->value,
                 'courier' => null,
-                'shipping_cost' => 0,
+                'shipping_cost' => $shipping['cost'],
                 'subtotal' => $subtotal,
                 'coupon_code' => $coupon?->code,
                 'discount_amount' => $discountAmount,
-                'grand_total' => $subtotal - $discountAmount,
+                'grand_total' => $subtotal - $discountAmount + $shipping['cost'],
             ]);
 
             foreach ($cartItems as $cartItem) {
@@ -112,6 +124,21 @@ class CheckoutService
             }
 
             $owner->scope(CartItem::query())->where('is_selected', true)->delete();
+
+            if ($owner->userId !== null) {
+                User::query()->whereKey($owner->userId)->update([
+                    'address' => $customerData['shipping_address'],
+                    'province_code' => $customerData['province_code'],
+                    'province_name' => $customerData['province_name'],
+                    'regency_code' => $customerData['regency_code'],
+                    'regency_name' => $customerData['regency_name'],
+                    'district_code' => $customerData['district_code'],
+                    'district_name' => $customerData['district_name'],
+                    'village_code' => $customerData['village_code'],
+                    'village_name' => $customerData['village_name'],
+                ]);
+            }
+
             $order->setRelation('items', $order->items()->get());
             $order->update(['snap_token' => $this->paymentService->createSnapToken($order)]);
 

@@ -62,7 +62,15 @@ class OrderNotificationsTest extends TestCase
             'customer_name' => 'Alya Putri',
             'customer_email' => 'alya@example.com',
             'customer_phone' => '081234567890',
-            'shipping_address' => 'Jl. Melati No. 7, Kecamatan Menteng, Jakarta',
+            'shipping_address' => 'Jl. Melati No. 7, RT 01/RW 02, 12950',
+            'province_code' => '31',
+            'province_name' => 'DKI Jakarta',
+            'regency_code' => '31.74',
+            'regency_name' => 'Kota Administrasi Jakarta Selatan',
+            'district_code' => '31.74.09',
+            'district_name' => 'Setiabudi',
+            'village_code' => '31.74.09.1002',
+            'village_name' => 'Kuningan Barat',
         ])->assertRedirect();
 
         $order = Order::query()->sole();
@@ -78,7 +86,8 @@ class OrderNotificationsTest extends TestCase
 
         $this->assertStringContainsString($order->getKey(), $rendered);
         $this->assertStringContainsString('Rp 209.000', $rendered);
-        $this->assertStringContainsString('Dibayar langsung kepada kurir', $rendered);
+        $this->assertStringContainsString('Ongkos kirim: Rp 15.000', $rendered);
+        $this->assertStringContainsString('Total: Rp 224.000', $rendered);
         $this->assertStringContainsString('signature=', $rendered);
     }
 

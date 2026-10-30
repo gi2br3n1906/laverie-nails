@@ -19,7 +19,7 @@ class OrderTrackingTest extends TestCase
         $response = $this->get('/lacak-pesanan');
 
         $response->assertOk()
-            ->assertSee('Lacak Pesanan')
+            ->assertSee('Track Order')
             ->assertSee('order_id', false)
             ->assertSee('email', false);
 
@@ -45,8 +45,8 @@ class OrderTrackingTest extends TestCase
         ])->assertOk()
             ->assertSeeText($order->id)
             ->assertSeeText('Cloud French Set')
-            ->assertSeeText('Lunas')
-            ->assertSeeText('Dikirim')
+            ->assertSeeText('Paid')
+            ->assertSeeText('Shipped')
             ->assertSeeText('JNT-TRACK-445566');
     }
 
@@ -63,7 +63,7 @@ class OrderTrackingTest extends TestCase
         ] as $credentials) {
             $this->post('/lacak-pesanan', $credentials)
                 ->assertOk()
-                ->assertSeeText('Pesanan tidak ditemukan. Periksa kembali Order ID dan email Anda.')
+                ->assertSeeText('Order not found. Please check your Order ID and email again.')
                 ->assertDontSeeText('SECRET-RESI-123')
                 ->assertDontSeeText($order->shipping_address);
         }

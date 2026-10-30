@@ -1,3 +1,5 @@
+import { t } from './i18n';
+
 const drawer = document.querySelector('[data-cart-drawer]');
 
 if (drawer) {
@@ -50,7 +52,7 @@ if (drawer) {
             image.alt = item.name;
             media.append(image);
         } else {
-            media.append(element('span', 'grid size-full place-items-center text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-stone-400', 'No image'));
+            media.append(element('span', 'grid size-full place-items-center text-[0.6rem] font-semibold uppercase tracking-[0.12em] text-stone-400', t('common.no_image')));
         }
 
         const details = element('div', 'min-w-0');
@@ -92,15 +94,15 @@ if (drawer) {
             button.dataset.url = item.update_url;
             button.dataset.quantity = String(action === 'decrease' ? item.quantity - 1 : item.quantity + 1);
             button.disabled = action === 'decrease' ? item.quantity <= 1 : item.quantity >= item.max_quantity;
-            button.setAttribute('aria-label', `${action === 'decrease' ? 'Kurangi' : 'Tambah'} jumlah ${item.name}`);
+            button.setAttribute('aria-label', `${action === 'decrease' ? t('cart.decrease') : t('cart.increase')} ${item.name}`);
             selector.append(button);
         });
 
-        const remove = element('button', 'text-xs font-semibold underline underline-offset-4', 'Remove');
+        const remove = element('button', 'text-xs font-semibold underline underline-offset-4', t('cart.remove'));
         remove.type = 'button';
         remove.dataset.cartAction = 'remove';
         remove.dataset.url = item.remove_url;
-        remove.setAttribute('aria-label', `Hapus ${item.name}`);
+        remove.setAttribute('aria-label', t('cart.remove_aria', {name: item.name}));
         actions.append(selector, remove);
         details.append(actions);
         article.append(media, details);
@@ -156,7 +158,7 @@ if (drawer) {
 
         if (!response.ok) {
             const validationMessage = Object.values(payload.errors ?? {}).flat()[0];
-            throw new Error(validationMessage ?? payload.message ?? 'Keranjang tidak dapat diperbarui.');
+            throw new Error(validationMessage ?? payload.message ?? t('cart.update_failed'));
         }
 
         render(payload.data);

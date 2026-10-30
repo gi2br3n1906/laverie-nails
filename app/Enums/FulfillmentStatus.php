@@ -14,10 +14,10 @@ enum FulfillmentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::Pending => 'Menunggu',
-            self::Processing => 'Diproses',
-            self::Shipped => 'Dikirim',
-            self::Completed => 'Selesai',
+            self::Pending => __('ui.status.fulfillment_pending'),
+            self::Processing => __('ui.status.processing'),
+            self::Shipped => __('ui.status.shipped'),
+            self::Completed => __('ui.status.completed'),
         };
     }
 }

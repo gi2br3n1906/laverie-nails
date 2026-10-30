@@ -1,9 +1,9 @@
 <div class="fixed inset-0 z-[80] hidden" id="cart-drawer" data-cart-drawer data-state-url="{{ route('cart.state', absolute: false) }}" data-store-url="{{ route('cart.store', absolute: false) }}" data-coupon-apply-url="{{ route('cart.coupon.apply', absolute: false) }}" data-coupon-remove-url="{{ route('cart.coupon.remove', absolute: false) }}" aria-hidden="true">
-    <button class="absolute inset-0 cursor-default bg-[#081329]/45 opacity-0 backdrop-blur-sm transition-opacity duration-300" type="button" aria-label="Tutup keranjang" data-cart-drawer-close data-cart-drawer-backdrop></button>
+    <button class="absolute inset-0 cursor-default bg-[#081329]/45 opacity-0 backdrop-blur-sm transition-opacity duration-300" type="button" aria-label="{{ __('ui.cart.drawer_close') }}" data-cart-drawer-close data-cart-drawer-backdrop></button>
     <aside class="absolute inset-y-0 right-0 flex w-full max-w-md translate-x-full flex-col bg-white text-[#0C1C39] shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg" role="dialog" aria-modal="true" aria-labelledby="cart-drawer-title" tabindex="-1" data-cart-drawer-panel>
         <header class="flex items-center justify-between border-b border-stone-200 px-5 py-5 sm:px-7">
-            <h2 class="font-display text-2xl" id="cart-drawer-title">Keranjang (<span data-cart-drawer-quantity>0</span> item)</h2>
-            <button class="grid size-10 place-items-center rounded-full transition hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C1C39]" type="button" aria-label="Tutup keranjang" data-cart-drawer-close>
+            <h2 class="font-display text-2xl" id="cart-drawer-title">{{ __('ui.cart.drawer_title_prefix') }} (<span data-cart-drawer-quantity>0</span> {{ __('ui.cart.drawer_items_suffix') }})</h2>
+            <button class="grid size-10 place-items-center rounded-full transition hover:bg-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0C1C39]" type="button" aria-label="{{ __('ui.cart.drawer_close') }}" data-cart-drawer-close>
                 <svg class="size-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" d="m6 6 12 12M18 6 6 18" /></svg>
             </button>
         </header>
@@ -12,32 +12,32 @@
         <div class="flex-1 overflow-y-auto px-5 py-5 sm:px-7">
             <div class="space-y-6" data-cart-drawer-items></div>
             <div class="grid min-h-52 place-items-center text-center" data-cart-drawer-empty>
-                <div><p class="font-display text-2xl">Your cart is empty</p><a class="mt-4 inline-flex text-sm font-semibold underline underline-offset-4" href="{{ route('products.index') }}">Explore the collection</a></div>
+                <div><p class="font-display text-2xl">{{ __('ui.cart.empty') }}</p><a class="mt-4 inline-flex text-sm font-semibold underline underline-offset-4" href="{{ route('products.index') }}">{{ __('ui.cart.explore') }}</a></div>
             </div>
 
             <form class="mt-8" data-cart-coupon-form>
-                <label class="text-sm font-semibold uppercase tracking-[0.12em]" for="cart-coupon-code">Kode diskon</label>
+                <label class="text-sm font-semibold uppercase tracking-[0.12em]" for="cart-coupon-code">{{ __('ui.cart.coupon_label') }}</label>
                 <div class="mt-3 flex gap-2" data-cart-coupon-input-row>
                     <input class="min-w-0 flex-1 rounded-full border border-stone-300 bg-stone-50 px-4 py-2.5 text-sm uppercase outline-none focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" id="cart-coupon-code" name="code" maxlength="50" placeholder="SAVE10" data-cart-coupon-code>
-                    <button class="rounded-full border border-[#0C1C39] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-[#0C1C39] hover:text-white" type="submit">Terapkan</button>
+                    <button class="rounded-full border border-[#0C1C39] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition hover:bg-[#0C1C39] hover:text-white" type="submit">{{ __('ui.cart.apply') }}</button>
                 </div>
                 <div class="mt-3 hidden items-center justify-between rounded-2xl bg-emerald-50 px-4 py-3 text-sm" data-cart-coupon-applied>
                     <span class="font-semibold text-emerald-800"><span data-cart-coupon-label></span> <span class="font-normal">(−<span data-cart-coupon-percent></span>)</span></span>
-                    <button class="text-xs font-semibold text-emerald-800 underline underline-offset-4" type="button" data-cart-coupon-remove>Hapus</button>
+                    <button class="text-xs font-semibold text-emerald-800 underline underline-offset-4" type="button" data-cart-coupon-remove>{{ __('ui.cart.coupon_remove') }}</button>
                 </div>
             </form>
 
             <details class="mt-6 border-y border-stone-200 py-4" data-cart-drawer-notes>
-                <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold uppercase tracking-[0.12em]">Tambah catatan pesanan <span aria-hidden="true">+</span></summary>
-                <label class="sr-only" for="cart-order-note">Catatan pesanan</label>
-                <textarea class="mt-4 min-h-24 w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-sm outline-none focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" id="cart-order-note" maxlength="500" placeholder="Permintaan khusus untuk pesanan Anda" data-cart-order-note></textarea>
+                <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold uppercase tracking-[0.12em]">{{ __('ui.cart.notes_toggle') }} <span aria-hidden="true">+</span></summary>
+                <label class="sr-only" for="cart-order-note">{{ __('ui.cart.notes_label') }}</label>
+                <textarea class="mt-4 min-h-24 w-full rounded-2xl border border-stone-300 bg-stone-50 px-4 py-3 text-sm outline-none focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20" id="cart-order-note" maxlength="500" placeholder="{{ __('ui.cart.notes_placeholder') }}" data-cart-order-note></textarea>
             </details>
         </div>
 
         <footer class="border-t border-stone-200 bg-white p-5 sm:p-7" data-cart-drawer-footer>
-            <div class="mb-2 flex items-center justify-between text-sm font-semibold"><span>Subtotal</span><span data-cart-drawer-subtotal>Rp 0</span></div>
-            <div class="mb-4 hidden items-center justify-between text-sm font-semibold text-emerald-700" data-cart-drawer-discount-row><span>Diskon</span><span>−<span data-cart-drawer-discount>Rp 0</span></span></div>
-            <a class="flex min-h-13 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48]" href="{{ route('checkout.create') }}" data-cart-drawer-checkout>CHECKOUT • <span class="ml-1" data-cart-drawer-total>Rp 0</span></a>
+            <div class="mb-2 flex items-center justify-between text-sm font-semibold"><span>{{ __('ui.cart.drawer_subtotal') }}</span><span data-cart-drawer-subtotal>Rp 0</span></div>
+            <div class="mb-4 hidden items-center justify-between text-sm font-semibold text-emerald-700" data-cart-drawer-discount-row><span>{{ __('ui.cart.drawer_discount') }}</span><span>−<span data-cart-drawer-discount>Rp 0</span></span></div>
+            <a class="flex min-h-13 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48]" href="{{ route('checkout.create') }}" data-cart-drawer-checkout>{{ __('ui.cart.drawer_checkout') }} • <span class="ml-1" data-cart-drawer-total>Rp 0</span></a>
         </footer>
     </aside>
 </div>

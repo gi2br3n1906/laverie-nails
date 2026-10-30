@@ -38,6 +38,6 @@ class CustomerPortalController extends Controller
         $user = $request->user();
         $this->service->updateMeasurements($user, $request->validated());
 
-        return to_route('dashboard')->with('status', 'Profil ukuran berhasil disimpan.');
+        return to_route('dashboard')->with('status', __('ui.dashboard.measurement_saved'));
     }
 }

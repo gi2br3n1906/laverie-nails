@@ -7,8 +7,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ $title ?? 'Authentication' }} | {{ config('app.name') }}</title>
+        <title>{{ $title ?? __('ui.auth.authentication_title') }} | {{ config('app.name') }}</title>
 
+        <meta name="laverie-i18n" content="{{ json_encode(__('ui.js'), JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_APOS) }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-[#F8FAFC] font-sans text-[#0C1C39] antialiased">

@@ -55,13 +55,13 @@ class StoreCartItemRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'size_type.required' => 'Tipe ukuran wajib dipilih.',
-            'size_type.enum' => 'Tipe ukuran tidak dikenali.',
-            'standard_size.required_if' => 'Ukuran standar wajib dipilih.',
-            'standard_size.enum' => 'Ukuran standar tidak dikenali.',
-            'custom_measurements.required_if' => 'Ukuran custom wajib diisi.',
-            'product_id.exists' => 'Produk tidak tersedia.',
-            'quantity.min' => 'Jumlah minimal 1 item.',
+            'size_type.required' => __('ui.validation.size_type_required'),
+            'size_type.enum' => __('ui.validation.size_type_invalid'),
+            'standard_size.required_if' => __('ui.validation.standard_required'),
+            'standard_size.enum' => __('ui.validation.standard_invalid'),
+            'custom_measurements.required_if' => __('ui.validation.custom_required'),
+            'product_id.exists' => __('ui.validation.product_unavailable'),
+            'quantity.min' => __('ui.validation.quantity_min'),
         ];
     }
 

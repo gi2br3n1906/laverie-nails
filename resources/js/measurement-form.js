@@ -1,3 +1,5 @@
+import { t } from './i18n';
+
 const setupMeasurementForm = (root) => {
     const form = root.querySelector('[data-measurement-form-element]');
     const toggle = root.querySelector('[data-hand-toggle]');
@@ -23,8 +25,8 @@ const setupMeasurementForm = (root) => {
 
     const validateInput = (input) => {
         input.setCustomValidity('');
-        if (input.value === '' && input.required) input.setCustomValidity('Nilai pengukuran wajib diisi.');
-        if (input.value !== '' && (Number(input.value) < 0 || Number(input.value) > 25)) input.setCustomValidity('Masukkan angka antara 0 dan 25 mm.');
+        if (input.value === '' && input.required) input.setCustomValidity(t('measurement.required'));
+        if (input.value !== '' && (Number(input.value) < 0 || Number(input.value) > 25)) input.setCustomValidity(t('measurement.range'));
         return input.checkValidity();
     };
 
@@ -36,7 +38,7 @@ const setupMeasurementForm = (root) => {
         const inputs = [...form.querySelectorAll('[data-measurement-input]:not(:disabled)')];
         const isValid = inputs.every(validateInput);
         summary.hidden = isValid;
-        summary.textContent = isValid ? '' : 'Periksa kembali semua ukuran. Setiap nilai harus berada pada rentang 0–25 mm.';
+        summary.textContent = isValid ? '' : t('measurement.summary');
         if (!isValid) {
             event.preventDefault();
             form.querySelector(':invalid')?.focus();

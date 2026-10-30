@@ -46,7 +46,7 @@ class HomepageTest extends TestCase
                 'Our Collection',
                 'Handpainted press on nails designed to match every mood, occasion, and style',
                 'Speak to Us',
-                'Real reviews from those who trust laverie for salon quality nails at home',
+                'Real reviews from those who trust Laverie for salon quality nails at home',
             ])
 
             ->assertSee('images/hero-banner.png', false)
@@ -92,6 +92,7 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString(route('products.index'), $heroMatch[0]);
         $this->assertStringContainsString(route('measurements.create'), $heroMatch[0]);
         $this->assertSame(1, substr_count($content, '>SIZING<'));
+        $this->assertStringContainsString(route('products.index', ['category' => $product->category->slug]), $content);
         $this->assertStringContainsString('tracking-wide', $content);
         $this->assertStringNotContainsString('Shop By Style', $content);
         $this->assertDoesNotMatchRegularExpression('/<section[^>]*class="[^"]*border-(?:t|y)[^"]*"[^>]*aria-labelledby="shape-heading"/', $content);
@@ -250,7 +251,7 @@ class HomepageTest extends TestCase
         $content = $this->get(route('home'))
             ->assertOk()
             ->assertSee('data-homepage-reviews-demo', false)
-            ->assertSee('Contoh ulasan untuk pratinjau katalog—bukan ulasan pelanggan asli.')
+            ->assertSee('Sample reviews for catalog preview—not real customer reviews.')
             ->assertSee('Alya (Demo)')
             ->assertSee('data-review-demo', false)
             ->assertSee('Detail mutiaranya terlihat cantik dan ukurannya pas; nyaman dipakai seharian.')

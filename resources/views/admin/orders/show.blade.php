@@ -44,7 +44,7 @@
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6">
                         <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Detail pengiriman</p>
                         <p class="mt-4 font-semibold text-[#0C1C39]">{{ $courierLabel ?? 'Kurir belum diisi' }}</p>
-                        <p class="mt-2 text-sm leading-6 text-stone-600">{{ $order->shipping_address }}</p>
+                        <p class="mt-2 text-sm leading-6 text-stone-600">{{ $order->fullShippingAddress() }}</p>
                         <p class="mt-2 text-xs text-stone-400">Nomor resi: {{ $order->tracking_number ?: 'belum diisi' }}</p>
                     </article>
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6 md:col-span-2"><p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Order notes</p><p class="mt-4 whitespace-pre-line text-sm leading-6 text-stone-600">{{ $order->order_notes ?: 'Tidak ada catatan.' }}</p></article>
@@ -115,8 +115,8 @@
 
                 <dl class="mt-7 space-y-3 border-t border-white/20 pt-6 text-sm">
                     <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Subtotal</dt><dd>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</dd></div>
-                    <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Ongkir</dt><dd>{{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : 'Dibayar saat terima' }}</dd></div>
-                    <div class="flex justify-between gap-4 border-t border-white/20 pt-4 font-semibold"><dt>Total Produk</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
+                    <div class="flex justify-between gap-4 text-[#DDE6F0]"><dt>Ongkir</dt><dd>{{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : ($order->shipping_zone ? 'Gratis' : 'Dibayar saat terima') }}</dd></div>
+                    <div class="flex justify-between gap-4 border-t border-white/20 pt-4 font-semibold"><dt>Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
                 </dl>
             </aside>
         </div>

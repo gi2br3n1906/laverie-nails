@@ -25,12 +25,22 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'provider',
+        'provider_id',
         'roles',
         'default_size_payload',
         'phone',
         'address',
         'province_id',
         'city_id',
+        'province_code',
+        'province_name',
+        'regency_code',
+        'regency_name',
+        'district_code',
+        'district_name',
+        'village_code',
+        'village_name',
     ];
 
     /**
@@ -65,11 +75,27 @@ class User extends Authenticatable
         return in_array($roleValue, $this->roles ?? [], true);
     }
 
+    public function hasPassword(): bool
+    {
+        return filled($this->password);
+    }
+
     public function accountHomeRouteName(): string
     {
         return $this->hasRole(UserRole::Admin)
             ? 'admin.orders.index'
             : 'dashboard';
+    }
+
+    public function fullAddress(): string
+    {
+        return collect([
+            $this->address,
+            $this->village_name,
+            $this->district_name,
+            $this->regency_name,
+            $this->province_name,
+        ])->filter(fn (mixed $value): bool => filled($value))->implode(', ');
     }
 
     /** @return HasMany<Measurement, $this> */

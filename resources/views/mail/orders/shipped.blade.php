@@ -15,7 +15,7 @@ Pesanan **{{ $order->id }}** sudah kami serahkan ke kurir.
 @include('mail.orders._summary', ['order' => $order])
 
 Dikirim ke:<br>
-{{ $order->shipping_address }}
+{{ $order->fullShippingAddress() }}
 
 @component('mail::panel')
 Nomor resi kadang baru aktif beberapa jam setelah paket dijemput. Cek resi langsung di situs kurir; sistem tidak melakukan pelacakan otomatis. Kalau paket belum bergerak lebih dari 2 hari, balas email ini.

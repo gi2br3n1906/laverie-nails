@@ -8,5 +8,6 @@
         <a class="whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-stone-100" href="{{ route('admin.banners.index') }}">Hero Banners</a>
 
         <a class="whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-stone-100" href="{{ route('admin.size-standards.index') }}">Standar Ukuran</a>
+        <a class="whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-stone-100" href="{{ route('admin.settings.edit') }}">Ongkir</a>
     </div>
 </nav>

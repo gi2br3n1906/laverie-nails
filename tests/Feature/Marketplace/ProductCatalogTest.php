@@ -127,7 +127,7 @@ class ProductCatalogTest extends TestCase
         // UI no longer exposes the size pill navigation...
         $this->get(route('products.index'))
             ->assertOk()
-            ->assertSee('Filter Kategori')
+            ->assertSee('Filter Category')
             ->assertDontSee('aria-label="Filter ukuran"', false)
             ->assertDontSee('>Ukuran</p>', false);
 
@@ -201,6 +201,18 @@ class ProductCatalogTest extends TestCase
             ->assertSee('Recommended for your size')
             ->assertSee('RESULT-MATCH')
             ->assertDontSee('RESULT-NO-MATCH');
+    }
+
+    public function test_product_page_shows_whatsapp_consultation_when_a_real_number_is_configured(): void
+    {
+        config(['laverie.contact.whatsapp_number' => '6281234567890']);
+
+        $product = Product::factory()->create(['is_active' => true, 'stock' => 5]);
+
+        $this->get(route('storefront.products.show', $product))
+            ->assertOk()
+            ->assertSee('Chat with a nailist on WhatsApp')
+            ->assertSee('https://wa.me/6281234567890', false);
     }
 
     /** @return array{jempol: float, telunjuk: float, tengah: float, manis: float, kelingking: float} */

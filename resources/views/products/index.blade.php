@@ -1,4 +1,4 @@
-<x-layouts.app title="Our Collection">
+<x-layouts.app :title="__('ui.catalog.title')">
     @php
         $searchQuery = (string) ($search ?? '');
         $activeCategoryId = is_numeric((string) ($selectedCategory ?? '')) ? (int) $selectedCategory : null;
@@ -12,8 +12,8 @@
     @endphp
 
     <section class="text-center">
-        <h1 class="font-serif text-5xl font-semibold tracking-wide sm:text-6xl">Our Collection</h1>
-        <p class="mx-auto mt-5 max-w-3xl leading-7 text-stone-600">Handpainted press on nails designed to match every mood, occasion, and style</p>
+        <h1 class="font-serif text-5xl font-semibold tracking-wide sm:text-6xl">{{ __('ui.catalog.title') }}</h1>
+                <p class="mx-auto mt-5 max-w-3xl leading-7 text-stone-600">{{ __('ui.catalog.copy') }}</p>
     </section>
 
     <section class="mx-auto mt-9 max-w-3xl">
@@ -25,30 +25,30 @@
                 <input type="hidden" name="size" value="{{ $currentSizeValue }}">
             @endif
 
-            <label class="sr-only" for="products-search">Cari produk</label>
+            <label class="sr-only" for="products-search">{{ __('ui.catalog.search_label') }}</label>
             <div class="relative">
                 <input
                     id="products-search"
                     type="search"
                     name="search"
                     value="{{ $searchQuery }}"
-                    placeholder="Search by name or description"
+                    placeholder="{{ __('ui.catalog.search_placeholder') }}"
                     class="w-full rounded-full border border-[#92A1B5] bg-white px-4 py-2.5 pr-11 text-sm text-[#0C1C39] outline-none placeholder:text-stone-500 focus:border-[#0C1C39] focus:ring-4 focus:ring-[#92A1B5]/20"
                 >
-                <button type="submit" class="absolute inset-y-0 right-1 my-1 flex w-9 items-center justify-center rounded-full bg-[#0C1C39] text-white transition hover:bg-[#192B48]" aria-label="Cari produk">
+                <button type="submit" class="absolute inset-y-0 right-1 my-1 flex w-9 items-center justify-center rounded-full bg-[#0C1C39] text-white transition hover:bg-[#192B48]" aria-label="{{ __('ui.catalog.search_aria') }}">
                     <svg class="size-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg>
                 </button>
             </div>
 
-            <button class="min-h-11 rounded-full bg-[#0C1C39] px-5 text-sm font-semibold text-white transition hover:bg-[#192B48]" type="submit" aria-label="Jalankan pencarian">
-                Search
+            <button class="min-h-11 rounded-full bg-[#0C1C39] px-5 text-sm font-semibold text-white transition hover:bg-[#192B48]" type="submit" aria-label="{{ __('ui.catalog.search_aria') }}">
+                {{ __('ui.catalog.search') }}
             </button>
         </form>
     </section>
 
-    <section class="mt-8" aria-label="Filter kategori">
-        <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Filter Kategori</p>
-        <nav class="flex flex-wrap gap-2" aria-label="Filter kategori">
+    <section class="mt-8" aria-label="{{ __('ui.catalog.filter_aria') }}">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">{{ __('ui.catalog.filter_label') }}</p>
+            <nav class="flex flex-wrap gap-2" aria-label="{{ __('ui.catalog.filter_aria') }}">
             <a
                 @class([
                     'rounded-full px-5 py-2.5 text-sm font-semibold transition',
@@ -56,7 +56,7 @@
                     'border border-[#92A1B5]/50 bg-white text-stone-600' => $hasActiveCategory,
                 ])
                 href="{{ route('products.index', array_filter(['search' => $searchQuery ?: null, 'size' => $currentSizeValue ?: null])) }}"
-            >All Styles</a>
+            >{{ __('ui.catalog.all_styles') }}</a>
             @foreach ($categories as $category)
                 @php
                     $categoryIsActive = $activeCategoryId === $category->id || $activeCategorySlug === (string) $category->slug;
@@ -81,18 +81,18 @@
 
     @if ($hasActiveFilter)
         <div class="mt-8">
-            <a class="inline-flex rounded-full border border-[#92A1B5]/50 px-5 py-2.5 text-sm font-semibold transition hover:border-[#0C1C39] hover:text-[#0C1C39]" href="{{ route('products.index') }}">Reset Filter</a>
+            <a class="inline-flex rounded-full border border-[#92A1B5]/50 px-5 py-2.5 text-sm font-semibold transition hover:border-[#0C1C39] hover:text-[#0C1C39]" href="{{ route('products.index') }}">{{ __('ui.catalog.reset_filter') }}</a>
         </div>
     @endif
 
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @forelse ($catalogs as $product)
-            <x-storefront.product-card :product="$product" badge="Shop All" :homepage-card="false" />
+            <x-storefront.product-card :product="$product" :badge="__('ui.catalog.badge')" :homepage-card="false" />
         @empty
             <div class="rounded-3xl border border-dashed border-stone-300 bg-white p-12 text-center sm:col-span-2 lg:col-span-3">
-                <p class="font-serif text-2xl font-semibold">Tidak ada produk untuk filter yang dipilih</p>
-                <p class="mt-2 text-stone-500">Coba ulangi pencarian dengan kata kunci lain atau kosongkan filter.</p>
-                <a class="mt-6 inline-flex rounded-full bg-[#0C1C39] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">Kembali ke semua produk</a>
+                <p class="font-serif text-2xl font-semibold">{{ __('ui.catalog.empty_title') }}</p>
+                                <p class="mt-2 text-stone-500">{{ __('ui.catalog.empty_copy') }}</p>
+                <a class="mt-6 inline-flex rounded-full bg-[#0C1C39] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">{{ __('ui.catalog.back_all') }}</a>
             </div>
         @endforelse
     </div>

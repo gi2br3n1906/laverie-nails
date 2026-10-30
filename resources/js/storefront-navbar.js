@@ -8,3 +8,39 @@ if (overlayNavbar) {
     synchronizeNavbar();
     window.addEventListener('scroll', synchronizeNavbar, { passive: true });
 }
+
+const searchForm = document.querySelector('[data-navbar-search-form]');
+
+if (searchForm) {
+    const panel = searchForm.querySelector('[data-navbar-search-panel]');
+    const trigger = searchForm.querySelector('[data-navbar-search-button]');
+    const input = searchForm.querySelector('[data-navbar-search-input]');
+
+    const setSearchOpen = (open) => {
+        panel?.classList.toggle('hidden', !open);
+        trigger?.setAttribute('aria-expanded', String(open));
+
+        if (open) {
+            input?.focus();
+        }
+    };
+
+    trigger?.addEventListener('click', (event) => {
+        if (panel?.classList.contains('hidden')) {
+            event.preventDefault();
+            setSearchOpen(true);
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!searchForm.contains(event.target)) {
+            setSearchOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            setSearchOpen(false);
+        }
+    });
+}

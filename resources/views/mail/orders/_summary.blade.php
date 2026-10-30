@@ -7,7 +7,7 @@
 @endcomponent
 
 Subtotal: Rp {{ number_format($order->subtotal, 0, ',', '.') }}<br>
-Ongkos kirim: {{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : 'Dibayar langsung kepada kurir saat paket diterima' }}<br>
+Ongkos kirim: {{ $order->shipping_cost > 0 ? 'Rp '.number_format($order->shipping_cost, 0, ',', '.') : ($order->shipping_zone ? 'Gratis' : 'Dibayar langsung kepada kurir saat paket diterima') }}<br>
 @if ($order->discount_amount > 0)
 Diskon{{ $order->coupon_code ? ' ('.$order->coupon_code.')' : '' }}: −Rp {{ number_format($order->discount_amount, 0, ',', '.') }}<br>
 @endif

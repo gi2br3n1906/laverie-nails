@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\HeroBannerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\SizeStandardController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
@@ -17,15 +19,18 @@ use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\HasilKlasifikasiController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MeasurementHistoryController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StorefrontProductController;
 use App\Models\Measurement;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/locale/{locale}', LocaleController::class)->name('locale.switch');
 Route::get('/healthz', HealthController::class)->name('healthz');
 Route::get('/readyz', HealthController::class)->name('readyz');
 
@@ -46,6 +51,13 @@ Route::get('/checkout/{order}/payment', [CheckoutController::class, 'payment'])-
 Route::get('/lacak-pesanan', [OrderTrackingController::class, 'create'])->name('orders.track.create');
 Route::post('/lacak-pesanan', [OrderTrackingController::class, 'store'])->middleware('throttle:10,1')->name('orders.track.store');
 
+Route::prefix('wilayah')->name('regions.')->middleware('throttle:120,1')->group(function (): void {
+    Route::get('/provinces', [RegionController::class, 'provinces'])->name('provinces');
+    Route::get('/regencies/{province}', [RegionController::class, 'regencies'])->name('regencies');
+    Route::get('/districts/{regency}', [RegionController::class, 'districts'])->name('districts');
+    Route::get('/villages/{district}', [RegionController::class, 'villages'])->name('villages');
+});
+
 Route::post('/hasil-klasifikasi', [HasilKlasifikasiController::class, 'store'])
     ->name('measurements.store');
 
@@ -55,6 +67,13 @@ Route::middleware('guest')->group(function (): void {
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
+
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])
+        ->middleware('throttle:20,1')
+        ->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+        ->middleware('throttle:20,1')
+        ->name('auth.google.callback');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -100,4 +119,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::resource('products', AdminProductController::class)->except('show');
     Route::resource('orders', AdminOrderController::class)->only(['index', 'show', 'update']);
     Route::resource('customers', AdminCustomerController::class)->only('index');
+
+    Route::get('settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
+    Route::patch('settings', [AdminSettingController::class, 'update'])->name('settings.update');
 });

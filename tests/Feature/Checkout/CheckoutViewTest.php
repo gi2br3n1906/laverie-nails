@@ -41,18 +41,20 @@ class CheckoutViewTest extends TestCase
 
         $response = $this->get('/checkout')
             ->assertOk()
-            ->assertSee('Pembayaran aman')
+            ->assertSee('Secure payment')
             ->assertSee('Moonlit Pearl')
-            ->assertSee('Ongkir dibayar saat paket diterima')
-            ->assertSee('Total Produk')
+            ->assertSee('Automatic shipping by province')
+            ->assertSee('Total')
             ->assertSee('Rp 350.000')
             ->assertSee('data-checkout-form', false)
+            ->assertSee('data-region-form', false)
+            ->assertSee('name="province_code"', false)
+            ->assertSee('Jawa Tengah')
             ->assertDontSee('Ongkos kirim flat')
             ->assertDontSee('data-cities-url', false)
             ->assertDontSee('data-shipping-options-url', false)
             ->assertDontSee('data-grand-total', false)
-            ->assertDontSee('name="shipping_option"', false)
-            ->assertDontSee('Jawa Tengah');
+            ->assertDontSee('name="shipping_option"', false);
 
         $content = (string) $response->getContent();
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $content);
@@ -74,9 +76,9 @@ class CheckoutViewTest extends TestCase
 
         $response = $this->get(route('checkout.payment', $order))
             ->assertOk()
-            ->assertSee('Selesaikan Pembayaran')
-            ->assertSee('Total Produk')
-            ->assertSee('Belum termasuk ongkir')
+            ->assertSee('Complete Your Payment')
+            ->assertSee('Total')
+            ->assertSee('This order was created before shipping was calculated at checkout')
             ->assertSee('data-payment-snap', false)
             ->assertSee('data-snap-token="snap-token-123"', false)
             ->assertSee('data-snap-url="https://midtrans.test/snap/snap.js"', false)
@@ -98,7 +100,7 @@ class CheckoutViewTest extends TestCase
         $this->get(route('checkout.payment', $order))
             ->assertOk()
             ->assertDontSee('data-payment-snap', false)
-            ->assertDontSee('Bayar Sekarang')
-            ->assertSee('Pembayaran tidak dapat dilanjutkan.');
+            ->assertDontSee('Pay Now')
+            ->assertSee('Payment cannot be continued.');
     }
 }

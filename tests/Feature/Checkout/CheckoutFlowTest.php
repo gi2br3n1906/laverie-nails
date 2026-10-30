@@ -68,9 +68,15 @@ class CheckoutFlowTest extends TestCase
         $this->assertNull($order->courier);
         $this->assertNull($order->province_id);
         $this->assertNull($order->city_id);
-        $this->assertSame(0, $order->shipping_cost);
+        $this->assertSame('31', $order->province_code);
+        $this->assertSame('DKI Jakarta', $order->province_name);
+        $this->assertSame('31.74', $order->regency_code);
+        $this->assertSame('31.74.09', $order->district_code);
+        $this->assertSame('31.74.09.1002', $order->village_code);
+        $this->assertSame('java', $order->shipping_zone);
+        $this->assertSame(15000, $order->shipping_cost);
         $this->assertSame(500000, $order->subtotal);
-        $this->assertSame(500000, $order->grand_total);
+        $this->assertSame(515000, $order->grand_total);
         $this->assertSame(PaymentStatus::Pending, $order->payment_status);
         $this->assertSame(FulfillmentStatus::Pending, $order->fulfillment_status);
         $this->assertSame('snap-token-for-order', $order->snap_token);
@@ -88,15 +94,23 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame(6, $product->refresh()->stock);
         $this->assertDatabaseMissing('cart_items', ['id' => $cartItem->id]);
         $this->assertDatabaseHas('cart_items', ['session_id' => 'another-browser']);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'address' => 'Jl. Melati No. 7, RT 01/RW 02, 12950',
+            'province_code' => '31',
+            'regency_code' => '31.74',
+            'district_code' => '31.74.09',
+            'village_code' => '31.74.09.1002',
+        ]);
 
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
             && $request->hasHeader('Authorization', 'Basic '.base64_encode('midtrans-server-secret:'))
             && $request['transaction_details']['order_id'] === $order->id
-            && $request['transaction_details']['gross_amount'] === 500000
-            && count($request['item_details']) === 1
-            && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 500000
+            && $request['transaction_details']['gross_amount'] === 515000
+            && count($request['item_details']) === 2
+            && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 515000
             && $request['item_details'][0]['price'] === 250000
-            && ! collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING'));
+            && collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING' && $item['price'] === 15000));
     }
 
     public function test_a_second_checkout_submission_is_rejected_while_the_first_is_processing(): void
@@ -123,7 +137,7 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseHas('cart_items', ['user_id' => $user->id]);
     }
 
-    public function test_checkout_does_not_charge_shipping_and_ignores_client_supplied_shipping_fields(): void
+    public function test_checkout_charges_shipping_from_province_and_ignores_client_supplied_shipping_fields(): void
     {
         $this->fakeGateways();
         $user = User::factory()->create();
@@ -138,12 +152,41 @@ class CheckoutFlowTest extends TestCase
 
         $order = Order::query()->sole();
         $this->assertNull($order->courier);
-        $this->assertSame(0, $order->shipping_cost);
-        $this->assertSame(209000, $order->grand_total);
+        $this->assertSame(15000, $order->shipping_cost);
+        $this->assertSame('java', $order->shipping_zone);
+        $this->assertSame(224000, $order->grand_total);
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
             && $request['transaction_details']['order_id'] === $order->id
-            && $request['transaction_details']['gross_amount'] === 209000
-            && ! collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING'));
+            && $request['transaction_details']['gross_amount'] === 224000
+            && collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING' && $item['price'] === 15000));
+    }
+
+    public function test_checkout_uses_the_outside_java_rate_for_a_non_java_province(): void
+    {
+        $this->fakeGateways();
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['price' => '100000.00', 'stock' => 3]);
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product));
+
+        $this->actingAs($user)->post('/checkout', [
+            ...$this->checkoutPayload(),
+            'province_code' => '51',
+            'province_name' => 'Bali',
+            'regency_code' => '51.01',
+            'regency_name' => 'Kabupaten Jembrana',
+            'district_code' => '51.01.01',
+            'district_name' => 'Negara',
+            'village_code' => '51.01.01.2001',
+            'village_name' => 'Gilimanuk',
+        ])->assertRedirect();
+
+        $order = Order::query()->sole();
+        $this->assertSame('outside_java', $order->shipping_zone);
+        $this->assertSame(20000, $order->shipping_cost);
+        $this->assertSame(120000, $order->grand_total);
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
+            && $request['transaction_details']['gross_amount'] === 120000
+            && collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING' && $item['price'] === 20000));
     }
 
     public function test_checkout_applies_percentage_coupon_and_matches_the_snap_item_total(): void
@@ -166,8 +209,8 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame('SAVE10', $order->coupon_code);
         $this->assertSame(50000, $order->discount_amount);
         $this->assertSame(500000, $order->subtotal);
-        $this->assertSame(0, $order->shipping_cost);
-        $this->assertSame(450000, $order->grand_total);
+        $this->assertSame(15000, $order->shipping_cost);
+        $this->assertSame(465000, $order->grand_total);
 
         Http::assertSent(function (Request $request) use ($order): bool {
             if ($request->url() !== 'https://midtrans.test/snap/v1/transactions') {
@@ -219,7 +262,7 @@ class CheckoutFlowTest extends TestCase
         $order = $order->fresh();
         $this->assertSame('POTONG25', $order->coupon_code);
         $this->assertSame(25000, $order->discount_amount);
-        $this->assertSame(175000, $order->grand_total);
+        $this->assertSame(190000, $order->grand_total);
         Http::assertSent(fn (Request $request): bool => str_contains($request->url(), 'midtrans.test')
             && collect($request['item_details'])->contains(fn (array $item): bool => $item['id'] === 'DISCOUNT'
                 && $item['price'] === -25000
@@ -304,6 +347,8 @@ class CheckoutFlowTest extends TestCase
         $this->assertSame($user->id, $order->user_id);
         $this->assertNull($order->guest_id);
         $this->assertSame(0, $user->cartItems()->count());
+        $this->assertSame('Jl. Melati No. 7, RT 01/RW 02, 12950', $user->refresh()->address);
+        $this->assertSame('31', $user->province_code);
     }
 
     public function test_stock_change_after_cart_creation_rejects_checkout_without_partial_writes(): void
@@ -344,6 +389,29 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseCount('order_items', 0);
         $this->assertDatabaseCount('cart_items', 1);
         $this->assertSame(3, $product->refresh()->stock);
+    }
+
+    public function test_checkout_rejects_an_inconsistent_region_hierarchy(): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->from('/checkout')->post('/checkout', [
+            ...$this->checkoutPayload(),
+            'province_code' => '31',
+            'province_name' => 'DKI Jakarta',
+            'regency_code' => '32.01',
+            'district_code' => '32.01.01',
+            'village_code' => '32.01.01.2001',
+        ])->assertRedirect('/checkout')
+            ->assertSessionHasErrors(['regency_code']);
+
+        $this->from('/checkout')->post('/checkout', [
+            ...$this->checkoutPayload(),
+            'province_name' => 'Jawa Barat',
+        ])->assertRedirect('/checkout')
+            ->assertSessionHasErrors(['province_name']);
+
+        $this->assertDatabaseCount('orders', 0);
     }
 
     public function test_payment_page_is_visible_only_to_the_order_owner(): void
@@ -414,8 +482,16 @@ class CheckoutFlowTest extends TestCase
             'customer_name' => 'Alya Putri',
             'customer_email' => 'alya@example.com',
             'customer_phone' => '081234567890',
-            'shipping_address' => 'Jl. Melati No. 7, Kecamatan Menteng, Jakarta',
+            'shipping_address' => 'Jl. Melati No. 7, RT 01/RW 02, 12950',
             'order_notes' => 'Please pack the adhesive tabs separately.',
+            'province_code' => '31',
+            'province_name' => 'DKI Jakarta',
+            'regency_code' => '31.74',
+            'regency_name' => 'Kota Administrasi Jakarta Selatan',
+            'district_code' => '31.74.09',
+            'district_name' => 'Setiabudi',
+            'village_code' => '31.74.09.1002',
+            'village_name' => 'Kuningan Barat',
         ];
     }
 

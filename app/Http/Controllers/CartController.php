@@ -50,7 +50,7 @@ class CartController extends Controller
         $request->session()->put('cart_coupon_id', $coupon->id);
 
         return response()->json([
-            'message' => "Kode {$coupon->code} diterapkan.",
+            'message' => __('ui.cart.coupon_applied', ['code' => $coupon->code]),
             'data' => $this->stateFor($request),
         ]);
     }
@@ -60,7 +60,7 @@ class CartController extends Controller
         $request->session()->forget('cart_coupon_id');
 
         return response()->json([
-            'message' => 'Kode diskon dihapus.',
+            'message' => __('ui.cart.coupon_removed'),
             'data' => $this->stateFor($request),
         ]);
     }
@@ -78,12 +78,12 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Produk ditambahkan ke keranjang.',
+                'message' => __('ui.cart.cart_added'),
                 'data' => $this->stateFor($request),
             ]);
         }
 
-        return to_route('home')->with('status', 'Produk ditambahkan ke keranjang.');
+        return to_route('home')->with('status', __('ui.cart.cart_added'));
     }
 
     public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse|JsonResponse
@@ -96,12 +96,12 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Jumlah produk diperbarui.',
+                'message' => __('ui.cart.cart_updated'),
                 'data' => $this->stateFor($request),
             ]);
         }
 
-        return to_route('home')->with('status', 'Jumlah produk diperbarui.');
+        return to_route('home')->with('status', __('ui.cart.cart_updated'));
     }
 
     public function selection(Request $request, CartItem $cartItem): JsonResponse
@@ -117,7 +117,7 @@ class CartController extends Controller
         );
 
         return response()->json([
-            'message' => 'Pilihan produk diperbarui.',
+            'message' => __('ui.cart.cart_selection_updated'),
             'data' => $this->stateFor($request),
         ]);
     }
@@ -128,12 +128,12 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Produk dihapus dari keranjang.',
+                'message' => __('ui.cart.cart_removed'),
                 'data' => $this->stateFor($request),
             ]);
         }
 
-        return to_route('home')->with('status', 'Produk dihapus dari keranjang.');
+        return to_route('home')->with('status', __('ui.cart.cart_removed'));
     }
 
     /** @return array<string, mixed> */

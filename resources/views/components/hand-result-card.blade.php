@@ -2,11 +2,11 @@
 
 @php
     $labels = [
-        'jempol' => 'Thumb',
-        'telunjuk' => 'Index',
-        'tengah' => 'Middle',
-        'manis' => 'Ring',
-        'kelingking' => 'Pinky',
+        'jempol' => __('ui.common.finger_thumb'),
+        'telunjuk' => __('ui.common.finger_index'),
+        'tengah' => __('ui.common.finger_middle'),
+        'manis' => __('ui.common.finger_ring'),
+        'kelingking' => __('ui.common.finger_pinky'),
     ];
     $tipConverter = new \App\Services\NailSizeConverter;
 @endphp
@@ -15,11 +15,11 @@
     <div class="bg-gradient-to-br from-[#0C1C39] to-[#344761] p-6 text-white sm:p-8">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div>
-                <p class="text-sm text-stone-200">recommendation</p>
+                <p class="text-sm text-stone-200">{{ __('ui.measurements.recommendation') }}</p>
                 <p class="mt-1 font-serif text-5xl font-semibold">{{ $size }}</p>
             </div>
             <div class="rounded-2xl bg-white/15 px-4 py-3 text-right backdrop-blur">
-                <p class="text-xs uppercase tracking-wider text-stone-200">Confidence</p>
+                <p class="text-xs uppercase tracking-wider text-stone-200">{{ __('ui.measurements.confidence') }}</p>
                 <p class="mt-1 text-2xl font-bold tabular-nums">{{ number_format((float) $confidence, 2) }}%</p>
             </div>
         </div>

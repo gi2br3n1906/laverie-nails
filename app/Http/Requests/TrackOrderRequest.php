@@ -34,7 +34,7 @@ class TrackOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'order_id.regex' => 'Format Order ID tidak valid.',
+            'order_id.regex' => __('ui.validation.order_id_invalid'),
         ];
     }
 }

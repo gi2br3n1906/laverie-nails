@@ -45,6 +45,6 @@ class MeasurementHistoryController extends Controller
 
         return $request->expectsJson()
             ? response()->noContent()
-            : redirect()->route('history.index')->with('status', 'Riwayat pengukuran berhasil dihapus.');
+            : redirect()->route('history.index')->with('status', __('ui.measurements.deleted'));
     }
 }

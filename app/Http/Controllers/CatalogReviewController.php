@@ -20,6 +20,6 @@ class CatalogReviewController extends Controller
         abort_unless($product->is_active, 404);
         $this->reviewService->create($request->user(), $product, $request->validated());
 
-        return redirect()->route('storefront.products.show', $product)->with('status', 'Ulasan Anda berhasil disimpan.');
+        return redirect()->route('storefront.products.show', $product)->with('status', __('ui.product.review_saved'));
     }
 }

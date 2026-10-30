@@ -14,7 +14,7 @@ Selesaikan pembayaran
 Tautan pembayaran ini berlaku 7 hari. Kalau kamu sudah membayar, abaikan email ini.
 
 Alamat pengiriman:<br>
-{{ $order->shipping_address }}
+{{ $order->fullShippingAddress() }}
 
 @component('mail::panel')
 Butuh bantuan? Balas email ini dan sertakan nomor pesanan **{{ $order->id }}**.
