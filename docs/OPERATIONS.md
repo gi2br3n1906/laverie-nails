@@ -61,6 +61,20 @@ These are dashboard changes, not repository changes. Follow the detailed list in
 
 Do not put Cloudflare Access in front of the Midtrans webhook.
 
+## Go-live minimum
+
+Do not announce the store until every item is checked:
+
+- [ ] `laverie.web.id` resolves and the Cloudflare Tunnel routes to `127.0.0.1:${APP_PORT}`.
+- [ ] Production `.env` is filled, `APP_KEY` is set, and `./deploy.sh` completes without errors.
+- [ ] `php artisan laverie:create-admin` has created the owner account; the password is in a password manager.
+- [ ] The daily backup cron is installed with an rclone destination, and one restore drill has succeeded.
+- [ ] An external uptime monitor alerts on `/healthz` and `/readyz` to a channel someone actually reads.
+- [ ] Cloudflare Access protects `/admin*`; the Midtrans webhook path bypasses Access and cache.
+- [ ] A sandbox checkout reaches `paid` through both the webhook and the reconciliation command.
+- [ ] `/privacy` is live; business identity and Terms of Service are ready before requesting Midtrans production.
+- [ ] `LAVERIE_WHATSAPP_NUMBER` contains the real number, and demo products/reviews are reviewed for the presentation.
+
 ## Routine schedule
 
 | When | Task |
