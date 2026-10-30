@@ -126,6 +126,20 @@ if [[ "$(env_value MIDTRANS_IS_PRODUCTION)" != "true" ]]; then
     echo "WARNING: Midtrans is still in Sandbox mode. Set MIDTRANS_IS_PRODUCTION=true when the store goes live." >&2
 fi
 
+if [[ -z "$(env_value MIDTRANS_SERVER_KEY)" || -z "$(env_value MIDTRANS_CLIENT_KEY)" ]]; then
+    echo "MIDTRANS_SERVER_KEY and MIDTRANS_CLIENT_KEY must be set; checkout cannot create Snap tokens without them." >&2
+    exit 1
+fi
+
+if [[ -z "$(env_value RAJAONGKIR_API_KEY)" ]]; then
+    echo "RAJAONGKIR_API_KEY must be set because RAJAONGKIR_LOCAL_MOCK must be false in production." >&2
+    exit 1
+fi
+
+if [[ "$(env_value MAIL_MAILER)" == "smtp" && -z "$(env_value MAIL_PASSWORD)" ]]; then
+    echo "WARNING: MAIL_PASSWORD is empty; queued order emails will fail until Brevo SMTP credentials are set." >&2
+fi
+
 echo "Starting Laverie Nails production deployment..."
 
 build_args=(build --pull)
