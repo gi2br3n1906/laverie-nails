@@ -41,9 +41,10 @@ class CheckoutFlowTest extends TestCase
         ]);
     }
 
-    public function test_guest_checkout_revalidates_totals_creates_snapshots_deducts_stock_and_clears_only_its_cart(): void
+    public function test_authenticated_checkout_revalidates_totals_creates_snapshots_deducts_stock_and_clears_only_its_cart(): void
     {
         $this->fakeGateways();
+        $user = User::factory()->create();
         $product = Product::factory()->create([
             'name' => 'Azure Whisper',
             'price' => '250000.00',
@@ -51,8 +52,8 @@ class CheckoutFlowTest extends TestCase
         ]);
         $otherProduct = Product::factory()->create(['stock' => 4]);
 
-        $this->post('/cart-items', $this->cartPayload($product, 2))->assertRedirect('/');
-        $guestId = (string) CartItem::query()->sole()->session_id;
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product, 2))->assertRedirect('/');
+        $cartItem = CartItem::query()->where('user_id', $user->id)->sole();
         CartItem::query()->create([
             'user_id' => null,
             'session_id' => 'another-browser',
@@ -63,7 +64,7 @@ class CheckoutFlowTest extends TestCase
             'size_signature' => hash('sha256', 'other-cart'),
         ]);
 
-        $response = $this->post('/checkout', [
+        $response = $this->actingAs($user)->post('/checkout', [
             ...$this->checkoutPayload(),
             'shipping_cost' => 1,
         ]);
@@ -71,8 +72,8 @@ class CheckoutFlowTest extends TestCase
         $order = Order::query()->sole();
         $response->assertRedirect(route('checkout.payment', $order));
         $this->assertMatchesRegularExpression('/^ORD-\d{8}-[0-9A-HJKMNP-TV-Z]{26}$/', $order->id);
-        $this->assertNull($order->user_id);
-        $this->assertSame($guestId, $order->guest_id);
+        $this->assertSame($user->id, $order->user_id);
+        $this->assertNull($order->guest_id);
         $this->assertSame('jne:REG', $order->courier);
         $this->assertSame(18000, $order->shipping_cost);
         $this->assertSame(500000, $order->subtotal);
@@ -92,7 +93,7 @@ class CheckoutFlowTest extends TestCase
         ]);
         $this->assertSame(['size' => 'M', 'length' => 'Medium'], $order->items()->sole()->size_payload);
         $this->assertSame(6, $product->refresh()->stock);
-        $this->assertDatabaseMissing('cart_items', ['session_id' => $guestId]);
+        $this->assertDatabaseMissing('cart_items', ['id' => $cartItem->id]);
         $this->assertDatabaseHas('cart_items', ['session_id' => 'another-browser']);
 
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
@@ -104,9 +105,58 @@ class CheckoutFlowTest extends TestCase
             && $request['item_details'][1]['id'] === 'SHIPPING');
     }
 
+    public function test_local_mock_shipping_allows_checkout_without_a_rajaongkir_api_key(): void
+    {
+        $this->fakeGateways();
+        $csrfToken = str_repeat('t', 40);
+        $this->withCredentials()
+            ->withCookie(config('session.cookie'), str_repeat('a', 40))
+            ->withSession(['_token' => $csrfToken]);
+        $this->app->instance('env', 'local');
+        config()->set('services.rajaongkir.api_key', null);
+        config()->set('services.rajaongkir.local_mock', true);
+
+        $user = User::factory()->create();
+        $product = Product::factory()->create(['price' => '209000.00', 'stock' => 7]);
+        CartItem::query()->create([
+            'user_id' => $user->id,
+            'session_id' => null,
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'size_type' => 'standard',
+            'size_payload' => ['size' => 'M', 'length' => 'Medium'],
+            'length' => 'Medium',
+            'size_signature' => hash('sha256', 'local-mock-shipping'),
+        ]);
+
+        $this->actingAs($user)->get('/checkout')->assertOk();
+        $this->actingAs($user)->getJson('/checkout/logistics/cities?province_id=31')
+            ->assertOk()
+            ->assertJsonPath('data.0.id', '152');
+        $this->actingAs($user)->getJson('/checkout/logistics/shipping-options?destination_id=152')
+            ->assertOk()
+            ->assertJsonPath('data.0.key', 'jne:REG')
+            ->assertJsonPath('data.0.cost', 18000);
+
+        $this->actingAs($user)->post('/checkout', [
+            '_token' => $csrfToken,
+            ...$this->checkoutPayload(),
+            'province_id' => '31',
+            'city_id' => '152',
+        ])->assertRedirect();
+
+        $order = Order::query()->sole();
+        $this->assertSame('jne:REG', $order->courier);
+        $this->assertSame(18000, $order->shipping_cost);
+        Http::assertSentCount(1);
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
+            && $request['transaction_details']['order_id'] === $order->id);
+    }
+
     public function test_checkout_applies_percentage_coupon_and_matches_the_snap_item_total(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['price' => '250000.00', 'stock' => 5]);
         Coupon::query()->create([
             'code' => 'SAVE10',
@@ -153,6 +203,7 @@ class CheckoutFlowTest extends TestCase
     public function test_checkout_applies_a_fixed_coupon_and_snapshots_the_discount(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
         Coupon::query()->create([
             'code' => 'POTONG25',
@@ -185,6 +236,7 @@ class CheckoutFlowTest extends TestCase
     public function test_checkout_revalidates_coupon_expiry_and_minimum_order_amount(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 4]);
         $coupon = Coupon::query()->create([
             'code' => 'SAVE10',
@@ -219,6 +271,7 @@ class CheckoutFlowTest extends TestCase
     public function test_checkout_only_carries_selected_items_and_leaves_unselected_in_cart(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $selectedProduct = Product::factory()->create(['price' => '200000.00', 'stock' => 5]);
         $skippedProduct = Product::factory()->create(['price' => '90000.00', 'stock' => 5]);
 
@@ -263,6 +316,7 @@ class CheckoutFlowTest extends TestCase
     public function test_stock_change_after_cart_creation_rejects_checkout_without_partial_writes(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
         $this->post('/cart-items', $this->cartPayload($product, 2));
         $product->update(['stock' => 1]);
@@ -281,6 +335,7 @@ class CheckoutFlowTest extends TestCase
     public function test_midtrans_failure_rolls_back_order_items_stock_and_cart_deletion(): void
     {
         $this->fakeGateways(failPayment: true);
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['price' => '200000.00', 'stock' => 3]);
         $this->post('/cart-items', $this->cartPayload($product, 2));
         $this->withoutExceptionHandling();
@@ -300,13 +355,13 @@ class CheckoutFlowTest extends TestCase
 
     public function test_payment_page_is_visible_only_to_the_order_owner(): void
     {
-        $this->fakeGateways();
-        $product = Product::factory()->create(['stock' => 2]);
-        $this->post('/cart-items', $this->cartPayload($product));
-        $this->post('/checkout', $this->checkoutPayload());
-        $order = Order::query()->sole();
+        $guestId = 'legacy-guest-session';
+        $order = Order::factory()->create(['guest_id' => $guestId]);
 
-        $this->get(route('checkout.payment', $order))->assertOk()->assertSee($order->id);
+        $this->withSession(['cart.guest_id' => $guestId])
+            ->get(route('checkout.payment', $order))
+            ->assertOk()
+            ->assertSee($order->id);
         $this->withSession(['cart.guest_id' => 'different-browser'])
             ->get(route('checkout.payment', $order))
             ->assertNotFound();
@@ -331,6 +386,7 @@ class CheckoutFlowTest extends TestCase
     public function test_unknown_or_tampered_shipping_option_cannot_create_an_order(): void
     {
         $this->fakeGateways();
+        $this->actingAs(User::factory()->create());
         $product = Product::factory()->create(['stock' => 2]);
         $this->post('/cart-items', $this->cartPayload($product));
 

@@ -6,6 +6,7 @@ namespace Tests\Feature\Checkout;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -40,7 +41,7 @@ class CheckoutViewTest extends TestCase
             ]),
         ]);
         $product = Product::factory()->create(['name' => 'Moonlit Pearl', 'price' => '175000.00', 'stock' => 4]);
-        $this->post('/cart-items', [
+        $this->actingAs(User::factory()->create())->post('/cart-items', [
             'product_id' => $product->id,
             'quantity' => 2,
             'size_type' => 'standard',
@@ -91,17 +92,18 @@ class CheckoutViewTest extends TestCase
             ]]]]);
         });
         $product = Product::factory()->create(['stock' => 4]);
-        $this->post('/cart-items', [
+        $user = User::factory()->create();
+        $this->actingAs($user)->post('/cart-items', [
             'product_id' => $product->id,
             'quantity' => 3,
             'size_type' => 'standard',
             'standard_size' => 'M',
         ]);
 
-        $this->getJson('/checkout/logistics/cities?province_id=6')
+        $this->actingAs($user)->getJson('/checkout/logistics/cities?province_id=6')
             ->assertOk()
             ->assertExactJson(['data' => [['id' => '152', 'name' => 'Kota Semarang']]]);
-        $this->getJson('/checkout/logistics/shipping-options?destination_id=152')
+        $this->actingAs($user)->getJson('/checkout/logistics/shipping-options?destination_id=152')
             ->assertOk()
             ->assertJsonPath('data.0.key', 'jne:REG')
             ->assertJsonPath('data.0.cost', 18000);
@@ -112,7 +114,10 @@ class CheckoutViewTest extends TestCase
 
     public function test_empty_cart_cannot_enter_checkout(): void
     {
-        $this->get('/checkout')->assertRedirect('/')->assertSessionHasErrors(['cart']);
+        $this->actingAs(User::factory()->create())
+            ->get('/checkout')
+            ->assertRedirect('/')
+            ->assertSessionHasErrors(['cart']);
     }
 
     public function test_payment_page_exposes_snap_configuration_via_data_attributes_without_inline_script(): void

@@ -38,20 +38,20 @@ Route::patch('/cart-items/{cartItem}/selection', [CartController::class, 'select
 Route::post('/cart-coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
 Route::delete('/cart-coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 Route::delete('/cart-items/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/checkout/logistics/cities', [CheckoutLogisticsController::class, 'cities'])->name('checkout.logistics.cities');
-Route::get('/checkout/logistics/shipping-options', [CheckoutLogisticsController::class, 'shippingOptions'])->name('checkout.logistics.shipping-options');
+Route::get('/checkout', [CheckoutController::class, 'create'])->middleware('auth')->name('checkout.create');
+Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('auth')->name('checkout.store');
+Route::get('/checkout/logistics/cities', [CheckoutLogisticsController::class, 'cities'])->middleware('auth')->name('checkout.logistics.cities');
+Route::get('/checkout/logistics/shipping-options', [CheckoutLogisticsController::class, 'shippingOptions'])->middleware('auth')->name('checkout.logistics.shipping-options');
 Route::get('/checkout/{order}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/lacak-pesanan', [OrderTrackingController::class, 'create'])->name('orders.track.create');
-Route::post('/lacak-pesanan', [OrderTrackingController::class, 'store'])->name('orders.track.store');
+Route::post('/lacak-pesanan', [OrderTrackingController::class, 'store'])->middleware('throttle:10,1')->name('orders.track.store');
 
 Route::post('/hasil-klasifikasi', [HasilKlasifikasiController::class, 'store'])
     ->name('measurements.store');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store']);
+    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:6,1');
 
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
