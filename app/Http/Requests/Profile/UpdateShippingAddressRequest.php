@@ -18,8 +18,6 @@ class UpdateShippingAddressRequest extends FormRequest
     {
         return [
             'address' => ['required', 'string', 'max:2000'],
-            'province_id' => ['required', 'string', 'max:50'],
-            'city_id' => ['required', 'string', 'max:50'],
         ];
     }
 }

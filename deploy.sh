@@ -117,8 +117,8 @@ if [[ -z "$(env_value TRUSTED_PROXIES)" ]]; then
     exit 1
 fi
 
-if [[ "$(env_value RAJAONGKIR_LOCAL_MOCK)" == "true" ]]; then
-    echo "RAJAONGKIR_LOCAL_MOCK must be false in production." >&2
+if [[ -n "$(env_value SHIPPING_FLAT_RATE)" && ! "$(env_value SHIPPING_FLAT_RATE)" =~ ^[0-9]+$ ]]; then
+    echo "SHIPPING_FLAT_RATE must be a non-negative integer amount in Rupiah." >&2
     exit 1
 fi
 
@@ -128,11 +128,6 @@ fi
 
 if [[ -z "$(env_value MIDTRANS_SERVER_KEY)" || -z "$(env_value MIDTRANS_CLIENT_KEY)" ]]; then
     echo "MIDTRANS_SERVER_KEY and MIDTRANS_CLIENT_KEY must be set; checkout cannot create Snap tokens without them." >&2
-    exit 1
-fi
-
-if [[ -z "$(env_value RAJAONGKIR_API_KEY)" ]]; then
-    echo "RAJAONGKIR_API_KEY must be set because RAJAONGKIR_LOCAL_MOCK must be false in production." >&2
     exit 1
 fi
 

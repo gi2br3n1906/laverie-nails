@@ -7,7 +7,7 @@
                 <div class="max-w-2xl">
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#60738C]">Pembayaran aman</p>
                     <h1 class="mt-3 font-display text-4xl tracking-[-0.03em] text-[#0C1C39] sm:text-6xl" id="checkout-heading">Detail pesanan Anda</h1>
-                    <p class="mt-4 max-w-xl text-sm leading-7 text-stone-600">Lengkapi alamat pengiriman, pilih kurir, lalu lanjutkan ke pembayaran aman melalui Midtrans.</p>
+                    <p class="mt-4 max-w-xl text-sm leading-7 text-stone-600">Lengkapi alamat pengiriman, lalu lanjutkan ke pembayaran aman melalui Midtrans.</p>
                 </div>
                 <ol class="flex items-center gap-3 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#60738C]" aria-label="Tahapan checkout">
                     <li class="rounded-full bg-[#0C1C39] px-4 py-2 text-white">1 · Details</li>
@@ -35,13 +35,8 @@
             action="{{ route('checkout.store') }}"
             method="POST"
             data-checkout-form
-            data-cities-url="{{ route('checkout.logistics.cities') }}"
-            data-shipping-options-url="{{ route('checkout.logistics.shipping-options') }}"
-            data-subtotal="{{ $subtotal }}"
-            data-discount="{{ $discount }}"
         >
             @csrf
-            <input name="shipping_option" type="hidden" value="{{ old('shipping_option') }}" data-shipping-option-input>
 
             <div class="space-y-6">
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
@@ -67,40 +62,23 @@
 
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
                     <legend class="px-2 font-display text-2xl text-[#0C1C39]">Detail pengiriman</legend>
-                    <div class="mt-2 grid gap-5 sm:grid-cols-2">
+                    <div class="mt-2 grid gap-5">
                         <div>
-                            <label class="text-sm font-semibold text-[#0C1C39]" for="province_id">Provinsi</label>
-                            <select class="{{ $fieldClass }}" id="province_id" name="province_id" data-province-select required>
-                                <option value="">Pilih provinsi</option>
-                                @foreach ($provinces as $province)
-                                    <option value="{{ $province['id'] }}" @selected(old('province_id', auth()->user()?->province_id) === $province['id'])>{{ $province['name'] }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
-                        </div>
-                        <div>
-                            <label class="text-sm font-semibold text-[#0C1C39]" for="city_id">Kota / Kabupaten</label>
-                            <select class="{{ $fieldClass }}" id="city_id" name="city_id" data-city-select data-old-value="{{ old('city_id', auth()->user()?->city_id) }}" disabled required>
-                                <option value="">Pilih provinsi terlebih dahulu</option>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
-                        </div>
-                        <div class="sm:col-span-2">
                             <label class="text-sm font-semibold text-[#0C1C39]" for="shipping_address">Alamat lengkap</label>
-                            <textarea class="{{ $fieldClass }} min-h-32 resize-y" id="shipping_address" name="shipping_address" autocomplete="street-address" placeholder="Nama jalan, nomor rumah, kecamatan, kode pos, dan patokan" required>{{ old('shipping_address', auth()->user()?->address) }}</textarea>
+                            <textarea class="{{ $fieldClass }} min-h-32 resize-y" id="shipping_address" name="shipping_address" autocomplete="street-address" placeholder="Nama jalan, nomor rumah, kelurahan, kecamatan, kota/kabupaten, kode pos, dan patokan" required>{{ old('shipping_address', auth()->user()?->address) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('shipping_address')" />
                         </div>
-                        <div class="sm:col-span-2"><label class="text-sm font-semibold text-[#0C1C39]" for="order_notes">Catatan pesanan</label><textarea class="{{ $fieldClass }} min-h-24 resize-y" id="order_notes" name="order_notes" maxlength="500" placeholder="Catatan untuk pesanan (opsional)">{{ old('order_notes') }}</textarea><x-input-error class="mt-2" :messages="$errors->get('order_notes')" /></div>
+                        <div><label class="text-sm font-semibold text-[#0C1C39]" for="order_notes">Catatan pesanan</label><textarea class="{{ $fieldClass }} min-h-24 resize-y" id="order_notes" name="order_notes" maxlength="500" placeholder="Catatan untuk pesanan (opsional)">{{ old('order_notes') }}</textarea><x-input-error class="mt-2" :messages="$errors->get('order_notes')" /></div>
                     </div>
                 </fieldset>
 
                 <fieldset class="rounded-[2rem] border border-[#92A1B5]/35 bg-white p-5 sm:p-8">
-                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Delivery service</legend>
-                    <p class="mt-2 text-sm leading-6 text-stone-500">Pilihan ongkir akan muncul setelah kota tujuan dipilih. Nominal akan diverifikasi kembali oleh server saat pesanan dibuat.</p>
-                    <div class="mt-5 grid gap-3" data-shipping-options role="radiogroup" aria-label="Pilihan layanan pengiriman">
-                        <p class="rounded-2xl border border-dashed border-[#92A1B5]/60 px-5 py-6 text-sm text-stone-500" data-shipping-placeholder>Pilih kota tujuan untuk melihat ongkos kirim.</p>
+                    <legend class="px-2 font-display text-2xl text-[#0C1C39]">Pengiriman</legend>
+                    <div class="mt-2 rounded-2xl bg-[#F8FAFC] px-5 py-5 text-sm leading-6 text-stone-600">
+                        <p class="font-semibold text-[#0C1C39]">Ongkos kirim flat</p>
+                        <p class="mt-2">Ongkos kirim sebesar <strong class="text-[#0C1C39]">Rp {{ number_format($shippingCost, 0, ',', '.') }}</strong> dibebankan kepada pembeli dan sudah termasuk dalam total pembayaran.</p>
+                        <p class="mt-2">Kurir dan nomor resi akan diisi oleh admin setelah pesanan diserahkan ke jasa pengiriman. Anda dapat mengecek resi melalui halaman Lacak Pesanan.</p>
                     </div>
-                    <x-input-error class="mt-3" :messages="$errors->get('shipping_option')" />
                 </fieldset>
             </div>
 
@@ -125,7 +103,7 @@
                     </div>
                     <div class="flex justify-between gap-4 text-[#DDE6F0]">
                         <dt>Ongkos kirim</dt>
-                        <dd data-shipping-total>Belum dipilih</dd>
+                        <dd>Rp {{ number_format($shippingCost, 0, ',', '.') }}</dd>
                     </div>
                     @if ($coupon && $discount > 0)
                         <div class="flex justify-between gap-4 text-[#DDE6F0]">
@@ -135,7 +113,7 @@
                     @endif
                     <div class="flex items-end justify-between gap-4 border-t border-white/20 pt-5">
                         <dt class="font-display text-2xl">Grand Total</dt>
-                        <dd class="text-lg font-semibold" data-grand-total>Rp {{ number_format($subtotal - $discount, 0, ',', '.') }}</dd>
+                        <dd class="text-lg font-semibold">Rp {{ number_format($subtotal - $discount + $shippingCost, 0, ',', '.') }}</dd>
                     </div>
                 </dl>
 

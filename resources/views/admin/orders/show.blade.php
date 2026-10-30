@@ -1,7 +1,10 @@
 @php
     $fingerLabels = ['jempol' => 'Jempol', 'telunjuk' => 'Telunjuk', 'tengah' => 'Tengah', 'manis' => 'Manis', 'kelingking' => 'Kelingking'];
     $handLabels = ['right_hand' => 'Tangan kanan', 'left_hand' => 'Tangan kiri'];
-    [$courierCode, $courierService] = array_pad(explode(':', $order->courier, 2), 2, '');
+    $courierLabel = filled($order->courier)
+        ? strtoupper((string) strtok($order->courier, ':'))
+            .(str_contains($order->courier, ':') ? ' · '.explode(':', $order->courier, 2)[1] : '')
+        : null;
     $measurement = static fn (mixed $value): string => rtrim(rtrim(number_format((float) $value, 2, '.', ''), '0'), '.');
 @endphp
 
@@ -40,9 +43,9 @@
                     </article>
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6">
                         <p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Detail pengiriman</p>
-                        <p class="mt-4 font-semibold text-[#0C1C39]">{{ strtoupper($courierCode) }} · {{ $courierService }}</p>
+                        <p class="mt-4 font-semibold text-[#0C1C39]">{{ $courierLabel ?? 'Kurir belum diisi' }}</p>
                         <p class="mt-2 text-sm leading-6 text-stone-600">{{ $order->shipping_address }}</p>
-                        <p class="mt-2 text-xs text-stone-400">Province {{ $order->province_id }} · City {{ $order->city_id }}</p>
+                        <p class="mt-2 text-xs text-stone-400">Nomor resi: {{ $order->tracking_number ?: 'belum diisi' }}</p>
                     </article>
                     <article class="rounded-3xl border border-[#92A1B5]/35 bg-white p-6 md:col-span-2"><p class="text-xs font-bold uppercase tracking-[0.14em] text-[#60738C]">Order notes</p><p class="mt-4 whitespace-pre-line text-sm leading-6 text-stone-600">{{ $order->order_notes ?: 'Tidak ada catatan.' }}</p></article>
                 </div>
@@ -98,9 +101,14 @@
                         </select>
                     </div>
                     <div>
+                        <label class="text-sm font-semibold" for="courier">Kurir</label>
+                        <input class="mt-2 block min-h-12 w-full rounded-xl border border-white/30 bg-white px-4 text-sm text-[#0C1C39] placeholder:text-stone-400" id="courier" name="courier" type="text" value="{{ old('courier', $order->courier ? strtoupper((string) strtok($order->courier, ':')) : '') }}" maxlength="50" placeholder="Contoh: JNE">
+                        <p class="mt-2 text-xs leading-5 text-[#DDE6F0]">Wajib diisi ketika status diubah menjadi shipped.</p>
+                    </div>
+                    <div>
                         <label class="text-sm font-semibold" for="tracking_number">Nomor resi</label>
                         <input class="mt-2 block min-h-12 w-full rounded-xl border border-white/30 bg-white px-4 text-sm text-[#0C1C39] placeholder:text-stone-400" id="tracking_number" name="tracking_number" type="text" value="{{ old('tracking_number', $order->tracking_number) }}" maxlength="100" placeholder="Contoh: JNE-123456789">
-                        <p class="mt-2 text-xs leading-5 text-[#DDE6F0]">Wajib diisi ketika status diubah menjadi shipped.</p>
+                        <p class="mt-2 text-xs leading-5 text-[#DDE6F0]">Wajib diisi ketika status diubah menjadi shipped. Resi dicatat manual, tidak ada API pelacakan otomatis.</p>
                     </div>
                     <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-white px-6 text-xs font-bold uppercase tracking-[0.12em] text-[#0C1C39] transition hover:bg-[#EAF0F6]" type="submit">Simpan perubahan</button>
                 </form>

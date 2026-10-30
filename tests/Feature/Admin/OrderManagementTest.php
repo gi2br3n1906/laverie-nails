@@ -90,31 +90,48 @@ class OrderManagementTest extends TestCase
             ->assertSeeText('8.5 mm');
     }
 
+    public function test_admin_detail_handles_an_order_without_courier_or_tracking_number(): void
+    {
+        $order = Order::factory()->paid()->create([
+            'courier' => null,
+            'tracking_number' => null,
+        ]);
+
+        $this->actingAs($this->admin())->get('/admin/orders/'.$order->id)
+            ->assertOk()
+            ->assertSeeText('Kurir belum diisi')
+            ->assertSeeText('Nomor resi: belum diisi');
+    }
+
     public function test_admin_can_update_fulfillment_status_and_tracking_number(): void
     {
         $order = Order::factory()->paid()->create();
 
         $this->actingAs($this->admin())->patch('/admin/orders/'.$order->id, [
             'fulfillment_status' => 'shipped',
+            'courier' => 'JNE',
             'tracking_number' => 'JNE-RESI-998877',
         ])->assertRedirect(route('admin.orders.show', $order))->assertSessionHas('status');
 
         $order->refresh();
         $this->assertSame(FulfillmentStatus::Shipped, $order->fulfillment_status);
+        $this->assertSame('JNE', $order->courier);
         $this->assertSame('JNE-RESI-998877', $order->tracking_number);
     }
 
-    public function test_shipped_status_requires_tracking_number_and_invalid_status_is_rejected(): void
+    public function test_shipped_status_requires_courier_and_tracking_number_and_invalid_status_is_rejected(): void
     {
         $order = Order::factory()->paid()->create();
 
         $this->actingAs($this->admin())->from(route('admin.orders.show', $order))->patch('/admin/orders/'.$order->id, [
             'fulfillment_status' => 'shipped',
+            'courier' => '',
             'tracking_number' => '',
-        ])->assertRedirect(route('admin.orders.show', $order))->assertSessionHasErrors(['tracking_number']);
+        ])->assertRedirect(route('admin.orders.show', $order))->assertSessionHasErrors(['courier', 'tracking_number']);
 
         $this->actingAs($this->admin())->from(route('admin.orders.show', $order))->patch('/admin/orders/'.$order->id, [
             'fulfillment_status' => 'cancelled',
+            'courier' => 'JNE',
             'tracking_number' => 'INVALID',
         ])->assertRedirect(route('admin.orders.show', $order))->assertSessionHasErrors(['fulfillment_status']);
 
@@ -126,6 +143,7 @@ class OrderManagementTest extends TestCase
     {
         $order = Order::factory()->paid()->create([
             'fulfillment_status' => FulfillmentStatus::Shipped,
+            'courier' => 'JNE',
             'tracking_number' => 'JNE-PERSIST-123',
         ]);
 

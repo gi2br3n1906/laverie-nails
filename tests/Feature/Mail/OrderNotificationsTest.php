@@ -30,13 +30,7 @@ class OrderNotificationsTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('services.rajaongkir', [
-            'base_url' => 'https://rajaongkir.test/starter',
-            'api_key' => 'raja-secret',
-            'origin_city_id' => '399',
-            'couriers' => ['jne', 'jnt'],
-            'item_weight_grams' => 500,
-        ]);
+        config()->set('shipping.flat_rate', 18000);
         config()->set('services.midtrans', [
             'server_key' => 'midtrans-server-secret',
             'client_key' => 'midtrans-client-key',
@@ -69,10 +63,7 @@ class OrderNotificationsTest extends TestCase
             'customer_name' => 'Alya Putri',
             'customer_email' => 'alya@example.com',
             'customer_phone' => '081234567890',
-            'province_id' => '6',
-            'city_id' => '152',
             'shipping_address' => 'Jl. Melati No. 7, Kecamatan Menteng, Jakarta',
-            'shipping_option' => 'jne:REG',
         ])->assertRedirect();
 
         $order = Order::query()->sole();
@@ -140,6 +131,7 @@ class OrderNotificationsTest extends TestCase
 
         $this->actingAs($admin)->patch('/admin/orders/'.$order->id, [
             'fulfillment_status' => 'shipped',
+            'courier' => 'JNE',
             'tracking_number' => 'JNE1234567890',
         ])->assertRedirect(route('admin.orders.show', $order));
 
@@ -151,6 +143,7 @@ class OrderNotificationsTest extends TestCase
 
         $this->actingAs($admin)->patch('/admin/orders/'.$order->id, [
             'fulfillment_status' => 'shipped',
+            'courier' => 'JNE',
             'tracking_number' => 'JNE1234567890',
         ])->assertRedirect(route('admin.orders.show', $order));
 
@@ -178,22 +171,6 @@ class OrderNotificationsTest extends TestCase
     private function fakeGateways(): void
     {
         Http::fake(function (Request $request) {
-            if (str_ends_with($request->url(), '/cost')) {
-                $courier = (string) $request['courier'];
-
-                return Http::response([
-                    'rajaongkir' => ['results' => [[
-                        'code' => $courier,
-                        'name' => strtoupper($courier),
-                        'costs' => [[
-                            'service' => $courier === 'jne' ? 'REG' : 'EZ',
-                            'description' => 'Regular Service',
-                            'cost' => [['value' => $courier === 'jne' ? 18000 : 16500, 'etd' => '2-3', 'note' => '']],
-                        ]],
-                    ]]],
-                ]);
-            }
-
             if ($request->url() === 'https://midtrans.test/snap/v1/transactions') {
                 return Http::response(['token' => 'snap-token-for-order', 'redirect_url' => 'https://midtrans.test/pay']);
             }

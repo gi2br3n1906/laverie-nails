@@ -9,7 +9,6 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Services\CartService;
 use App\Services\CheckoutService;
-use App\Services\LogisticsService;
 use App\ValueObjects\CartOwner;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +19,7 @@ use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
-    public function create(Request $request, CartService $cartService, LogisticsService $logisticsService): View|RedirectResponse
+    public function create(Request $request, CartService $cartService): View|RedirectResponse
     {
         $owner = CartOwner::fromRequest($request);
         $items = $cartService->items($owner)->where('is_selected', true)->values();
@@ -40,7 +39,7 @@ class CheckoutController extends Controller
             'subtotal' => intdiv($cartState['subtotal'], 100),
             'discount' => intdiv($cartState['discount'], 100),
             'coupon' => $cartState['coupon'],
-            'provinces' => $logisticsService->provinces(),
+            'shippingCost' => max(0, (int) config('shipping.flat_rate', 0)),
         ]);
     }
 
@@ -53,9 +52,6 @@ class CheckoutController extends Controller
             'customer_phone',
             'shipping_address',
             'order_notes',
-            'province_id',
-            'city_id',
-            'shipping_option',
         ]);
         $couponId = $request->session()->get('cart_coupon_id');
         $couponId = $couponId === null ? null : (int) $couponId;

@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -17,23 +16,8 @@ class ProfileManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        config([
-            'services.rajaongkir.base_url' => 'https://rajaongkir.test/starter',
-            'services.rajaongkir.api_key' => 'rajaongkir-test-key',
-        ]);
-    }
-
     public function test_profile_page_requires_authentication_and_renders_three_premium_sections(): void
     {
-        Http::fake([
-            '*province*' => Http::response(['rajaongkir' => ['results' => [
-                ['province_id' => '10', 'province' => 'Jawa Tengah'],
-            ]]]),
-        ]);
         $user = User::factory()->create(['province_id' => '10', 'city_id' => '399']);
 
         $this->get('/profile')->assertRedirect(route('login'));
@@ -43,31 +27,15 @@ class ProfileManagementTest extends TestCase
             ->assertSeeText('Informasi Pribadi')
             ->assertSeeText('Ganti Password')
             ->assertSeeText('Alamat Pengiriman')
-            ->assertSee('data-profile-address-form', false)
-            ->assertSee('data-cities-url=', false)
-            ->assertSeeText('Jawa Tengah');
+            ->assertSee('name="address"', false)
+            ->assertDontSee('data-profile-address-form', false)
+            ->assertDontSee('data-cities-url=', false)
+            ->assertDontSeeText('Jawa Tengah');
 
         $source = file_get_contents(resource_path('views/profile/edit.blade.php'));
         $this->assertIsString($source);
         $this->assertDoesNotMatchRegularExpression('/style\s*=/i', $source);
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $source);
-    }
-
-    public function test_profile_remains_available_when_rajaongkir_is_not_configured(): void
-    {
-        config(['services.rajaongkir.api_key' => null]);
-        $user = User::factory()->create();
-
-        $this->actingAs($user)->get('/profile')
-            ->assertOk()
-            ->assertSeeText('Informasi Pribadi')
-            ->assertSeeText('Ganti Password')
-            ->assertSeeText('Layanan wilayah belum dapat dimuat')
-            ->assertSee('disabled', false);
-
-        $this->actingAs($user)->getJson('/profile/logistics/cities?province_id=10')
-            ->assertStatus(503)
-            ->assertJsonPath('message', 'Layanan wilayah belum dapat dimuat. Silakan coba lagi nanti.');
     }
 
     public function test_user_can_update_personal_information_and_email_remains_unique(): void
@@ -93,29 +61,18 @@ class ProfileManagementTest extends TestCase
         ])->assertRedirect('/profile')->assertSessionHasErrors('email');
     }
 
-    public function test_user_can_update_shipping_address_and_load_cities_for_a_province(): void
+    public function test_user_can_update_shipping_address(): void
     {
-        Http::fake([
-            '*city*' => Http::response(['rajaongkir' => ['results' => [
-                ['city_id' => '399', 'type' => 'Kota', 'city_name' => 'Semarang'],
-            ]]]),
-        ]);
         $user = User::factory()->create();
 
         $this->actingAs($user)->patch('/profile/address', [
             'address' => 'Jl. Melati No. 8, Banyumanik',
-            'province_id' => '10',
-            'city_id' => '399',
         ])->assertRedirect(route('profile.edit'))->assertSessionHas('status');
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'address' => 'Jl. Melati No. 8, Banyumanik',
-            'province_id' => '10',
-            'city_id' => '399',
         ]);
-        $this->actingAs($user)->get('/profile/logistics/cities?province_id=10')
-            ->assertOk()->assertJsonPath('data.0.name', 'Kota Semarang');
     }
 
     public function test_user_can_change_password_only_with_the_current_password(): void
@@ -147,16 +104,9 @@ class ProfileManagementTest extends TestCase
 
     public function test_saved_account_details_prefill_authenticated_checkout(): void
     {
-        Http::fake([
-            '*province*' => Http::response(['rajaongkir' => ['results' => [
-                ['province_id' => '10', 'province' => 'Jawa Tengah'],
-            ]]]),
-        ]);
         $user = User::factory()->create([
             'phone' => '+628111111111',
             'address' => 'Jl. Default Checkout No. 1',
-            'province_id' => '10',
-            'city_id' => '399',
         ]);
         $product = Product::factory()->create(['price' => 100000, 'stock' => 2, 'is_active' => true]);
         CartItem::query()->create([
@@ -172,7 +122,7 @@ class ProfileManagementTest extends TestCase
             ->assertOk()
             ->assertSee('+628111111111')
             ->assertSee('Jl. Default Checkout No. 1')
-            ->assertSee('data-old-value="399"', false)
-            ->assertSee('value="10" selected', false);
+            ->assertDontSee('data-old-value="399"', false)
+            ->assertDontSee('value="10" selected', false);
     }
 }

@@ -17,7 +17,6 @@ use Illuminate\Validation\ValidationException;
 class CheckoutService
 {
     public function __construct(
-        private readonly LogisticsService $logisticsService,
         private readonly PaymentService $paymentService,
         private readonly OrderNotifier $notifier,
     ) {}
@@ -31,20 +30,7 @@ class CheckoutService
             throw ValidationException::withMessages(['cart' => 'Keranjang belanja Anda masih kosong.']);
         }
 
-        $shippingOptions = $this->logisticsService->shippingOptions(
-            $customerData['city_id'],
-            $quantity * $this->logisticsService->itemWeightGrams(),
-        );
-        $selectedShipping = collect($shippingOptions)
-            ->firstWhere('key', $customerData['shipping_option']);
-
-        if (! is_array($selectedShipping)) {
-            throw ValidationException::withMessages([
-                'shipping_option' => 'Layanan pengiriman tidak lagi tersedia. Silakan pilih kembali.',
-            ]);
-        }
-
-        $order = DB::transaction(function () use ($owner, $customerData, $selectedShipping, $quantity, $couponId): Order {
+        $order = DB::transaction(function () use ($owner, $customerData, $quantity, $couponId): Order {
             $cartItems = $owner->scope(CartItem::query())
                 ->where('is_selected', true)
                 ->orderBy('id')
@@ -65,7 +51,7 @@ class CheckoutService
                 ->keyBy('id');
 
             $subtotal = $this->validateAndCalculateSubtotal($cartItems, $products);
-            $shippingCost = (int) $selectedShipping['cost'];
+            $shippingCost = max(0, (int) config('shipping.flat_rate', 0));
             $coupon = $couponId === null ? null : Coupon::query()->whereKey($couponId)->lockForUpdate()->first();
 
             if ($couponId !== null) {
@@ -86,9 +72,9 @@ class CheckoutService
                 'customer_phone' => $customerData['customer_phone'],
                 'shipping_address' => $customerData['shipping_address'],
                 'order_notes' => $customerData['order_notes'] ?? null,
-                'province_id' => $customerData['province_id'],
-                'city_id' => $customerData['city_id'],
-                'courier' => (string) $selectedShipping['key'],
+                'province_id' => null,
+                'city_id' => null,
+                'courier' => null,
                 'shipping_cost' => $shippingCost,
                 'subtotal' => $subtotal,
                 'coupon_code' => $coupon?->code,

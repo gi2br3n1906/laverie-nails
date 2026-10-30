@@ -41,4 +41,13 @@
             <div class="flex justify-between text-base font-bold text-[#0C1C39]"><dt>Total</dt><dd>Rp {{ number_format($order->grand_total, 0, ',', '.') }}</dd></div>
         </dl>
     </section>
+    <section class="mt-6 rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 sm:p-8" aria-labelledby="shipping-heading">
+        <h2 class="font-display text-3xl text-[#0C1C39]" id="shipping-heading">Pengiriman</h2>
+        <p class="mt-4 text-sm leading-6 text-stone-600">{{ $order->shipping_address }}</p>
+        <dl class="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+            <div><dt class="text-stone-500">Kurir</dt><dd class="mt-1 font-semibold text-[#0C1C39]">{{ $order->courier ? strtoupper(str_replace(':', ' · ', $order->courier)) : 'Belum diisi admin' }}</dd></div>
+            <div><dt class="text-stone-500">Nomor resi</dt><dd class="mt-1 break-all font-semibold text-[#0C1C39]">{{ $order->tracking_number ?: 'Belum tersedia' }}</dd></div>
+        </dl>
+        <p class="mt-4 text-xs leading-6 text-stone-500">Cek nomor resi langsung di situs resmi kurir. Sistem tidak melakukan pelacakan otomatis.</p>
+    </section>
 </x-layouts.app>

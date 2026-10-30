@@ -4,41 +4,25 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LogisticsCitiesRequest;
 use App\Http\Requests\Profile\UpdatePasswordRequest;
 use App\Http\Requests\Profile\UpdateProfileInformationRequest;
 use App\Http\Requests\Profile\UpdateShippingAddressRequest;
 use App\Models\User;
-use App\Services\LogisticsService;
 use App\Services\ProfileService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Throwable;
 
 class ProfileController extends Controller
 {
     public function __construct(
         private readonly ProfileService $profileService,
-        private readonly LogisticsService $logisticsService,
     ) {}
 
     public function edit(Request $request): View
     {
-        try {
-            $provinces = $this->logisticsService->provinces();
-            $logisticsAvailable = true;
-        } catch (Throwable $exception) {
-            report($exception);
-            $provinces = [];
-            $logisticsAvailable = false;
-        }
-
         return view('profile.edit', [
             'user' => $request->user(),
-            'provinces' => $provinces,
-            'logisticsAvailable' => $logisticsAvailable,
         ]);
     }
 
@@ -67,20 +51,5 @@ class ProfileController extends Controller
         $this->profileService->updatePassword($user, (string) $request->validated('password'));
 
         return to_route('profile.edit')->with('status', 'Password berhasil diperbarui.');
-    }
-
-    public function cities(LogisticsCitiesRequest $request): JsonResponse
-    {
-        try {
-            return response()->json([
-                'data' => $this->logisticsService->cities((string) $request->validated('province_id')),
-            ]);
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return response()->json([
-                'message' => 'Layanan wilayah belum dapat dimuat. Silakan coba lagi nanti.',
-            ], 503);
-        }
     }
 }

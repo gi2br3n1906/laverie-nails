@@ -26,13 +26,7 @@ class CheckoutFlowTest extends TestCase
     {
         parent::setUp();
 
-        config()->set('services.rajaongkir', [
-            'base_url' => 'https://rajaongkir.test/starter',
-            'api_key' => 'raja-secret',
-            'origin_city_id' => '399',
-            'couriers' => ['jne', 'jnt'],
-            'item_weight_grams' => 500,
-        ]);
+        config()->set('shipping.flat_rate', 18000);
         config()->set('services.midtrans', [
             'server_key' => 'midtrans-server-secret',
             'client_key' => 'midtrans-client-key',
@@ -65,17 +59,16 @@ class CheckoutFlowTest extends TestCase
             'size_signature' => hash('sha256', 'other-cart'),
         ]);
 
-        $response = $this->actingAs($user)->post('/checkout', [
-            ...$this->checkoutPayload(),
-            'shipping_cost' => 1,
-        ]);
+        $response = $this->actingAs($user)->post('/checkout', $this->checkoutPayload());
 
         $order = Order::query()->sole();
         $response->assertRedirect(route('checkout.payment', $order));
         $this->assertMatchesRegularExpression('/^ORD-\d{8}-[0-9A-HJKMNP-TV-Z]{26}$/', $order->id);
         $this->assertSame($user->id, $order->user_id);
         $this->assertNull($order->guest_id);
-        $this->assertSame('jne:REG', $order->courier);
+        $this->assertNull($order->courier);
+        $this->assertNull($order->province_id);
+        $this->assertNull($order->city_id);
         $this->assertSame(18000, $order->shipping_cost);
         $this->assertSame(500000, $order->subtotal);
         $this->assertSame(518000, $order->grand_total);
@@ -130,52 +123,26 @@ class CheckoutFlowTest extends TestCase
         $this->assertDatabaseHas('cart_items', ['user_id' => $user->id]);
     }
 
-    public function test_local_mock_shipping_allows_checkout_without_a_rajaongkir_api_key(): void
+    public function test_flat_shipping_is_charged_and_client_supplied_shipping_costs_are_ignored(): void
     {
         $this->fakeGateways();
-        $csrfToken = str_repeat('t', 40);
-        $this->withCredentials()
-            ->withCookie(config('session.cookie'), str_repeat('a', 40))
-            ->withSession(['_token' => $csrfToken]);
-        $this->app->instance('env', 'local');
-        config()->set('services.rajaongkir.api_key', null);
-        config()->set('services.rajaongkir.local_mock', true);
-
         $user = User::factory()->create();
         $product = Product::factory()->create(['price' => '209000.00', 'stock' => 7]);
-        CartItem::query()->create([
-            'user_id' => $user->id,
-            'session_id' => null,
-            'product_id' => $product->id,
-            'quantity' => 1,
-            'size_type' => 'standard',
-            'size_payload' => ['size' => 'M', 'length' => 'Medium'],
-            'length' => 'Medium',
-            'size_signature' => hash('sha256', 'local-mock-shipping'),
-        ]);
-
-        $this->actingAs($user)->get('/checkout')->assertOk();
-        $this->actingAs($user)->getJson('/checkout/logistics/cities?province_id=31')
-            ->assertOk()
-            ->assertJsonPath('data.0.id', '152');
-        $this->actingAs($user)->getJson('/checkout/logistics/shipping-options?destination_id=152')
-            ->assertOk()
-            ->assertJsonPath('data.0.key', 'jne:REG')
-            ->assertJsonPath('data.0.cost', 18000);
+        $this->actingAs($user)->post('/cart-items', $this->cartPayload($product));
 
         $this->actingAs($user)->post('/checkout', [
-            '_token' => $csrfToken,
             ...$this->checkoutPayload(),
-            'province_id' => '31',
-            'city_id' => '152',
+            'shipping_cost' => 1,
+            'shipping_option' => 'jne:FREE',
         ])->assertRedirect();
 
         $order = Order::query()->sole();
-        $this->assertSame('jne:REG', $order->courier);
+        $this->assertNull($order->courier);
         $this->assertSame(18000, $order->shipping_cost);
-        Http::assertSentCount(1);
+        $this->assertSame(227000, $order->grand_total);
         Http::assertSent(fn (Request $request): bool => $request->url() === 'https://midtrans.test/snap/v1/transactions'
-            && $request['transaction_details']['order_id'] === $order->id);
+            && $request['transaction_details']['order_id'] === $order->id
+            && $request['transaction_details']['gross_amount'] === 227000);
     }
 
     public function test_checkout_applies_percentage_coupon_and_matches_the_snap_item_total(): void
@@ -408,25 +375,6 @@ class CheckoutFlowTest extends TestCase
         $this->get(route('checkout.payment', $order))->assertNotFound();
     }
 
-    public function test_unknown_or_tampered_shipping_option_cannot_create_an_order(): void
-    {
-        $this->fakeGateways();
-        $this->actingAs(User::factory()->create());
-        $product = Product::factory()->create(['stock' => 2]);
-        $this->post('/cart-items', $this->cartPayload($product));
-
-        $this->from('/checkout')->post('/checkout', [
-            ...$this->checkoutPayload(),
-            'shipping_option' => 'jne:FREE',
-        ])->assertRedirect('/checkout')->assertSessionHasErrors(['shipping_option']);
-
-        $this->assertDatabaseCount('orders', 0);
-        $this->assertDatabaseCount('order_items', 0);
-        $this->assertDatabaseCount('cart_items', 1);
-        $this->assertSame(2, $product->refresh()->stock);
-        Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'midtrans.test'));
-    }
-
     public function test_order_and_item_snapshots_survive_customer_and_product_deletion(): void
     {
         $this->fakeGateways();
@@ -465,10 +413,7 @@ class CheckoutFlowTest extends TestCase
             'customer_name' => 'Alya Putri',
             'customer_email' => 'alya@example.com',
             'customer_phone' => '081234567890',
-            'province_id' => '6',
-            'city_id' => '152',
             'shipping_address' => 'Jl. Melati No. 7, Kecamatan Menteng, Jakarta',
-            'shipping_option' => 'jne:REG',
             'order_notes' => 'Please pack the adhesive tabs separately.',
         ];
     }
@@ -476,22 +421,6 @@ class CheckoutFlowTest extends TestCase
     private function fakeGateways(bool $failPayment = false): void
     {
         Http::fake(function (Request $request) use ($failPayment) {
-            if (str_ends_with($request->url(), '/cost')) {
-                $courier = (string) $request['courier'];
-
-                return Http::response([
-                    'rajaongkir' => ['results' => [[
-                        'code' => $courier,
-                        'name' => strtoupper($courier),
-                        'costs' => [[
-                            'service' => $courier === 'jne' ? 'REG' : 'EZ',
-                            'description' => 'Regular Service',
-                            'cost' => [['value' => $courier === 'jne' ? 18000 : 16500, 'etd' => '2-3', 'note' => '']],
-                        ]],
-                    ]]],
-                ]);
-            }
-
             if ($request->url() === 'https://midtrans.test/snap/v1/transactions') {
                 return $failPayment
                     ? Http::response(['error_messages' => ['Gateway unavailable']], 503)

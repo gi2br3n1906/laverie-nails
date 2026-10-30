@@ -18,7 +18,7 @@ class ProfileService
         $user->fill($attributes)->save();
     }
 
-    /** @param array{address: string, province_id: string, city_id: string} $attributes */
+    /** @param array{address: string} $attributes */
     public function updateAddress(User $user, array $attributes): void
     {
         $user->update($attributes);

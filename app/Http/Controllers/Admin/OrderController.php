@@ -44,6 +44,7 @@ class OrderController extends Controller
             $order,
             FulfillmentStatus::from($data['fulfillment_status']),
             $data['tracking_number'] ?? null,
+            $data['courier'] ?? null,
         );
 
         return to_route('admin.orders.show', $order)->with('status', 'Status pemenuhan pesanan berhasil diperbarui.');

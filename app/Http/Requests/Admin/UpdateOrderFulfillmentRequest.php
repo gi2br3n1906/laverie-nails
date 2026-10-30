@@ -13,6 +13,9 @@ class UpdateOrderFulfillmentRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'courier' => is_string($this->courier)
+                ? trim($this->courier)
+                : $this->courier,
             'tracking_number' => is_string($this->tracking_number)
                 ? trim($this->tracking_number)
                 : $this->tracking_number,
@@ -29,6 +32,12 @@ class UpdateOrderFulfillmentRequest extends FormRequest
     {
         return [
             'fulfillment_status' => ['required', 'string', Rule::enum(FulfillmentStatus::class)],
+            'courier' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::requiredIf($this->string('fulfillment_status')->toString() === FulfillmentStatus::Shipped->value),
+            ],
             'tracking_number' => [
                 'nullable',
                 'string',
@@ -42,6 +51,7 @@ class UpdateOrderFulfillmentRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'courier.required' => 'Nama kurir wajib diisi saat pesanan dikirim.',
             'tracking_number.required' => 'Nomor resi wajib diisi saat pesanan dikirim.',
         ];
     }

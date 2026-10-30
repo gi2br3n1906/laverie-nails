@@ -21,12 +21,14 @@ class PaymentService
             'quantity' => $item->quantity,
             'name' => mb_substr($item->product_name, 0, 50),
         ])->all();
-        $itemDetails[] = [
-            'id' => 'SHIPPING',
-            'price' => $order->shipping_cost,
-            'quantity' => 1,
-            'name' => 'Ongkos Kirim',
-        ];
+        if ($order->shipping_cost > 0) {
+            $itemDetails[] = [
+                'id' => 'SHIPPING',
+                'price' => $order->shipping_cost,
+                'quantity' => 1,
+                'name' => 'Ongkos Kirim',
+            ];
+        }
 
         if ($order->discount_amount > 0) {
             $itemDetails[] = [

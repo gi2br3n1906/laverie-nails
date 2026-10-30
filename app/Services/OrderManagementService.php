@@ -29,14 +29,15 @@ class OrderManagementService
         return $order->loadMissing('items');
     }
 
-    public function updateFulfillment(Order $order, FulfillmentStatus $status, ?string $trackingNumber): Order
+    public function updateFulfillment(Order $order, FulfillmentStatus $status, ?string $trackingNumber, ?string $courier = null): Order
     {
         $previousStatus = $order->fulfillment_status;
 
-        $updated = DB::transaction(function () use ($order, $status, $trackingNumber): Order {
+        $updated = DB::transaction(function () use ($order, $status, $trackingNumber, $courier): Order {
             $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->getKey());
             $lockedOrder->update([
                 'fulfillment_status' => $status,
+                'courier' => $courier ?: $lockedOrder->courier,
                 'tracking_number' => $trackingNumber ?: $lockedOrder->tracking_number,
             ]);
 

@@ -65,7 +65,8 @@
                                 <div class="mt-7 rounded-2xl bg-[#0C1C39] p-5 text-white">
                                     <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#DDE6F0]">Nomor resi</p>
                                     <p class="mt-2 break-all font-display text-2xl">{{ $order->tracking_number }}</p>
-                                    <p class="mt-2 text-xs text-[#DDE6F0]">Kurir {{ strtoupper(str_replace(':', ' · ', $order->courier)) }}</p>
+                                    <p class="mt-2 text-xs text-[#DDE6F0]">Kurir {{ $order->courier ? strtoupper(str_replace(':', ' · ', $order->courier)) : 'belum diisi' }}</p>
+                                    <p class="mt-3 text-xs leading-5 text-[#DDE6F0]">Cek nomor resi ini langsung di situs resmi kurir. Pelacakan otomatis tidak tersedia.</p>
                                 </div>
                             @else
                                 <p class="mt-7 rounded-2xl bg-[#F8FAFC] px-5 py-4 text-sm leading-6 text-stone-500">Nomor resi akan tersedia setelah pesanan diserahkan kepada kurir.</p>

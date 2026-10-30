@@ -13,7 +13,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogReviewController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\CheckoutLogisticsController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\HasilKlasifikasiController;
 use App\Http\Controllers\HealthController;
@@ -43,8 +42,6 @@ Route::delete('/cart-coupon', [CartController::class, 'removeCoupon'])->name('ca
 Route::delete('/cart-items/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/checkout', [CheckoutController::class, 'create'])->middleware('auth')->name('checkout.create');
 Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(['auth', 'throttle:20,1'])->name('checkout.store');
-Route::get('/checkout/logistics/cities', [CheckoutLogisticsController::class, 'cities'])->middleware('auth')->name('checkout.logistics.cities');
-Route::get('/checkout/logistics/shipping-options', [CheckoutLogisticsController::class, 'shippingOptions'])->middleware('auth')->name('checkout.logistics.shipping-options');
 Route::get('/checkout/{order}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::get('/lacak-pesanan', [OrderTrackingController::class, 'create'])->name('orders.track.create');
 Route::post('/lacak-pesanan', [OrderTrackingController::class, 'store'])->middleware('throttle:10,1')->name('orders.track.store');
@@ -66,7 +63,6 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/profile/information', [ProfileController::class, 'updateInformation'])->name('profile.information.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::patch('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.address.update');
-    Route::get('/profile/logistics/cities', [ProfileController::class, 'cities'])->name('profile.logistics.cities');
     Route::post('/koleksi/{product:slug}/ulasan', [CatalogReviewController::class, 'store'])->name('storefront.products.reviews.store');
 
     Route::prefix('riwayat')->name('history.')->group(function (): void {
