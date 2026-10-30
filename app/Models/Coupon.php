@@ -39,6 +39,29 @@ class Coupon extends Model
             && $subtotal >= $this->minimum_order_amount;
     }
 
+    public function invalidReason(int $subtotal): ?string
+    {
+        if (! $this->is_active) {
+            return 'Kode diskon sudah tidak aktif.';
+        }
+
+        if ($this->expires_at && $this->expires_at->isPast()) {
+            return 'Kode diskon sudah kedaluwarsa.';
+        }
+
+        if ($subtotal < $this->minimum_order_amount) {
+            $minimum = number_format($this->minimum_order_amount, 0, ',', '.');
+
+            return "Minimal belanja Rp {$minimum} untuk memakai kode ini.";
+        }
+
+        if ($this->discountFor($subtotal) < 1) {
+            return 'Kode diskon tidak dapat dipakai untuk keranjang ini.';
+        }
+
+        return null;
+    }
+
     public function discountFor(int $subtotal): int
     {
         if (! $this->isValidForSubtotal($subtotal) || $subtotal < 1) {

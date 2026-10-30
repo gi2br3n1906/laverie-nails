@@ -35,9 +35,15 @@ class CartController extends Controller
         $coupon = Coupon::query()->whereRaw('UPPER(code) = ?', [$code])->first();
         $subtotal = intdiv($this->cartService->state(CartOwner::fromRequest($request))['subtotal'], 100);
 
-        if (! $coupon || ! $coupon->isValidForSubtotal($subtotal) || $coupon->discountFor($subtotal) < 1) {
+        if (! $coupon) {
             throw ValidationException::withMessages([
-                'code' => 'Kode diskon tidak valid untuk subtotal keranjang saat ini.',
+                'code' => 'Kode diskon tidak ditemukan.',
+            ]);
+        }
+
+        if ($reason = $coupon->invalidReason($subtotal)) {
+            throw ValidationException::withMessages([
+                'code' => $reason,
             ]);
         }
 

@@ -68,10 +68,14 @@ class CheckoutService
             $shippingCost = (int) $selectedShipping['cost'];
             $coupon = $couponId === null ? null : Coupon::query()->whereKey($couponId)->lockForUpdate()->first();
 
-            if ($couponId !== null && (! $coupon || ! $coupon->isValidForSubtotal($subtotal) || $coupon->discountFor($subtotal) < 1)) {
-                throw ValidationException::withMessages([
-                    'coupon' => 'Kupon tidak lagi berlaku untuk pesanan ini. Periksa kode, masa berlaku, dan minimum belanja.',
-                ]);
+            if ($couponId !== null) {
+                $reason = $coupon === null ? 'Kode diskon tidak ditemukan.' : $coupon->invalidReason($subtotal);
+
+                if ($reason !== null) {
+                    throw ValidationException::withMessages([
+                        'coupon' => $reason,
+                    ]);
+                }
             }
 
             $discountAmount = $coupon?->discountFor($subtotal) ?? 0;

@@ -49,11 +49,13 @@ class CartCouponTest extends TestCase
 
         $this->postJson('/cart-coupon', ['code' => 'NOPE'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrorFor('code');
+            ->assertJsonValidationErrorFor('code')
+            ->assertJsonPath('errors.code.0', 'Kode diskon tidak ditemukan.');
 
         $this->postJson('/cart-coupon', ['code' => 'OFF'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrorFor('code');
+            ->assertJsonValidationErrorFor('code')
+            ->assertJsonPath('errors.code.0', 'Kode diskon sudah tidak aktif.');
 
         $this->getJson('/cart-state')->assertJsonPath('data.coupon', null);
     }
@@ -77,7 +79,8 @@ class CartCouponTest extends TestCase
 
         $this->postJson('/cart-coupon', ['code' => 'MIN150'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrorFor('code');
+            ->assertJsonValidationErrorFor('code')
+            ->assertJsonPath('errors.code.0', 'Minimal belanja Rp 150.000 untuk memakai kode ini.');
 
         $this->assertFalse(session()->has('cart_coupon_id'));
         $this->getJson('/cart-state')->assertJsonPath('data.coupon', null);
@@ -102,7 +105,8 @@ class CartCouponTest extends TestCase
 
         $this->postJson('/cart-coupon', ['code' => 'EXPIRED'])
             ->assertUnprocessable()
-            ->assertJsonValidationErrorFor('code');
+            ->assertJsonValidationErrorFor('code')
+            ->assertJsonPath('errors.code.0', 'Kode diskon sudah kedaluwarsa.');
 
         $this->assertFalse(session()->has('cart_coupon_id'));
     }
