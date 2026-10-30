@@ -25,14 +25,21 @@ sudo apt update
 sudo apt install -y \
   nginx git unzip curl \
   php8.3-fpm php8.3-cli php8.3-sqlite3 php8.3-mbstring php8.3-xml \
-  php8.3-curl php8.3-zip php8.3-intl php8.3-bcmath php8.3-gd php8.3-opcache \
-  nodejs npm
+  php8.3-curl php8.3-zip php8.3-intl php8.3-bcmath php8.3-gd php8.3-opcache
+
+# Ubuntu's default nodejs package is 18.x. Vite 7 needs Node 20.19+ or 22.12+.
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
 
 php -v
 php -m | grep -E 'pdo_sqlite|sqlite3|mbstring|intl|zip|bcmath|opcache'
 composer --version
 node --version
+npm --version
 ```
+
+Do not use Ubuntu's `nodejs` 18 package for the build; it produces the
+`@tailwindcss/oxide` native-binding error before Vite can start.
 
 If the server uses another PHP version, replace `php8.3` everywhere and use the
 matching `/run/php/phpX.Y-fpm.sock` path.

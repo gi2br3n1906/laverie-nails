@@ -60,6 +60,11 @@ fi
 echo "Installing PHP dependencies..."
 COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
+if ! node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit((major === 20 && minor >= 19) || (major === 22 && minor >= 12) || major > 22 ? 0 : 1);'; then
+    echo "Node $(node --version) is too old for Vite 7. Install Node 20.19+ or 22.12+." >&2
+    exit 1
+fi
+
 echo "Building frontend assets..."
 npm ci --no-audit --no-fund --progress=false
 npm run build
