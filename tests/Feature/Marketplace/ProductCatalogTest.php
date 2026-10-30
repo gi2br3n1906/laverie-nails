@@ -145,6 +145,15 @@ class ProductCatalogTest extends TestCase
         $this->get(route('storefront.products.show', $inactive))->assertNotFound();
     }
 
+    public function test_product_page_defaults_to_standard_size(): void
+    {
+        $product = Product::factory()->create(['is_active' => true, 'stock' => 5]);
+
+        $this->get(route('storefront.products.show', $product))
+            ->assertOk()
+            ->assertSee('value="standard" checked', false);
+    }
+
     public function test_standard_measurement_result_links_to_matching_products_and_custom_keeps_whatsapp(): void
     {
         $this->seed(SizeStandardSeeder::class);

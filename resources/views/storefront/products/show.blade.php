@@ -44,7 +44,7 @@
                         <legend class="text-sm font-semibold uppercase tracking-[0.12em] text-[#0C1C39]">Pilih tipe ukuran</legend>
                         <div class="mt-4 grid gap-3 sm:grid-cols-2">
                             <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-[#92A1B5]/60 bg-white px-5 py-4 text-sm font-semibold transition has-checked:border-[#0C1C39] has-checked:bg-[#EAF0F6]">
-                                <input class="size-4 accent-[#0C1C39]" name="size_type" type="radio" value="standard" @checked(old('size_type') === 'standard')>
+                                <input class="size-4 accent-[#0C1C39]" name="size_type" type="radio" value="standard" @checked(old('size_type', 'standard') === 'standard')>
                                 Standard Size
                             </label>
                             <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-[#92A1B5]/60 bg-white px-5 py-4 text-sm font-semibold transition has-checked:border-[#0C1C39] has-checked:bg-[#EAF0F6]">

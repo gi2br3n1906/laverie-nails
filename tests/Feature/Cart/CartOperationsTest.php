@@ -173,6 +173,19 @@ class CartOperationsTest extends TestCase
         $this->assertDatabaseCount('cart_items', 0);
     }
 
+    public function test_cart_validation_messages_are_in_indonesian(): void
+    {
+        $product = Product::factory()->create(['stock' => 5]);
+
+        $this->post('/cart-items', ['product_id' => $product->id])
+            ->assertSessionHasErrors(['size_type' => 'Tipe ukuran wajib dipilih.']);
+
+        $this->post('/cart-items', [
+            'product_id' => $product->id,
+            'size_type' => 'standard',
+        ])->assertSessionHasErrors(['standard_size' => 'Ukuran standar wajib dipilih.']);
+    }
+
     public function test_inactive_zero_stock_and_insufficient_stock_products_cannot_be_added(): void
     {
         $inactive = Product::factory()->inactive()->create(['stock' => 5]);
