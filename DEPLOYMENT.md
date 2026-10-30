@@ -52,6 +52,9 @@ APP_KEY=base64:GENERATE_A_SECURE_KEY
 APP_PORT=8080
 APP_TIMEZONE=Asia/Jakarta
 
+# Cloudflare Tunnel token; see the tunnel section below.
+TUNNEL_TOKEN=
+
 DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/data/database.sqlite
 DB_BUSY_TIMEOUT=5000
@@ -95,7 +98,7 @@ The deployment script performs these steps in order:
 
 1. Fast-forwards the checked-out server branch from its configured Git upstream. Set `DEPLOY_PULL_LATEST=false` only when source synchronization is handled externally.
 2. Validates Docker, Compose, `.env`, `APP_KEY`, and required static assets.
-3. Builds current PHP-FPM and Nginx images, then force-recreates PHP-FPM, Nginx, and the queue worker. Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
+3. Builds current PHP-FPM and Nginx images, then force-recreates PHP-FPM, Nginx, and the queue worker. When `TUNNEL_TOKEN` is set it also starts the `cloudflare-tunnel` profile (host network, HTTP/2). Set `DEPLOY_NO_CACHE=true` for a one-off completely uncached build.
 4. Creates the persistent SQLite file and Laravel runtime directories.
 5. Applies `www-data` ownership and group-writable directory/file permissions.
 6. Clears stale file-based bootstrap caches without querying a fresh database.
@@ -178,17 +181,44 @@ Copy the backup from the named volume using an approved server backup process. U
 
 The compose stack publishes Nginx on `127.0.0.1:${APP_PORT}` only. Cloudflare Tunnel is the only public entry point; do not open port 8080 in the VPS firewall.
 
-### Tunnel ingress
+This server is an LXC container on Proxmox. Docker bridge DNS/routing and UDP/QUIC are unreliable there, so the tunnel **must** use host networking and HTTP/2:
 
-Run `cloudflared` on the host:
+- `network_mode: host` for cloudflared (or `--net=host` with `docker run`); never attach it to the `laverie` bridge.
+- `--protocol http2`; do not let cloudflared fall back to QUIC/UDP.
+- Point the tunnel ingress at `http://127.0.0.1:${APP_PORT}` (default `http://127.0.0.1:8080`). Do not use `http://nginx:80`; that requires the bridge network and will fail or route unpredictably in this LXC.
 
-```text
-http://127.0.0.1:8080
+### Start the tunnel with the compose stack
+
+Put the tunnel token in `.env` as `TUNNEL_TOKEN=...`, then either run the profile manually:
+
+```bash
+docker compose --profile tunnel up -d cloudflare-tunnel
 ```
 
-Or run it as a container on the same compose network and point the ingress at `http://nginx:80`. In that case the published port is unnecessary; keep it loopback-only anyway.
+or run the deploy script, which enables the profile automatically when `TUNNEL_TOKEN` is non-empty:
 
-Create the tunnel and public hostname in the Cloudflare dashboard (or with `cloudflared tunnel route dns`). The token is a secret: install it as a systemd service or an env var, never in Git.
+```bash
+./deploy.sh
+```
+
+The compose service is defined as:
+
+```yaml
+cloudflare-tunnel:
+  image: cloudflare/cloudflared:latest
+  network_mode: host
+  command: ["tunnel", "--no-autoupdate", "--protocol", "http2", "run", "--token", "${TUNNEL_TOKEN}"]
+```
+
+### Run cloudflared separately on the host
+
+If you manage cloudflared as a systemd service instead, it must still run in the LXC host network namespace:
+
+```bash
+cloudflared tunnel --no-autoupdate --protocol http2 run --token "$TUNNEL_TOKEN"
+```
+
+Create the tunnel and public hostname in the Cloudflare dashboard (or with `cloudflared tunnel route dns`). The token is a secret: install it as a systemd service or an env var, never in Git. The ingress service URL is `http://127.0.0.1:8080`.
 
 ### Required Cloudflare settings
 
@@ -202,11 +232,13 @@ Create the tunnel and public hostname in the Cloudflare dashboard (or with `clou
 
 ```bash
 ss -ltnp | grep 8080          # must show 127.0.0.1:8080, not 0.0.0.0:8080
+docker inspect -f '{{.HostConfig.NetworkMode}}' laverie-cloudflared   # must print: host
+docker inspect -f '{{json .Config.Cmd}}' laverie-cloudflared          # must contain --protocol http2
 curl -I http://127.0.0.1:8080/healthz
 curl -I https://your-domain.example/
 ```
 
-If `ss` shows `0.0.0.0:8080`, fix `docker-compose.yml` before exposing the tunnel.
+If `ss` shows `0.0.0.0:8080`, fix `docker-compose.yml` before exposing the tunnel. If `NetworkMode` is anything other than `host`, the tunnel is on the Docker bridge and will be unreliable in this LXC.
 
 ### Backups off the server
 

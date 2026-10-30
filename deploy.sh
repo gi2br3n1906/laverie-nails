@@ -126,6 +126,10 @@ if [[ "$(env_value MIDTRANS_IS_PRODUCTION)" != "true" ]]; then
     echo "WARNING: Midtrans is still in Sandbox mode. Set MIDTRANS_IS_PRODUCTION=true when the store goes live." >&2
 fi
 
+if [[ -z "$(env_value TUNNEL_TOKEN)" ]]; then
+    echo "WARNING: TUNNEL_TOKEN is empty; Cloudflare Tunnel will not be started by Compose. Set it and rerun, or run cloudflared separately on the host." >&2
+fi
+
 echo "Starting Laverie Nails production deployment..."
 
 build_args=(build --pull)
@@ -134,7 +138,11 @@ if [[ "${DEPLOY_NO_CACHE:-false}" == "true" ]]; then
 fi
 
 "${COMPOSE[@]}" "${build_args[@]}"
-"${COMPOSE[@]}" up -d --force-recreate --remove-orphans
+if [[ -n "$(env_value TUNNEL_TOKEN)" ]]; then
+    "${COMPOSE[@]}" --profile tunnel up -d --force-recreate --remove-orphans
+else
+    "${COMPOSE[@]}" up -d --force-recreate --remove-orphans
+fi
 
 echo "Waiting for PHP-FPM to become available..."
 for attempt in {1..30}; do
