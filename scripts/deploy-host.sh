@@ -127,11 +127,12 @@ run_artisan view:cache
 echo "Restarting the queue worker..."
 run_artisan queue:restart
 
+echo "Leaving maintenance mode before the health check..."
+run_artisan up
+trap - EXIT
+
 echo "Verifying the local Nginx origin..."
 curl --fail --silent --show-error "http://127.0.0.1:${APP_PORT}/healthz" >/dev/null
 curl --fail --silent --show-error "http://127.0.0.1:${APP_PORT}/readyz" >/dev/null
-
-run_artisan up || true
-trap - EXIT
 
 echo "Host deployment complete. Verify https://laverie.web.id/readyz through the tunnel."
