@@ -107,7 +107,7 @@ Important:
 Install dependencies and generate the application key:
 
 ```bash
-sudo COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+sudo env COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 sudo php artisan key:generate
 sudo mkdir -p database
 sudo touch database/database.sqlite
