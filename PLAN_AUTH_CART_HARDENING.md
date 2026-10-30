@@ -33,8 +33,10 @@ Plan ini ditulis supaya bisa dieksekusi model murah tanpa membaca ulang seluruh 
 | ✅ | T2: cart tamu di-merge tanpa baris duplikat, qty di-clamp ke stok | `CartMergeOnLoginTest` (4 tes) |
 | ✅ | T3: throttle registrasi (6/menit) & lacak pesanan (10/menit) | `RegistrationThrottleTest`, `OrderTrackingThrottleTest` |
 
-T1–T3 **sudah dikerjakan dan hijau** (suite akhir: 243 passed, 1469 assertions).
-T4 (commit staging) dan T5/T6 (butuh keputusan/kredensial) belum.
+| ✅ | T4: working tree dipecah jadi 5 commit per intent (+1 chore) | `git log --oneline` → `c508318` … `92bfcbd`, belum di-push |
+
+T1–T4 **sudah dikerjakan dan hijau** (suite akhir: 243 passed, 1469 assertions).
+T5 (email, butuh SMTP + keputusan) dan T6 (checklist deploy di server) belum.
 
 ---
 
