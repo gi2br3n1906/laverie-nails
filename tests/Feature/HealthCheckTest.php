@@ -14,4 +14,11 @@ class HealthCheckTest extends TestCase
             ->assertOk()
             ->assertExactJson(['status' => 'ok']);
     }
+
+    public function test_readiness_check_reports_database_connectivity(): void
+    {
+        $this->get('/readyz')
+            ->assertOk()
+            ->assertExactJson(['status' => 'ok']);
+    }
 }

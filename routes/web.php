@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/healthz', HealthController::class)->name('healthz');
+Route::get('/readyz', HealthController::class)->name('readyz');
 
 Route::view('/panduan', 'guidance')->name('guidance');
 Route::view('/input-data', 'measurements.create')->name('measurements.create');

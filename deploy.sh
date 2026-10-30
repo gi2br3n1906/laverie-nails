@@ -201,6 +201,7 @@ artisan queue:restart
 
 echo "Verifying application health..."
 curl --fail --silent --show-error "http://127.0.0.1:${app_port}/healthz" >/dev/null
+curl --fail --silent --show-error "http://127.0.0.1:${app_port}/readyz" >/dev/null
 curl --fail --silent --show-error "http://127.0.0.1:${app_port}/up" >/dev/null
 
 echo "Verifying immutable source and static assets inside both application images..."

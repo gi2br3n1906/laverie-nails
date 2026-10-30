@@ -103,7 +103,7 @@ The deployment script performs these steps in order:
 8. Runs `php artisan migrate --force`.
 9. Synchronizes the canonical XS/S/M/L records using the idempotent `SizeStandardSeeder`.
 10. Clears remaining caches, then runs `php artisan optimize` and `php artisan view:cache`.
-11. Restarts the queue worker and checks `/healthz` plus `/up` on the local origin.
+11. Restarts the queue worker and checks `/healthz`, `/readyz` (database readiness), and `/up` on the local origin.
 12. Verifies that the hero asset SHA-256 checksum is identical in the server checkout, PHP-FPM image, and Nginx image.
 13. Downloads the cache-busted hero URL directly from the local Nginx origin and verifies its checksum.
 14. Prints final container status.
@@ -157,6 +157,7 @@ Check container health:
 ```bash
 docker compose ps
 curl --fail http://127.0.0.1:${APP_PORT:-8080}/healthz
+curl --fail http://127.0.0.1:${APP_PORT:-8080}/readyz
 ```
 
 Inspect logs:
@@ -217,6 +218,7 @@ Do not add cloudflared to the `laverie` bridge network, and do not point its ing
 ss -ltnp | grep 8080          # must show 127.0.0.1:8080, not 0.0.0.0:8080
 docker compose ps              # php-fpm, nginx, worker only
 curl -I http://127.0.0.1:8080/healthz
+curl -I http://127.0.0.1:8080/readyz
 curl -I https://your-domain.example/
 ```
 
@@ -224,7 +226,7 @@ If `ss` shows `0.0.0.0:8080`, fix `docker-compose.yml` before exposing the tunne
 
 ### Backups off the server
 
-`deploy.sh` writes a pre-migration SQLite backup into the `sqlite_data` volume under `/var/www/data/backups` and keeps 14 days. Volume-only backups do not survive a lost VPS. Copy them off the server regularly, for example:
+`deploy.sh` writes a pre-migration SQLite backup into the `sqlite_data` volume under `/var/www/data/backups`, verifies it with `PRAGMA integrity_check`, and keeps 14 days. Volume-only backups do not survive a lost VPS. Copy them off the server regularly, for example:
 
 ```bash
 docker compose exec -T php-fpm sh -c 'cat /var/www/data/backups/database-*.sqlite' > laverie-backup.sqlite
