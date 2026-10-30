@@ -44,6 +44,7 @@ class Order extends Model
         'fulfillment_status',
         'tracking_number',
         'snap_token',
+        'stock_restored_at',
     ];
 
     protected static function booted(): void
@@ -65,6 +66,7 @@ class Order extends Model
             'grand_total' => 'integer',
             'payment_status' => PaymentStatus::class,
             'fulfillment_status' => FulfillmentStatus::class,
+            'stock_restored_at' => 'datetime',
         ];
     }
 
