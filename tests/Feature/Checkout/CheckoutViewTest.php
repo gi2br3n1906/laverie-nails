@@ -82,7 +82,8 @@ class CheckoutViewTest extends TestCase
             ->assertSee('data-payment-snap', false)
             ->assertSee('data-snap-token="snap-token-123"', false)
             ->assertSee('data-snap-url="https://midtrans.test/snap/snap.js"', false)
-            ->assertSee('data-client-key="midtrans-client-key"', false);
+            ->assertSee('data-client-key="midtrans-client-key"', false)
+            ->assertSee('data-payment-status-url', false);
 
         $content = (string) $response->getContent();
         $this->assertDoesNotMatchRegularExpression('/<script(?![^>]*\bsrc=)[^>]*>/i', $content);

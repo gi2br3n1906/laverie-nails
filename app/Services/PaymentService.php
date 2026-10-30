@@ -8,7 +8,10 @@ use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use RuntimeException;
+use Throwable;
 
 class PaymentService
 {
@@ -78,6 +81,13 @@ class PaymentService
                     'phone' => $order->customer_phone,
                     'shipping_address' => $shippingAddress,
                 ],
+                'callbacks' => [
+                    'finish' => URL::temporarySignedRoute(
+                        'checkout.payment',
+                        now()->addDay(),
+                        ['order' => $order, 'check' => 1],
+                    ),
+                ],
                 'item_details' => $itemDetails,
             ])
             ->throw()
@@ -88,6 +98,60 @@ class PaymentService
         }
 
         return $token;
+    }
+
+    /**
+     * Ask Midtrans for the authoritative status of an order.
+     *
+     * This is the fallback when a webhook is delayed or cannot reach the
+     * application. Returns null when the status cannot be trusted.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function fetchStatus(Order $order): ?array
+    {
+        try {
+            $response = Http::acceptJson()
+                ->withBasicAuth($this->serverKey(), '')
+                ->connectTimeout(5)
+                ->timeout(15)
+                ->get($this->apiUrl().'/'.$order->getKey().'/status');
+        } catch (Throwable $exception) {
+            Log::warning('Unable to query Midtrans transaction status.', [
+                'order_id' => $order->getKey(),
+                'error' => $exception->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        if ($response->failed()) {
+            Log::warning('Midtrans transaction status request failed.', [
+                'order_id' => $order->getKey(),
+                'http_status' => $response->status(),
+            ]);
+
+            return null;
+        }
+
+        $payload = $response->json();
+
+        if (! is_array($payload) || (string) ($payload['order_id'] ?? '') !== (string) $order->getKey()) {
+            return null;
+        }
+
+        $grossAmount = $payload['gross_amount'] ?? null;
+
+        if (! is_numeric($grossAmount) || abs((float) $grossAmount - (float) $order->grand_total) > 0.01) {
+            Log::warning('Midtrans transaction amount did not match the order.', [
+                'order_id' => $order->getKey(),
+                'gross_amount' => $grossAmount,
+            ]);
+
+            return null;
+        }
+
+        return $payload;
     }
 
     /** @param  array<string, mixed>  $payload */
@@ -131,6 +195,11 @@ class PaymentService
     private function serverKey(): string
     {
         return $this->requiredConfig('server_key');
+    }
+
+    private function apiUrl(): string
+    {
+        return rtrim($this->requiredConfig('api_url'), '/');
     }
 
     private function requiredConfig(string $key): string

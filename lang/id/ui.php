@@ -340,6 +340,7 @@ return [
         'title' => 'Pembayaran Pesanan',
         'confirmed' => 'Pesanan dikonfirmasi',
         'heading' => 'Selesaikan Pembayaran',
+        'received_heading' => 'Pembayaran Diterima',
         'intro' => 'Pesanan Anda telah diamankan. Lanjutkan pembayaran agar tim Laverie dapat segera memproses nail set pilihan Anda.',
         'order_number' => 'Nomor pesanan',
         'shipped_to' => 'Dikirim kepada',
@@ -535,6 +536,16 @@ return [
         'checkout' => [
             'select_province' => 'Pilih provinsi',
             'processing' => 'Memproses pesanan…',
+        ],
+        'payment' => [
+            'preparing' => 'Menyiapkan pembayaran aman…',
+            'verifying' => 'Pembayaran diterima. Mengonfirmasi pesanan…',
+            'checking' => 'Memeriksa status pembayaran…',
+            'pending' => 'Pembayaran menunggu penyelesaian.',
+            'error' => 'Pembayaran belum berhasil. Silakan coba kembali.',
+            'closed' => 'Jendela pembayaran ditutup. Anda dapat melanjutkan kapan saja.',
+            'still_pending' => 'Konfirmasi belum diterima. Silakan cek halaman pesanan beberapa saat lagi.',
+            'load_failed' => 'Layanan pembayaran belum dapat dimuat. Silakan coba kembali.',
         ],
         'measurement' => [
             'required' => 'Nilai pengukuran wajib diisi.',

@@ -110,6 +110,7 @@ class CheckoutFlowTest extends TestCase
             && count($request['item_details']) === 2
             && array_sum(array_map(fn (array $item): int => $item['price'] * $item['quantity'], $request['item_details'])) === 515000
             && $request['item_details'][0]['price'] === 250000
+            && str_starts_with((string) ($request['callbacks']['finish'] ?? ''), route('checkout.payment', $order))
             && collect($request['item_details'])->contains(fn (array $item): bool => ($item['id'] ?? null) === 'SHIPPING' && $item['price'] === 15000));
     }
 

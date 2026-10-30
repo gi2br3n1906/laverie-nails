@@ -48,6 +48,9 @@ Route::delete('/cart-items/{cartItem}', [CartController::class, 'destroy'])->nam
 Route::get('/checkout', [CheckoutController::class, 'create'])->middleware('auth')->name('checkout.create');
 Route::post('/checkout', [CheckoutController::class, 'store'])->middleware(['auth', 'throttle:20,1'])->name('checkout.store');
 Route::get('/checkout/{order}/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
+Route::get('/checkout/{order}/status', [CheckoutController::class, 'status'])
+    ->middleware('throttle:30,1')
+    ->name('checkout.status');
 Route::get('/lacak-pesanan', [OrderTrackingController::class, 'create'])->name('orders.track.create');
 Route::post('/lacak-pesanan', [OrderTrackingController::class, 'store'])->middleware('throttle:10,1')->name('orders.track.store');
 

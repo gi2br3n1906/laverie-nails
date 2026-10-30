@@ -340,6 +340,7 @@ return [
         'title' => 'Order Payment',
         'confirmed' => 'Order confirmed',
         'heading' => 'Complete Your Payment',
+        'received_heading' => 'Payment Received',
         'intro' => 'Your order is secured. Continue payment so the Laverie team can start preparing your chosen nail set.',
         'order_number' => 'Order number',
         'shipped_to' => 'Shipping to',
@@ -535,6 +536,16 @@ return [
         'checkout' => [
             'select_province' => 'Select province',
             'processing' => 'Processing order…',
+        ],
+        'payment' => [
+            'preparing' => 'Preparing secure payment…',
+            'verifying' => 'Payment received. Confirming your order…',
+            'checking' => 'Checking your payment status…',
+            'pending' => 'Payment is waiting to be completed.',
+            'error' => 'Payment was not completed. Please try again.',
+            'closed' => 'Payment window closed. You can try again whenever you are ready.',
+            'still_pending' => 'We have not received confirmation yet. Please check your order page in a moment.',
+            'load_failed' => 'The payment service could not be loaded. Please try again.',
         ],
         'measurement' => [
             'required' => 'Measurement value is required.',

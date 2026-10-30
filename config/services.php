@@ -54,6 +54,9 @@ return [
         'is_production' => (bool) env('MIDTRANS_IS_PRODUCTION', false),
         'snap_url' => env('MIDTRANS_SNAP_URL', 'https://app.sandbox.midtrans.com/snap/v1/transactions'),
         'snap_js_url' => env('MIDTRANS_SNAP_JS_URL', 'https://app.sandbox.midtrans.com/snap/snap.js'),
+        'api_url' => env('MIDTRANS_API_URL', env('MIDTRANS_IS_PRODUCTION', false)
+            ? 'https://api.midtrans.com/v2'
+            : 'https://api.sandbox.midtrans.com/v2'),
     ],
 
 ];

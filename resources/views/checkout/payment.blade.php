@@ -5,7 +5,7 @@
                 <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#DDE6F0]">{{ __('ui.payment.confirmed') }}</p>
-                        <h1 class="mt-3 font-display text-4xl tracking-[-0.03em] sm:text-5xl" id="payment-heading">{{ __('ui.payment.heading') }}</h1>
+                        <h1 class="mt-3 font-display text-4xl tracking-[-0.03em] sm:text-5xl" id="payment-heading">{{ $order->payment_status === \App\Enums\PaymentStatus::Paid ? __('ui.payment.received_heading') : __('ui.payment.heading') }}</h1>
                         <p class="mt-4 max-w-xl text-sm leading-7 text-[#DDE6F0]">{{ __('ui.payment.intro') }}</p>
                     </div>
                     <span class="w-fit rounded-full border border-white/25 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[#DDE6F0]">{{ $order->payment_status->label() }}</span>
@@ -70,6 +70,8 @@
                             data-snap-token="{{ $order->snap_token }}"
                             data-snap-url="{{ $snapJsUrl }}"
                             data-client-key="{{ $midtransClientKey }}"
+                            data-payment-status-url="{{ $paymentStatusUrl }}"
+                            data-payment-check="{{ request()->boolean('check') ? '1' : '0' }}"
                         >
                             <button class="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#0C1C39] px-6 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48] disabled:cursor-not-allowed disabled:opacity-60" type="button" data-pay-button>
                                 {{ __('ui.payment.pay_now') }}
