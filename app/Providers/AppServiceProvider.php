@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Enums\UserRole;
+use App\Models\Category;
 use App\Models\Measurement;
 use App\Models\User;
 use App\Policies\MeasurementPolicy;
@@ -39,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
                 'cartQuantity',
                 app(CartService::class)->quantity(CartOwner::fromRequest(request())),
             );
+        });
+
+        ViewFacade::composer('components.storefront.footer', function (View $view): void {
+            $view->with('footerCategorySlugs', Category::query()->pluck('slug')->all());
         });
     }
 }

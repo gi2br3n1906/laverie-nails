@@ -105,22 +105,38 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('prefers-reduced-motion: reduce', $carouselScript);
     }
 
-    public function test_homepage_footer_contains_customer_service_social_and_newsletter_content(): void
+    public function test_homepage_footer_contains_shop_brand_help_center_social_and_newsletter_content(): void
     {
         $this->get(route('home'))
             ->assertOk()
-            ->assertSee('CUSTOMER SERVICE')
+            ->assertSee('SHOP')
+            ->assertSee('BRAND')
+            ->assertSee('HELP CENTER')
             ->assertSee('data-global-footer-layout', false)
             ->assertSee('data-footer-top-row', false)
             ->assertSee('data-footer-bottom-row', false)
+            ->assertSee('data-footer-section="shop"', false)
+            ->assertSee('data-footer-section="brand"', false)
+            ->assertSee('data-footer-section="help-center"', false)
+            ->assertSee('data-footer-section="newsletter"', false)
             ->assertSee('Sizing')
             ->assertSee('Measurement guide')
+            ->assertSee('Pretty Picks')
+            ->assertSee('Classy')
+            ->assertSee('Coquette')
+            ->assertSee('Floral')
+            ->assertSee('Grunge')
+            ->assertSee('Y2K')
+            ->assertSee('About Us')
             ->assertSee('NEWSLETTER')
             ->assertSee('Sign up to save measurement history and get 10% off for your first order.')
             ->assertSee('placeholder="sign up"', false)
             ->assertSee('aria-label="WhatsApp"', false)
+            ->assertSee('data-social-icon="whatsapp"', false)
             ->assertSee('aria-label="Instagram"', false)
+            ->assertSee('data-social-icon="instagram"', false)
             ->assertSee('aria-label="TikTok"', false)
+            ->assertSee('data-social-icon="tiktok"', false)
             ->assertDontSee('>Discover<', false)
             ->assertDontSee('>Account<', false);
 

@@ -19,6 +19,7 @@ use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\HasilKlasifikasiController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InformationalPageController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MeasurementHistoryController;
 use App\Http\Controllers\OrderTrackingController;
@@ -36,6 +37,9 @@ Route::get('/readyz', HealthController::class)->name('readyz');
 
 Route::view('/panduan', 'guidance')->name('guidance');
 Route::view('/privacy', 'privacy')->name('privacy');
+Route::get('/about', [InformationalPageController::class, 'about'])->name('about');
+Route::get('/faq', [InformationalPageController::class, 'faq'])->name('faq');
+Route::get('/shipping-policy', [InformationalPageController::class, 'shippingPolicy'])->name('shipping.policy');
 Route::view('/input-data', 'measurements.create')->name('measurements.create');
 Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
 Route::get('/koleksi/{product:slug}', [StorefrontProductController::class, 'show'])->name('storefront.products.show');

@@ -62,6 +62,18 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertStringNotContainsString('>Find your size</a>', $content);
     }
 
+    public function test_hamburger_contains_only_the_five_requested_store_links_in_order(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+        preg_match('/<div[^>]*data-hamburger-links[^>]*>(.*?)<div[^>]*data-hamburger-account-menu/s', $content, $menu);
+
+        $this->assertNotEmpty($menu);
+        $this->assertMatchesRegularExpression('/All products.*Pretty Picks.*Measurement guide.*Sizing.*About Us/s', $menu[1]);
+        $this->assertSame(5, preg_match_all('/<a\b/', $menu[1]));
+        $this->assertStringNotContainsString('FAQ', $menu[1]);
+        $this->assertStringNotContainsString('Shipping Policy', $menu[1]);
+    }
+
     public function test_search_and_cart_buttons_are_visible_and_accessible_on_the_light_navbar(): void
     {
         $content = $this->get(route('products.index'))->assertOk()->getContent();

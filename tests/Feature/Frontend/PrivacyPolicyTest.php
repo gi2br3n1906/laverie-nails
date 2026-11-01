@@ -16,6 +16,7 @@ class PrivacyPolicyTest extends TestCase
         $this->get(route('privacy'))
             ->assertOk()
             ->assertSee('Privacy Policy')
+            ->assertSee('font-open-sans', false)
             ->assertSee('laverienails@gmail.com')
             ->assertSee('Midtrans')
             ->assertSee('Google')

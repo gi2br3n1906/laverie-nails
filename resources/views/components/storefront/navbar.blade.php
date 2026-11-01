@@ -11,10 +11,12 @@
                 <summary @class(['grid size-10 cursor-pointer list-none place-items-center rounded-full transition', 'text-white hover:bg-white/15 focus-visible:outline-white' => $overlay, 'hover:bg-stone-100 focus-visible:outline-[#0C1C39]' => ! $overlay, 'focus-visible:outline-2 focus-visible:outline-offset-2']) aria-label="{{ __('ui.nav.open_menu') }}">
                     <svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="menu"><path stroke-linecap="round" d="M3.75 7.5h16.5M3.75 12h16.5M3.75 16.5h16.5" /></svg>
                 </summary>
-                <div class="absolute left-0 top-12 w-64 rounded-2xl border border-[#92A1B5]/40 bg-white p-3 text-[#0C1C39] shadow-2xl shadow-[#0C1C39]/10 sm:top-14">
+                <div class="absolute left-0 top-12 w-64 rounded-2xl border border-[#92A1B5]/40 bg-white p-3 text-[#0C1C39] shadow-2xl shadow-[#0C1C39]/10 sm:top-14" data-hamburger-links>
                     <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('products.index') }}">{{ __('ui.nav.all_products') }}</a>
-                    <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('measurements.create') }}">{{ __('ui.nav.sizing') }}</a>
+                    <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('home') }}#pretty-picks">{{ __('ui.nav.pretty_picks') }}</a>
                     <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('guidance') }}">{{ __('ui.nav.measurement_guide') }}</a>
+                    <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('measurements.create') }}">{{ __('ui.nav.sizing') }}</a>
+                    <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('about') }}">{{ __('ui.nav.about') }}</a>
                     <div class="mt-2 border-t border-[#DDE3EB] pt-2" data-hamburger-account-menu>
                         @guest
                             <a class="block rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-stone-100" href="{{ route('login') }}">{{ __('ui.nav.login') }}</a>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Allura&family=Diphylleia&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Allura&family=Diphylleia&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -13,6 +13,7 @@
     --font-display: 'Playfair Display', 'The Seasons', Didot, 'Times New Roman', ui-serif, Georgia, serif;
     --font-logo: 'Diphylleia', 'Playfair Display', ui-serif, Georgia, serif;
     --font-script: 'Allura', 'Brush Script MT', cursive;
+    --font-open-sans: 'Open Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
     --color-navy: #0c1c39;
     --color-soft-blue: #92a1b5;

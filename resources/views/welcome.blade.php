@@ -56,7 +56,7 @@
         $sizeProducts = $catalogs->take(5);
     @endphp
 
-    <section class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="featured-sets-heading" data-homepage-featured-sets>
+    <section id="pretty-picks" class="bg-white px-5 py-16 sm:px-8 sm:py-20 lg:px-12" aria-labelledby="featured-sets-heading" data-homepage-featured-sets>
         <div class="mx-auto max-w-screen-2xl">
             <div class="text-center">
                 <h2 class="font-display text-4xl font-semibold tracking-wide text-[#0C1C39] sm:text-6xl" id="featured-sets-heading">{{ __('ui.home.pretty_picks') }}</h2>
