@@ -14,12 +14,24 @@ class UpdateShippingRatesRequest extends FormRequest
         return $this->user()?->hasRole(UserRole::Admin) === true;
     }
 
-    /** @return array<string, list<string>> */
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
             'java_cost' => ['required', 'integer', 'min:0', 'max:1000000'],
             'outside_java_cost' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'guidance_video_url' => ['nullable', 'url', 'max:2048', function (string $attribute, mixed $value, \Closure $fail): void {
+                if ($value === null || $value === '') {
+                    return;
+                }
+
+                $host = strtolower((string) parse_url((string) $value, PHP_URL_HOST));
+                $allowed = $host === 'youtu.be' || str_ends_with($host, '.youtube.com') || $host === 'youtube.com';
+
+                if (! $allowed) {
+                    $fail('Gunakan link video dari YouTube atau youtu.be.');
+                }
+            }],
         ];
     }
 
@@ -31,6 +43,7 @@ class UpdateShippingRatesRequest extends FormRequest
             'java_cost.integer' => 'Tarif Pulau Jawa harus berupa angka.',
             'outside_java_cost.required' => 'Tarif luar Pulau Jawa wajib diisi.',
             'outside_java_cost.integer' => 'Tarif luar Pulau Jawa harus berupa angka.',
+            'guidance_video_url.url' => 'Link video harus berupa URL yang valid.',
         ];
     }
 }

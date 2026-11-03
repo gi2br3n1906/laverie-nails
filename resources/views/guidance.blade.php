@@ -32,13 +32,21 @@
 
     <section class="mx-auto mt-24 max-w-5xl text-center" id="video-panduan">
         <h2 class="font-display text-3xl font-semibold leading-tight text-[#0C1C39] sm:text-4xl">{{ __('ui.guidance.video_heading') }}</h2>
-        <div class="mt-8 rounded-[2rem] border border-dashed border-[#92A1B5]/60 bg-white p-8 text-center shadow-sm sm:p-12" data-guidance-video-placeholder>
-            <span class="mx-auto grid size-16 place-items-center rounded-full bg-[#EAF0F6] text-[#0C1C39]" aria-hidden="true">
-                <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linejoin="round" d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
-            </span>
-            <h2 class="mt-5 font-display text-2xl font-semibold text-[#0C1C39] sm:text-3xl">{{ __('ui.guidance.video_soon') }}</h2>
-            <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-stone-600">{{ __('ui.guidance.video_copy') }}</p>
-        </div>
+        @if ($guidanceVideoUrl)
+            <div class="mt-8 overflow-hidden rounded-[2rem] border border-[#92A1B5]/60 bg-white shadow-sm" data-guidance-video>
+                <div class="aspect-video w-full">
+                    <iframe class="h-full w-full" src="{{ $guidanceVideoUrl }}" title="{{ __('ui.guidance.video_heading') }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+        @else
+            <div class="mt-8 rounded-[2rem] border border-dashed border-[#92A1B5]/60 bg-white p-8 text-center shadow-sm sm:p-12" data-guidance-video-placeholder>
+                <span class="mx-auto grid size-16 place-items-center rounded-full bg-[#EAF0F6] text-[#0C1C39]" aria-hidden="true">
+                    <svg class="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linejoin="round" d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+                </span>
+                <h2 class="mt-5 font-display text-2xl font-semibold text-[#0C1C39] sm:text-3xl">{{ __('ui.guidance.video_soon') }}</h2>
+                <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-stone-600">{{ __('ui.guidance.video_copy') }}</p>
+            </div>
+        @endif
         <a class="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0C1C39] px-10 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#192B48]" href="{{ route('measurements.create') }}" data-guidance-input-cta>{{ __('ui.guidance.input_cta') }}</a>
     </section>
 </x-layouts.app>

@@ -17,6 +17,7 @@ class SettingController extends Controller
         return view('admin.settings.edit', [
             'javaCost' => (int) Setting::get('shipping.java_cost', config('shipping.defaults.java')),
             'outsideJavaCost' => (int) Setting::get('shipping.outside_java_cost', config('shipping.defaults.outside_java')),
+            'guidanceVideoUrl' => (string) Setting::get('guidance.video_url', ''),
         ]);
     }
 
@@ -27,6 +28,7 @@ class SettingController extends Controller
         Setting::putMany([
             'shipping.java_cost' => (string) $data['java_cost'],
             'shipping.outside_java_cost' => (string) $data['outside_java_cost'],
+            'guidance.video_url' => (string) ($data['guidance_video_url'] ?? ''),
         ]);
 
         return redirect()

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\HeroBannerController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
@@ -35,7 +36,7 @@ Route::get('/locale/{locale}', LocaleController::class)->name('locale.switch');
 Route::get('/healthz', HealthController::class)->name('healthz');
 Route::get('/readyz', HealthController::class)->name('readyz');
 
-Route::view('/panduan', 'guidance')->name('guidance');
+Route::get('/panduan', [InformationalPageController::class, 'guidance'])->name('guidance');
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::get('/about', [InformationalPageController::class, 'about'])->name('about');
 Route::get('/faq', [InformationalPageController::class, 'faq'])->name('faq');
@@ -122,6 +123,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::resource('banners', HeroBannerController::class)->except('show');
     Route::resource('categories', CategoryController::class)->except('show');
+    Route::resource('coupons', CouponController::class)->except('show');
     Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'destroyImage'])
         ->name('products.images.destroy');
     Route::resource('products', AdminProductController::class)->except('show');

@@ -37,6 +37,15 @@
             </label>
         </div>
 
+        <div class="mt-8 border-t border-stone-200 pt-8">
+            <h2 class="font-serif text-2xl font-semibold">Video Panduan</h2>
+            <p class="mt-2 text-sm leading-6 text-stone-600">Tempel link video YouTube untuk ditampilkan di halaman Measurement Guide. Kosongkan jika ingin menampilkan placeholder.</p>
+            <label class="mt-5 block text-sm font-semibold text-stone-900" for="guidance_video_url">Link YouTube
+                <input class="mt-2 min-h-12 w-full rounded-xl border border-stone-300 bg-stone-50 px-4 outline-none focus:border-stone-900 focus:ring-2 focus:ring-stone-200" id="guidance_video_url" name="guidance_video_url" type="url" value="{{ old('guidance_video_url', $guidanceVideoUrl) }}" placeholder="https://www.youtube.com/watch?v=...">
+                @error('guidance_video_url')<span class="mt-2 block text-sm font-semibold text-red-700">{{ $message }}</span>@enderror
+            </label>
+        </div>
+
         <div class="mt-8 flex flex-wrap items-center gap-3">
             <button class="rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800" type="submit">Simpan tarif</button>
             <p class="text-sm text-stone-500">Tarif saat ini: Jawa Rp {{ number_format($javaCost, 0, ',', '.') }} · luar Jawa Rp {{ number_format($outsideJavaCost, 0, ',', '.') }}.</p>
