@@ -53,6 +53,13 @@ if [[ -z "${db_path}" || "${db_path}" != /* ]]; then
     exit 1
 fi
 
+cloudflare_team_domain="$(sed -n 's/^CLOUDFLARE_ACCESS_TEAM_DOMAIN=//p' .env | tail -n 1 | tr -d '\r' | sed -e 's/^"//' -e 's/"$//')"
+cloudflare_audience="$(sed -n 's/^CLOUDFLARE_ACCESS_AUDIENCE=//p' .env | tail -n 1 | tr -d '\r' | sed -e 's/^"//' -e 's/"$//')"
+if [[ ! "${cloudflare_team_domain}" =~ ^https://[A-Za-z0-9.-]+\.cloudflareaccess\.com$ || -z "${cloudflare_audience}" ]]; then
+    echo "CLOUDFLARE_ACCESS_TEAM_DOMAIN and CLOUDFLARE_ACCESS_AUDIENCE are required for admin SSO." >&2
+    exit 1
+fi
+
 if [[ "${DEPLOY_PULL_LATEST:-true}" == "true" ]]; then
     git pull --ff-only
 fi

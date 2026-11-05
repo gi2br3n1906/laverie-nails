@@ -80,6 +80,8 @@ APP_PORT=8080
 APP_TIMEZONE=Asia/Jakarta
 SESSION_SECURE_COOKIE=true
 TRUSTED_PROXIES=*
+CLOUDFLARE_ACCESS_TEAM_DOMAIN=https://your-team.cloudflareaccess.com
+CLOUDFLARE_ACCESS_AUDIENCE=<application-audience-tag>
 
 DB_CONNECTION=sqlite
 DB_DATABASE=/var/www/laverie/database/database.sqlite
@@ -110,6 +112,9 @@ Important:
   production.
 - Do not copy the local development `.env` or local SQLite file to the server.
 - `MAIL_PASSWORD` is the Brevo SMTP key, not the Brevo account password.
+- `CLOUDFLARE_ACCESS_TEAM_DOMAIN` is the Zero Trust team domain, and
+  `CLOUDFLARE_ACCESS_AUDIENCE` is the Access application's AUD tag. Copy both
+  from Cloudflare Access; the deploy script requires them for admin SSO.
 
 Install dependencies and generate the application key:
 
@@ -196,7 +201,9 @@ sudo -u www-data env LAVERIE_ALLOW_DEMO_SEED=true \
 
 The admin command asks for a password interactively. It must be at least 12
 characters; if it is shorter, the command exits without creating the account.
-Do not pass a password in a shared shell history.
+Do not pass a password in a shared shell history. When Cloudflare Access is
+configured with the team domain and app audience, the matching admin account is
+logged in automatically after the Access JWT is verified at the origin.
 
 ## 7. Connect Cloudflare Tunnel
 

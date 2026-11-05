@@ -48,6 +48,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', rtrim((string) env('APP_URL'), '/').'/auth/google/callback'),
     ],
 
+    'cloudflare_access' => [
+        'team_domain' => env('CLOUDFLARE_ACCESS_TEAM_DOMAIN'),
+        'audience' => env('CLOUDFLARE_ACCESS_AUDIENCE'),
+    ],
+
     'midtrans' => [
         'server_key' => env('MIDTRANS_SERVER_KEY'),
         'client_key' => env('MIDTRANS_CLIENT_KEY'),

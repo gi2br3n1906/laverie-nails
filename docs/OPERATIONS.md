@@ -245,10 +245,13 @@ the SQLite database volume.
 
 - Keep `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, and the origin bound to
   `127.0.0.1`; these are enforced by the deployment script.
-- Protect `/admin*` with Cloudflare Access. Application login remains the second
-  layer; Cloudflare Access is not a replacement for a strong admin password.
-- Admin accounts do not currently support in-app 2FA. Use Cloudflare Access email
-  OTP or a service token, and keep admin passwords in a password manager.
+- Cloudflare Access is the admin SSO layer. Laravel verifies the forwarded
+  `Cf-Access-Jwt-Assertion` against the configured team certificates, audience,
+  issuer, and expiry, then signs in the matching existing admin email. Keep the
+  Access application on `/admin*`, and set `CLOUDFLARE_ACCESS_TEAM_DOMAIN` plus
+  `CLOUDFLARE_ACCESS_AUDIENCE` in the VPS `.env`.
+- The Laravel password login remains available as a fallback when no Access JWT
+  is present; it does not bypass Cloudflare Access at the edge.
 - Rotate the Brevo SMTP key and the Midtrans server key after any suspected leak.
   Update `.env`, then redeploy or restart the affected containers.
 - Never commit `.env`, database files, backups, or logs.
