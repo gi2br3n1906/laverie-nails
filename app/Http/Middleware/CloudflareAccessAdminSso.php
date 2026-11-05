@@ -10,6 +10,7 @@ use App\Services\CloudflareAccessTokenService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CloudflareAccessAdminSso
@@ -25,26 +26,41 @@ class CloudflareAccessAdminSso
 
         if (! is_string($assertion) || $assertion === '') {
             if (Auth::guard('web')->check()) {
-                abort_unless($request->user()?->hasRole(UserRole::Admin), 403);
+                if (! $request->user()?->hasRole(UserRole::Admin)) {
+                    $this->logRejection('authenticated_user_not_admin', $request, $assertion);
+                    abort(403);
+                }
 
                 return $next($request);
             }
 
-            abort_if($this->tokens->isConfigured(), 403, 'Cloudflare Access assertion is missing.');
+            if ($this->tokens->isConfigured()) {
+                $this->logRejection('assertion_missing', $request, $assertion);
+                abort(403, 'Cloudflare Access assertion is missing.');
+            }
 
             return redirect()->guest(route('login'));
         }
 
         $email = $this->tokens->email($assertion);
 
-        abort_if($email === null, 403, 'Cloudflare Access authentication failed.');
+        if ($email === null) {
+            $this->logRejection('assertion_invalid', $request, $assertion);
+            abort(403, 'Cloudflare Access authentication failed.');
+        }
 
         $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
 
-        abort_if($user === null || ! $user->hasRole(UserRole::Admin), 403);
+        if ($user === null || ! $user->hasRole(UserRole::Admin)) {
+            $this->logRejection('access_identity_not_admin', $request, $assertion);
+            abort(403);
+        }
 
         if (Auth::guard('web')->check()) {
-            abort_unless($request->user()?->is($user), 403);
+            if (! $request->user()?->is($user)) {
+                $this->logRejection('access_identity_session_mismatch', $request, $assertion);
+                abort(403);
+            }
 
             return $next($request);
         }
@@ -53,5 +69,16 @@ class CloudflareAccessAdminSso
         $request->session()->regenerate();
 
         return $next($request);
+    }
+
+    private function logRejection(string $reason, Request $request, mixed $assertion): void
+    {
+        Log::warning('Cloudflare Access admin request rejected.', [
+            'reason' => $reason,
+            'path' => $request->path(),
+            'has_access_header' => filled($request->header('Cf-Access-Jwt-Assertion')),
+            'has_access_cookie' => filled($request->cookie('CF_Authorization')),
+            'assertion_source' => filled($request->header('Cf-Access-Jwt-Assertion')) ? 'header' : (filled($assertion) ? 'cookie' : 'none'),
+        ]);
     }
 }
