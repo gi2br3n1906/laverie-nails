@@ -95,6 +95,17 @@ class CloudflareAccessSsoTest extends TestCase
             ->assertOk();
     }
 
+    public function test_existing_admin_session_ignores_a_stale_access_cookie(): void
+    {
+        $admin = User::factory()->create(['roles' => ['admin']]);
+        $this->configureCloudflareAccess();
+
+        $this->actingAs($admin)
+            ->withUnencryptedCookie('CF_Authorization', 'stale-token')
+            ->get('/admin/orders')
+            ->assertOk();
+    }
+
     public function test_access_identity_must_match_an_existing_admin_session(): void
     {
         $admin = User::factory()->create([

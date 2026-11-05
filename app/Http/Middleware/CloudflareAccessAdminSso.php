@@ -22,18 +22,21 @@ class CloudflareAccessAdminSso
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $assertion = $request->header('Cf-Access-Jwt-Assertion') ?: $request->cookie('CF_Authorization');
+        $accessHeader = $request->header('Cf-Access-Jwt-Assertion');
 
-        if (! is_string($assertion) || $assertion === '') {
-            if (Auth::guard('web')->check()) {
-                if (! $request->user()?->hasRole(UserRole::Admin)) {
-                    $this->logRejection('authenticated_user_not_admin', $request, $assertion);
-                    abort(403);
-                }
-
-                return $next($request);
+        // A stale Access cookie must not override a valid Laravel password session.
+        if (! filled($accessHeader) && Auth::guard('web')->check()) {
+            if (! $request->user()?->hasRole(UserRole::Admin)) {
+                $this->logRejection('authenticated_user_not_admin', $request, null);
+                abort(403);
             }
 
+            return $next($request);
+        }
+
+        $assertion = $accessHeader ?: $request->cookie('CF_Authorization');
+
+        if (! is_string($assertion) || $assertion === '') {
             if ($this->tokens->isConfigured()) {
                 $this->logRejection('assertion_missing', $request, $assertion);
                 abort(403, 'Cloudflare Access assertion is missing.');
