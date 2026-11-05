@@ -21,7 +21,7 @@ class CloudflareAccessAdminSso
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $assertion = $request->header('Cf-Access-Jwt-Assertion');
+        $assertion = $request->header('Cf-Access-Jwt-Assertion') ?: $request->cookie('CF_Authorization');
 
         if (! is_string($assertion) || $assertion === '') {
             abort_if($this->tokens->isConfigured(), 403, 'Cloudflare Access assertion is missing.');

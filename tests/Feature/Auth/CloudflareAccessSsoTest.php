@@ -30,6 +30,21 @@ class CloudflareAccessSsoTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
+    public function test_cloudflare_authorization_cookie_can_bootstrap_an_admin_session(): void
+    {
+        $admin = User::factory()->create([
+            'email' => 'laverienails@gmail.com',
+            'roles' => ['admin'],
+        ]);
+        $this->configureCloudflareAccess();
+
+        $this->withUnencryptedCookie('CF_Authorization', $this->fixture('adminToken'))
+            ->get('/admin/orders')
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_cloudflare_access_token_for_a_non_admin_is_forbidden(): void
     {
         User::factory()->create(['email' => 'customer@example.com']);

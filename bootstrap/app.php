@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocale::class,
         ]);
 
+        $middleware->encryptCookies(except: [
+            'CF_Authorization',
+        ]);
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'cloudflare.admin.sso' => CloudflareAccessAdminSso::class,
