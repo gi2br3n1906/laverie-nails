@@ -82,7 +82,7 @@ class CloudflareAccessSsoTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_configured_access_rejects_a_session_without_the_assertion(): void
+    public function test_configured_access_allows_an_existing_admin_session_without_the_assertion(): void
     {
         $admin = User::factory()->create(['roles' => ['admin']]);
         config([
@@ -92,7 +92,7 @@ class CloudflareAccessSsoTest extends TestCase
 
         $this->actingAs($admin)
             ->get('/admin/orders')
-            ->assertForbidden();
+            ->assertOk();
     }
 
     public function test_access_identity_must_match_an_existing_admin_session(): void

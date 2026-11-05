@@ -24,13 +24,13 @@ class CloudflareAccessAdminSso
         $assertion = $request->header('Cf-Access-Jwt-Assertion') ?: $request->cookie('CF_Authorization');
 
         if (! is_string($assertion) || $assertion === '') {
-            abort_if($this->tokens->isConfigured(), 403, 'Cloudflare Access assertion is missing.');
-
             if (Auth::guard('web')->check()) {
                 abort_unless($request->user()?->hasRole(UserRole::Admin), 403);
 
                 return $next($request);
             }
+
+            abort_if($this->tokens->isConfigured(), 403, 'Cloudflare Access assertion is missing.');
 
             return redirect()->guest(route('login'));
         }
