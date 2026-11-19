@@ -47,6 +47,8 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect($hadCloudflareAccess ? '/cdn-cgi/access/logout' : route('login'));
+        return redirect($hadCloudflareAccess
+            ? '/cdn-cgi/access/logout?returnTo='.urlencode(url('/'))
+            : route('login'));
     }
 }

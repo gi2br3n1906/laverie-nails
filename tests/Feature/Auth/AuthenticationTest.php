@@ -79,7 +79,7 @@ class AuthenticationTest extends TestCase
         $this->actingAs($user)
             ->withUnencryptedCookie('CF_Authorization', 'access-token')
             ->post(route('logout'))
-            ->assertRedirect('/cdn-cgi/access/logout');
+            ->assertRedirect('/cdn-cgi/access/logout?returnTo='.urlencode(url('/')));
 
         $this->assertGuest();
     }
