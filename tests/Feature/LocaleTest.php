@@ -99,7 +99,13 @@ class LocaleTest extends TestCase
 
         $this->actingAs($user)->get('/profile')
             ->assertOk()
-            ->assertDontSee('data-language-switcher', false)
-            ->assertDontSee('Switch to Indonesian');
+            ->assertSee('data-language-switcher', false)
+            ->assertSee(route('locale.switch', 'id'), false)
+            ->assertSeeText('Language Preference');
+
+        $this->actingAs($user)->from('/profile')
+            ->get(route('locale.switch', 'id'))
+            ->assertRedirect('/profile')
+            ->assertSessionHas('locale', 'id');
     }
 }

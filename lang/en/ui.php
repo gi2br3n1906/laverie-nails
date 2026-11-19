@@ -227,6 +227,9 @@ return [
 
     'profile' => [
         'title' => 'Account Settings',
+        'preferences' => 'Preferences',
+        'language_heading' => 'Language Preference',
+        'language_copy' => 'Choose the language you want to use across Laverie Nails.',
         'hero_eyebrow' => 'Account settings',
         'heading' => 'Account Settings',
         'intro' => 'Manage your identity, security, and default address to speed up checkout.',

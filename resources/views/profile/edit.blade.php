@@ -44,6 +44,15 @@
             </form>
         </section>
 
+        <section class="rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 shadow-sm sm:p-8 lg:col-span-2" aria-labelledby="language-heading">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#60738C]">{{ __('ui.profile.preferences') }}</p>
+            <h2 class="mt-2 font-display text-3xl text-[#0C1C39]" id="language-heading">{{ __('ui.profile.language_heading') }}</h2>
+            <p class="mt-3 text-sm leading-6 text-stone-600">{{ __('ui.profile.language_copy') }}</p>
+            <div class="mt-5">
+                <x-storefront.language-switcher />
+            </div>
+        </section>
+
         <section class="rounded-[2rem] border border-[#92A1B5]/40 bg-white p-6 shadow-sm sm:p-8 lg:col-span-2" aria-labelledby="address-heading">
             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#60738C]">{{ __('ui.profile.default_checkout') }}</p>
             <h2 class="mt-2 font-display text-3xl text-[#0C1C39]" id="address-heading">{{ __('ui.profile.address_heading') }}</h2>

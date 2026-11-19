@@ -227,6 +227,9 @@ return [
 
     'profile' => [
         'title' => 'Pengaturan Akun',
+        'preferences' => 'Preferensi',
+        'language_heading' => 'Preferensi Bahasa',
+        'language_copy' => 'Pilih bahasa yang ingin Anda gunakan di seluruh Laverie Nails.',
         'hero_eyebrow' => 'Pengaturan akun',
         'heading' => 'Pengaturan Akun',
         'intro' => 'Kelola identitas, keamanan, dan alamat utama untuk mempercepat pengalaman belanja Anda.',

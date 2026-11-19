@@ -62,6 +62,14 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertSame(3, preg_match_all('/<svg[^>]*class="[^"]*drop-shadow-lg[^"]*"[^>]*data-navbar-icon="(?:menu|search|cart)"/', $content));
         $this->assertStringContainsString('>Sizing</a>', $content);
         $this->assertStringNotContainsString('>Find your size</a>', $content);
+
+        preg_match('/<div[^>]*data-hamburger-links[^>]*>(.*?)<div[^>]*data-hamburger-account-menu/s', $content, $menu);
+        preg_match('/<footer\b.*?<\/footer>/s', $content, $footer);
+
+        $this->assertNotEmpty($menu);
+        $this->assertNotEmpty($footer);
+        $this->assertStringNotContainsString('locale.switch', $menu[1]);
+        $this->assertStringNotContainsString('locale.switch', $footer[0]);
     }
 
     public function test_hamburger_contains_only_the_five_requested_store_links_in_order(): void
