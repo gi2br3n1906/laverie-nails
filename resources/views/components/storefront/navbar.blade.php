@@ -33,7 +33,6 @@
         </div>
         <a @class(['justify-self-center whitespace-nowrap font-logo text-[1.375rem] tracking-[-0.04em] sm:text-3xl', 'text-white drop-shadow-lg' => $overlay, 'text-[#0C1C39]' => ! $overlay]) href="{{ route('home') }}" data-navbar-brand>Laverie Nails</a>
         <div class="flex items-center justify-end gap-0.5 pl-2 sm:gap-1 sm:pl-0" data-navbar-right>
-            <x-storefront.language-switcher :overlay="$overlay" />
             <form action="{{ route('products.index') }}" method="GET" class="relative" data-navbar-search-form>
                 <button @class(['grid size-11 place-items-center rounded-full transition focus-visible:outline-2 focus-visible:outline-offset-2', 'text-white hover:bg-white/15 focus-visible:outline-white' => $overlay, 'text-[#0C1C39] hover:bg-[#EAF0F6] focus-visible:outline-[#0C1C39]' => ! $overlay]) type="button" aria-label="{{ __('ui.nav.search_products') }}" aria-expanded="false" aria-controls="navbar-search-panel" data-navbar-search-button><svg @class(['size-5', 'drop-shadow-lg' => $overlay]) aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-navbar-icon="search"><circle cx="11" cy="11" r="6.5" /><path stroke-linecap="round" d="m16 16 4 4" /></svg></button>
                 <div class="absolute -right-[46px] top-12 hidden w-[calc(100vw-1.5rem)] rounded-2xl border border-[#0C1C39]/10 bg-white p-2 text-[#0C1C39] shadow-[0_18px_40px_-12px_rgba(12,28,57,0.28)] sm:right-0 sm:top-14 sm:w-[min(20rem,calc(100vw-2rem))]" id="navbar-search-panel" data-navbar-search-panel>

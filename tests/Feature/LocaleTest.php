@@ -88,20 +88,18 @@ class LocaleTest extends TestCase
             ->assertSee('Pilih kelurahan/desa');
     }
 
-    public function test_language_switcher_is_available_on_overlay_and_regular_navigation(): void
+    public function test_language_switcher_is_not_rendered_in_storefront_navigation(): void
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('data-language-switcher', false)
-            ->assertSee(route('locale.switch', 'id'), false)
-            ->assertSee('hreflang="id"', false)
-            ->assertSee('aria-current="true"', false);
+            ->assertDontSee('data-language-switcher', false)
+            ->assertDontSee('Switch to Indonesian');
 
         $user = User::factory()->create();
 
         $this->actingAs($user)->get('/profile')
             ->assertOk()
-            ->assertSee('data-language-switcher', false)
-            ->assertSee(route('locale.switch', 'id'), false);
+            ->assertDontSee('data-language-switcher', false)
+            ->assertDontSee('Switch to Indonesian');
     }
 }

@@ -21,6 +21,7 @@ class GlobalPremiumUiTest extends TestCase
                 ->assertSee('data-homepage-announcement', false)
                 ->assertSee('data-homepage-navbar', false)
                 ->assertSee('data-overlay-navigation="false"', false)
+                ->assertDontSee('data-language-switcher', false)
                 ->assertSee('Laverie Nails')
                 ->getContent();
 
@@ -51,6 +52,7 @@ class GlobalPremiumUiTest extends TestCase
         $this->assertStringContainsString('window.scrollY > 0', $navbarScript);
         $this->assertStringContainsString('navbarScrolled', $navbarScript);
         $this->assertMatchesRegularExpression('/grid-cols-\[1fr_auto_1fr\]/', $content);
+        $this->assertStringNotContainsString('data-language-switcher', $content);
         $this->assertMatchesRegularExpression('/data-navbar-left.*?aria-label="Open menu".*?data-navbar-brand/s', $content);
         $this->assertMatchesRegularExpression('/data-navbar-brand[^>]*>Laverie Nails<\/a>.*?data-navbar-right/s', $content);
         $this->assertMatchesRegularExpression('/font-logo[^>]*text-white[^>]*>Laverie Nails<\/a>/', $content);
