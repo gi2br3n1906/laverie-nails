@@ -24,7 +24,11 @@ class InformationalPagesTest extends TestCase
             ->assertSee('nail game always on point')
             ->assertSee('data-landscape-hero', false)
             ->assertSee('data-informational-hero-image', false)
-            ->assertSee('images/hero-banner.png');
+            ->assertSee('images/hero-banner.png')
+            ->assertSee('font-serif text-[1.15rem] font-normal', false)
+            ->assertSee('font-serif text-5xl font-normal', false)
+            ->assertSee('font-serif text-2xl font-normal', false)
+            ->assertDontSee('font-script text-2xl', false);
     }
 
     public function test_faq_renders_the_eight_questions_in_canva_order(): void

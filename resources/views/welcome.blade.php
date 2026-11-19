@@ -17,7 +17,7 @@
         }
     @endphp
 
-    <section class="relative isolate flex min-h-[38rem] items-end justify-center overflow-hidden bg-[#EAF0F6] sm:min-h-[44rem] lg:min-h-[48rem]" aria-label="{{ __('ui.home.hero_aria') }}" aria-roledescription="carousel" tabindex="0" data-homepage-hero data-hero-carousel>
+    <section class="relative isolate flex aspect-[4/3] items-end justify-center overflow-hidden bg-[#EAF0F6] sm:aspect-[16/10] md:aspect-auto md:min-h-[44rem] lg:min-h-[48rem]" aria-label="{{ __('ui.home.hero_aria') }}" aria-roledescription="carousel" tabindex="0" data-homepage-hero data-hero-carousel>
         <div class="absolute inset-0 -z-20" data-hero-slides>
             @foreach ($heroSlides as $slide)
                 <div @class(['absolute inset-0 transition-opacity duration-700 ease-out', 'opacity-100' => $loop->first, 'pointer-events-none opacity-0' => ! $loop->first]) aria-hidden="{{ $loop->first ? 'false' : 'true' }}" aria-label="{{ __('ui.home.slide_label', ['current' => $loop->iteration, 'total' => count($heroSlides)]) }}" data-hero-slide>
@@ -25,16 +25,16 @@
                 </div>
             @endforeach
         </div>
-        <div class="mx-auto w-full max-w-screen-2xl px-5 pb-7 pt-28 text-center text-white sm:px-8 sm:pb-9 lg:px-12 lg:pb-10">
+        <div class="mx-auto flex h-full w-full max-w-screen-2xl flex-col justify-end px-5 pb-5 pt-20 text-center text-white sm:px-8 sm:pb-8 lg:px-12 lg:pb-10">
             <div class="mx-auto max-w-4xl drop-shadow-lg">
-                <h1 class="font-script text-[2.5rem] leading-[1.05] text-white sm:text-6xl lg:text-8xl">{{ __('ui.home.hero_title') }}</h1>
-                <p class="-mt-2 text-sm font-semibold tracking-[0.25em] text-white sm:text-base">{{ __('ui.home.hero_subtitle') }}</p>
-                <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row" data-homepage-hero-ctas>
-                    <a class="inline-flex min-h-11 items-center justify-center rounded-full bg-[#0C1C39] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">{{ __('ui.home.cta_collection') }}</a>
-                    <a class="inline-flex min-h-11 items-center justify-center rounded-full border border-white bg-white/10 px-8 text-xs font-semibold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#0C1C39]" href="{{ route('measurements.create') }}">{{ __('ui.home.cta_sizing') }}</a>
+                <h1 class="font-script text-[2rem] leading-[1.05] text-white sm:text-6xl lg:text-8xl">{{ __('ui.home.hero_title') }}</h1>
+                <p class="-mt-1 text-xs font-semibold tracking-[0.2em] text-white sm:-mt-2 sm:text-base sm:tracking-[0.25em]">{{ __('ui.home.hero_subtitle') }}</p>
+                <div class="mt-5 flex flex-col justify-center gap-2 sm:mt-7 sm:flex-row sm:gap-3" data-homepage-hero-ctas>
+                    <a class="inline-flex min-h-10 items-center justify-center rounded-full bg-[#0C1C39] px-6 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#192B48] sm:min-h-11 sm:px-8 sm:text-xs sm:tracking-[0.16em]" href="{{ route('products.index') }}">{{ __('ui.home.cta_collection') }}</a>
+                    <a class="inline-flex min-h-10 items-center justify-center rounded-full border border-white bg-white/10 px-6 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#0C1C39] sm:min-h-11 sm:px-8 sm:text-xs sm:tracking-[0.16em]" href="{{ route('measurements.create') }}">{{ __('ui.home.cta_sizing') }}</a>
                 </div>
             </div>
-            <div class="mt-7 flex items-center justify-center gap-3" aria-label="{{ __('ui.home.hero_choose_slide') }}" data-homepage-hero-indicators>
+            <div class="mt-5 flex items-center justify-center gap-3 sm:mt-7" aria-label="{{ __('ui.home.hero_choose_slide') }}" data-homepage-hero-indicators>
                 @foreach ($heroSlides as $slide)
                     <button @class(['size-2.5 rounded-full border border-white transition', 'bg-white' => $loop->first, 'bg-white/30 hover:bg-white/70' => ! $loop->first]) type="button" aria-label="{{ __('ui.home.hero_show_slide', ['number' => $loop->iteration]) }}" aria-current="{{ $loop->first ? 'true' : 'false' }}" data-hero-indicator="{{ $loop->index }}"></button>
                 @endforeach
