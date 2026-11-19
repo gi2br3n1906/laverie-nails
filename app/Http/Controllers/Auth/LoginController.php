@@ -38,11 +38,15 @@ class LoginController extends Controller
 
     public function destroy(LogoutRequest $request): RedirectResponse
     {
+        $hadCloudflareAccess = filled($request->cookie('CF_Authorization'))
+            || $request->headers->has('Cf-Access-Jwt-Assertion')
+            || $request->headers->has('Cf-Access-Authenticated-User-Email');
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect($hadCloudflareAccess ? '/cdn-cgi/access/logout' : route('login'));
     }
 }

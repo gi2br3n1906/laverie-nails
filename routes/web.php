@@ -110,10 +110,11 @@ Route::middleware('auth')->group(function (): void {
 });
 
 Route::middleware(['auth', 'role:user'])->group(function (): void {
-    Route::get('/dashboard', [CustomerPortalController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/orders/{order}', [CustomerPortalController::class, 'show'])->name('dashboard.orders.show');
     Route::patch('/dashboard/measurements', [CustomerPortalController::class, 'updateMeasurements'])->name('dashboard.measurements.update');
 });
+
+Route::get('/dashboard', [CustomerPortalController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::redirect('/admin', '/admin/orders');
 

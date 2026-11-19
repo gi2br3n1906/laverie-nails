@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\FulfillmentStatus;
+use App\Enums\UserRole;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -40,6 +41,14 @@ class CustomerPortalTest extends TestCase
         $this->actingAs($customer)->get('/dashboard/orders/'.$latest->id)
             ->assertOk()->assertSeeText('Owned Azure Set');
         $this->actingAs($customer)->get('/dashboard/orders/'.$foreign->id)->assertNotFound();
+    }
+
+    public function test_admin_dashboard_entry_redirects_to_admin_orders(): void
+    {
+        $admin = User::factory()->withRole(UserRole::Admin)->create();
+
+        $this->actingAs($admin)->get('/dashboard')
+            ->assertRedirect(route('admin.orders.index'));
     }
 
     public function test_customer_can_save_canonical_ten_finger_measurement_profile(): void

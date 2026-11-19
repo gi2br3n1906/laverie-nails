@@ -59,17 +59,11 @@ class CloudflareAccessAdminSso
             abort(403);
         }
 
-        if (Auth::guard('web')->check()) {
-            if (! $request->user()?->is($user)) {
-                $this->logRejection('access_identity_session_mismatch', $request, $assertion);
-                abort(403);
-            }
-
-            return $next($request);
+        if (! $request->user()?->is($user)) {
+            Auth::guard('web')->logout();
+            Auth::guard('web')->login($user);
+            $request->session()->regenerate();
         }
-
-        Auth::guard('web')->login($user);
-        $request->session()->regenerate();
 
         return $next($request);
     }

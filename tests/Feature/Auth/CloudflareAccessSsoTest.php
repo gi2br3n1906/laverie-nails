@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Services\CloudflareAccessTokenService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -23,8 +22,9 @@ class CloudflareAccessSsoTest extends TestCase
         ]);
         $this->configureCloudflareAccess();
 
-        $this->withHeaders(['Cf-Access-Jwt-Assertion' => $this->fixture('adminToken')])
-            ->get('/admin/orders')
+        $this->followingRedirects()
+            ->withHeaders(['Cf-Access-Jwt-Assertion' => $this->fixture('adminToken')])
+            ->get('/admin')
             ->assertOk();
 
         $this->assertAuthenticatedAs($admin);
@@ -106,36 +106,34 @@ class CloudflareAccessSsoTest extends TestCase
             ->assertOk();
     }
 
-    public function test_access_identity_must_match_an_existing_admin_session(): void
+    public function test_access_identity_switches_an_existing_customer_session_to_the_admin(): void
     {
         $admin = User::factory()->create([
             'email' => 'laverienails@gmail.com',
             'roles' => ['admin'],
         ]);
-        $otherAdmin = User::factory()->create([
-            'email' => 'other-admin@example.com',
-            'roles' => ['admin'],
-        ]);
-        config([
-            'services.cloudflare_access.team_domain' => 'https://gibsteam.cloudflareaccess.com',
-            'services.cloudflare_access.audience' => 'test-audience',
-        ]);
-        $this->app->bind(CloudflareAccessTokenService::class, function () use ($otherAdmin): CloudflareAccessTokenService {
-            return new class($otherAdmin->email) extends CloudflareAccessTokenService
-            {
-                public function __construct(private readonly string $email) {}
+        $customer = User::factory()->create(['email' => 'customer@example.com']);
+        $this->configureCloudflareAccess();
 
-                public function email(string $token): ?string
-                {
-                    return $this->email;
-                }
-            };
-        });
-
-        $this->actingAs($admin)
-            ->withHeaders(['Cf-Access-Jwt-Assertion' => 'valid-token'])
+        $this->actingAs($customer)
+            ->withHeaders(['Cf-Access-Jwt-Assertion' => $this->fixture('adminToken')])
             ->get('/admin/orders')
-            ->assertForbidden();
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($admin);
+    }
+
+    public function test_cloudflare_header_does_not_affect_customer_dashboard(): void
+    {
+        $customer = User::factory()->create(['email' => 'customer@example.com']);
+
+        $this->actingAs($customer)
+            ->withHeaders(['Cf-Access-Authenticated-User-Email' => 'laverienails@gmail.com'])
+            ->withUnencryptedCookie('CF_Authorization', $this->fixture('adminToken'))
+            ->get('/dashboard')
+            ->assertOk();
+
+        $this->assertAuthenticatedAs($customer);
     }
 
     private function configureCloudflareAccess(): void

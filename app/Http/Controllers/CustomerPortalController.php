@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\UpdateDefaultSizeRequest;
 use App\Models\Order;
 use App\Models\User;
@@ -16,10 +17,14 @@ class CustomerPortalController extends Controller
 {
     public function __construct(private readonly CustomerPortalService $service) {}
 
-    public function index(Request $request): View
+    public function index(Request $request): RedirectResponse|View
     {
         /** @var User $user */
         $user = $request->user();
+
+        if ($user->hasRole(UserRole::Admin)) {
+            return to_route('admin.orders.index');
+        }
 
         return view('dashboard', ['user' => $user, 'orders' => $this->service->orders($user)]);
     }

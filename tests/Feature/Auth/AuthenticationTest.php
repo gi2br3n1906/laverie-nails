@@ -71,4 +71,16 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('login'));
         $this->assertGuest();
     }
+
+    public function test_logout_with_cloudflare_access_cascades_to_access_logout(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withUnencryptedCookie('CF_Authorization', 'access-token')
+            ->post(route('logout'))
+            ->assertRedirect('/cdn-cgi/access/logout');
+
+        $this->assertGuest();
+    }
 }
