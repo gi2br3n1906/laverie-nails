@@ -26,11 +26,11 @@ class InformationalPagesTest extends TestCase
             ->assertSee('data-landscape-hero', false)
             ->assertSee('data-informational-hero-image', false)
             ->assertSee('images/hero-banner.png')
-            ->assertSee('font-serif text-[1.25rem] font-normal', false)
+            ->assertSee('font-display text-2xl leading-relaxed', false)
             ->assertSee('font-serif text-[1.15rem] font-normal', false)
-            ->assertSee('font-serif text-4xl font-normal', false)
-            ->assertSee('font-serif text-lg font-normal', false)
-            ->assertDontSee('font-script text-2xl', false);
+            ->assertSee('font-script text-2xl text-stone-500', false)
+            ->assertDontSee('font-serif text-4xl font-normal', false)
+            ->assertDontSee('laverie</p>', false);
     }
 
     public function test_faq_renders_the_eight_questions_in_canva_order(): void
