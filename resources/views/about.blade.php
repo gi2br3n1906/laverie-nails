@@ -6,7 +6,7 @@
             <h2 class="sr-only" id="about-story-heading">{{ __('about.heading') }}</h2>
             <p class="font-display text-2xl leading-relaxed text-[#0C1C39] sm:text-3xl">{{ __('about.paragraphs')[0] }}</p>
 
-            <div class="mt-9 space-y-7 font-serif text-[1.15rem] font-normal leading-[1.9] text-stone-700 sm:text-[1.25rem]">
+            <div class="mt-9 space-y-7 font-serif text-[0.9375rem] font-normal leading-[1.9] text-stone-700 sm:text-base">
                 @foreach (array_slice(__('about.paragraphs'), 1) as $paragraph)
                     <p>{{ $paragraph }}</p>
                 @endforeach
