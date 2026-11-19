@@ -26,9 +26,10 @@ class InformationalPagesTest extends TestCase
             ->assertSee('data-landscape-hero', false)
             ->assertSee('data-informational-hero-image', false)
             ->assertSee('images/hero-banner.png')
+            ->assertSee('font-serif text-[1.25rem] font-normal', false)
             ->assertSee('font-serif text-[1.15rem] font-normal', false)
-            ->assertSee('font-serif text-5xl font-normal', false)
-            ->assertSee('font-serif text-2xl font-normal', false)
+            ->assertSee('font-serif text-4xl font-normal', false)
+            ->assertSee('font-serif text-lg font-normal', false)
             ->assertDontSee('font-script text-2xl', false);
     }
 

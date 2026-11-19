@@ -4,7 +4,7 @@
     <section class="bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="about-story-heading">
         <div class="mx-auto max-w-2xl text-center">
             <h2 class="sr-only" id="about-story-heading">{{ __('about.heading') }}</h2>
-            <p class="font-display text-2xl leading-relaxed text-[#0C1C39] sm:text-3xl">{{ __('about.paragraphs')[0] }}</p>
+            <p class="font-serif text-[1.25rem] font-normal leading-[1.9] text-[#0C1C39] sm:text-[1.35rem]">{{ __('about.paragraphs')[0] }}</p>
 
             <div class="mt-9 space-y-7 font-serif text-[1.15rem] font-normal leading-[1.9] text-stone-700 sm:text-[1.25rem]">
                 @foreach (array_slice(__('about.paragraphs'), 1) as $paragraph)
@@ -13,8 +13,8 @@
             </div>
 
             <div class="mt-14 border-t border-[#92A1B5]/40 pt-10" aria-label="{{ __('about.signature') }}">
-                <p class="font-serif text-5xl font-normal leading-none text-[#0C1C39]">{{ __('about.signature') }}</p>
-                <p class="mt-1 font-serif text-2xl font-normal text-stone-500">{{ __('about.tagline') }}</p>
+                <p class="font-serif text-4xl font-normal leading-tight text-[#0C1C39]">{{ __('about.signature') }}</p>
+                <p class="mt-2 font-serif text-lg font-normal leading-relaxed text-stone-500">{{ __('about.tagline') }}</p>
             </div>
         </div>
     </section>
