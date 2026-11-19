@@ -32,7 +32,7 @@ class AuthNavigationTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)->post('/logout')
-            ->assertRedirect(route('login'));
+            ->assertRedirect('/');
         $this->assertGuest();
 
         $this->get('/logout')->assertMethodNotAllowed();

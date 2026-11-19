@@ -10,6 +10,7 @@ use App\Http\Requests\Auth\LogoutRequest;
 use App\Models\User;
 use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -36,7 +37,7 @@ class LoginController extends Controller
         return redirect()->intended(route($user->accountHomeRouteName()));
     }
 
-    public function destroy(LogoutRequest $request): RedirectResponse
+    public function destroy(LogoutRequest $request): RedirectResponse|Response
     {
         $hadCloudflareAccess = filled($request->cookie('CF_Authorization'))
             || $request->headers->has('Cf-Access-Jwt-Assertion')
@@ -47,8 +48,13 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect($hadCloudflareAccess
-            ? '/cdn-cgi/access/logout?returnTo='.urlencode(url('/'))
-            : route('login'));
+        if ($hadCloudflareAccess) {
+            return response()->view('auth.cloudflare-logout', [
+                'homeUrl' => url('/'),
+                'teamDomain' => rtrim((string) config('services.cloudflare_access.team_domain'), '/'),
+            ]);
+        }
+
+        return redirect('/');
     }
 }

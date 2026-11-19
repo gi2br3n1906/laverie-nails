@@ -68,19 +68,40 @@ class AuthenticationTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('logout'));
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect('/');
         $this->assertGuest();
     }
 
-    public function test_logout_with_cloudflare_access_cascades_to_access_logout(): void
+    public function test_logout_with_cloudflare_access_cleans_access_session_then_returns_home(): void
     {
         $user = User::factory()->create();
+
+        config(['services.cloudflare_access.team_domain' => 'https://team.cloudflareaccess.com']);
 
         $this->actingAs($user)
             ->withUnencryptedCookie('CF_Authorization', 'access-token')
             ->post(route('logout'))
-            ->assertRedirect('/cdn-cgi/access/logout?returnTo='.urlencode(url('/')));
+            ->assertOk()
+            ->assertSee("fetch('/cdn-cgi/access/logout', { credentials: 'include' })", false)
+            ->assertSee(json_encode('https://team.cloudflareaccess.com/cdn-cgi/access/logout'), false)
+            ->assertSee('mode: \'no-cors\'', false)
+            ->assertSee('window.setTimeout(resolve, 400)', false)
+            ->assertSee('window.location.replace('.json_encode(url('/')), false)
+            ->assertSee('http-equiv="refresh" content="1;url='.url('/').'"', false)
+            ->assertSee('href="'.url('/').'"', false);
 
         $this->assertGuest();
+    }
+
+    public function test_logout_with_cloudflare_headers_also_renders_cleanup_page(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->withHeaders(['Cf-Access-Authenticated-User-Email' => 'admin@example.com'])
+            ->post(route('logout'))
+            ->assertOk()
+            ->assertSee('/cdn-cgi/access/logout', false)
+            ->assertSee('window.location.replace('.json_encode(url('/')), false);
     }
 }
