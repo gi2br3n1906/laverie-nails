@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\HeroBanner;
 use App\Models\Setting;
 use App\Services\ShippingRateService;
 use Illuminate\View\View;
@@ -12,12 +13,16 @@ class InformationalPageController extends Controller
 {
     public function about(): View
     {
-        return view('about');
+        return view('about', [
+            'aboutBanner' => HeroBanner::query()->forPlacement('about_us')->first(),
+        ]);
     }
 
     public function faq(): View
     {
-        return view('faq');
+        return view('faq', [
+            'faqBanner' => HeroBanner::query()->forPlacement('faq')->first(),
+        ]);
     }
 
     public function shippingPolicy(ShippingRateService $shippingRates): View

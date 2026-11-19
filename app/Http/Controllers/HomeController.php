@@ -19,7 +19,7 @@ class HomeController extends Controller
         return view('welcome', [
             'catalogs' => $this->marketplaceService->mainProducts(null)->take(9),
             'reviews' => $this->marketplaceService->featuredReviews(),
-            'heroBanners' => HeroBanner::query()->activeOrdered()->get(),
+            'heroBanners' => HeroBanner::query()->forPlacement('home_hero')->get(),
             'styleCategories' => Category::query()
                 ->whereHas('products', fn ($query) => $query->where('is_active', true))
                 ->with(['products' => fn ($query) => $query->active()->with('primaryImage')->latest()])

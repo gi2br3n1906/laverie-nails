@@ -19,7 +19,7 @@ class HeroBannerController extends Controller
     public function index(): View
     {
         return view('admin.banners.index', [
-            'banners' => HeroBanner::query()->orderBy('sequence')->orderBy('id')->get(),
+            'banners' => HeroBanner::query()->orderBy('placement')->orderBy('sequence')->orderBy('id')->get(),
         ]);
     }
 

@@ -203,6 +203,8 @@ class HomepageTest extends TestCase
         Storage::fake('public');
         HeroBanner::factory()->create(['image_path' => 'banners/second.jpg', 'sequence' => 20]);
         HeroBanner::factory()->create(['image_path' => 'banners/first.jpg', 'sequence' => 10]);
+        HeroBanner::factory()->create(['image_path' => 'banners/about.jpg', 'placement' => 'about_us', 'sequence' => 1]);
+        HeroBanner::factory()->create(['image_path' => 'banners/faq.jpg', 'placement' => 'faq', 'sequence' => 2]);
         HeroBanner::factory()->inactive()->create(['image_path' => 'banners/hidden.jpg', 'sequence' => 1]);
 
         $this->get(route('home'))
@@ -212,6 +214,8 @@ class HomepageTest extends TestCase
                 Storage::disk('public')->url('banners/second.jpg'),
             ], false)
             ->assertDontSee('banners/hidden.jpg', false)
+            ->assertDontSee('banners/about.jpg', false)
+            ->assertDontSee('banners/faq.jpg', false)
             ->assertDontSee('/images/hero-banner.png?v=', false);
     }
 

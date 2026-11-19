@@ -9,17 +9,18 @@
     <div class="mt-10 overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-stone-100 text-left text-sm">
-                <thead class="bg-stone-100 text-xs uppercase tracking-wider text-stone-800"><tr><th class="px-5 py-4">Preview</th><th class="px-5 py-4">Sequence</th><th class="px-5 py-4">Status</th><th class="px-5 py-4">Actions</th></tr></thead>
+                <thead class="bg-stone-100 text-xs uppercase tracking-wider text-stone-800"><tr><th class="px-5 py-4">Preview</th><th class="px-5 py-4">Placement</th><th class="px-5 py-4">Sequence</th><th class="px-5 py-4">Status</th><th class="px-5 py-4">Actions</th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
                     @forelse ($banners as $banner)
                         <tr>
                             <td class="px-5 py-4"><img class="h-20 w-36 rounded-xl bg-stone-100 object-cover" src="{{ Storage::disk('public')->url($banner->image_path) }}" alt="Hero banner sequence {{ $banner->sequence }}"></td>
+                            <td class="px-5 py-4"><span class="inline-flex rounded-full bg-[#EAF0F6] px-3 py-1 text-xs font-semibold text-[#344761]">{{ ['home_hero' => 'Homepage Hero Slider', 'about_us' => 'Halaman About Us', 'faq' => 'Halaman FAQ'][$banner->placement] ?? $banner->placement }}</span></td>
                             <td class="px-5 py-4 font-semibold tabular-nums">{{ $banner->sequence }}</td>
                             <td class="px-5 py-4">{{ $banner->is_active ? 'Active' : 'Inactive' }}</td>
                             <td class="px-5 py-4"><div class="flex items-center gap-4"><a class="font-semibold text-stone-900" href="{{ route('admin.banners.edit', $banner) }}">Edit</a><form method="POST" action="{{ route('admin.banners.destroy', $banner) }}">@csrf @method('DELETE')<button class="font-semibold text-stone-600" type="submit">Delete</button></form></div></td>
                         </tr>
                     @empty
-                        <tr><td class="px-5 py-8 text-center text-stone-500" colspan="4">No hero banners have been uploaded. The static fallback remains active.</td></tr>
+                        <tr><td class="px-5 py-8 text-center text-stone-500" colspan="5">No banners have been uploaded. Static fallbacks remain active.</td></tr>
                     @endforelse
                 </tbody>
             </table>

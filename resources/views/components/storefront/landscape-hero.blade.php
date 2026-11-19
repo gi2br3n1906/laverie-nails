@@ -1,10 +1,11 @@
 @props([
     'heading',
     'eyebrow' => null,
+    'image' => null,
 ])
 
 <section class="relative isolate overflow-hidden bg-[#E8E1F1]" aria-label="{{ $heading }}" data-landscape-hero>
-    <img class="absolute inset-0 -z-20 h-full w-full object-cover object-center" src="{{ asset('images/hero-banner.png') }}" alt="" fetchpriority="high" data-informational-hero-image>
+    <img class="absolute inset-0 -z-20 h-full w-full object-cover object-center" src="{{ $image ?? asset('images/hero-banner.png') }}" alt="" fetchpriority="high" data-informational-hero-image>
     <div class="absolute inset-0 -z-10 bg-gradient-to-t from-[#241B31]/75 via-[#241B31]/10 to-white/10" aria-hidden="true"></div>
 
     <div class="relative mx-auto flex min-h-[19rem] max-w-4xl flex-col items-center justify-end px-5 pb-10 pt-28 text-center sm:min-h-[24rem] sm:pb-14">

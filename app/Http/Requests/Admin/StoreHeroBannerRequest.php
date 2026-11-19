@@ -20,12 +20,16 @@ class StoreHeroBannerRequest extends FormRequest
         return [
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['sometimes', 'boolean'],
+            'placement' => ['sometimes', 'string', 'in:home_hero,about_us,faq'],
             'sequence' => ['required', 'integer', 'min:0', 'max:10000'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['is_active' => $this->boolean('is_active')]);
+        $this->merge([
+            'is_active' => $this->boolean('is_active'),
+            'placement' => $this->input('placement', 'home_hero'),
+        ]);
     }
 }

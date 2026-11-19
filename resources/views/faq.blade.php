@@ -6,7 +6,7 @@
             : null;
     @endphp
 
-    <x-storefront.landscape-hero :heading="__('faq.heading')" />
+    <x-storefront.landscape-hero :heading="__('faq.heading')" :image="$faqBanner?->image_path ? Storage::disk('public')->url($faqBanner->image_path) : asset('images/hero-banner.png')" />
 
     <section class="bg-white px-4 py-14 sm:px-6 sm:py-20" aria-label="{{ __('faq.title') }}">
         <div class="mx-auto max-w-3xl font-open-sans">

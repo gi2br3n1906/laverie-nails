@@ -43,6 +43,7 @@ class HeroBannerCrudTest extends TestCase
         $response->assertRedirect(route('admin.banners.index'));
         $this->assertSame(7, $banner->sequence);
         $this->assertTrue($banner->is_active);
+        $this->assertSame('home_hero', $banner->placement);
         $this->assertStringStartsWith('banners/', $banner->image_path);
         Storage::disk('public')->assertExists($banner->image_path);
     }
@@ -79,6 +80,41 @@ class HeroBannerCrudTest extends TestCase
         $this->assertSame(10, $banner->sequence);
         $this->assertFalse($banner->is_active);
         Storage::disk('public')->assertExists('banners/original.jpg');
+    }
+
+    public function test_admin_can_assign_banner_to_about_or_faq_placement(): void
+    {
+        Storage::fake('public');
+        $admin = $this->admin();
+
+        foreach (['about_us', 'faq'] as $placement) {
+            $this->actingAs($admin)->post('/admin/banners', [
+                'image' => UploadedFile::fake()->image($placement.'.jpg', 1600, 900),
+                'sequence' => 1,
+                'placement' => $placement,
+                'is_active' => '1',
+            ])->assertRedirect(route('admin.banners.index'));
+        }
+
+        $this->assertDatabaseHas('hero_banners', ['placement' => 'about_us']);
+        $this->assertDatabaseHas('hero_banners', ['placement' => 'faq']);
+        $this->actingAs($admin)->get('/admin/banners')
+            ->assertOk()
+            ->assertSee('Halaman About Us')
+            ->assertSee('Halaman FAQ');
+    }
+
+    public function test_banner_placement_must_be_supported(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->admin())->post('/admin/banners', [
+            'image' => UploadedFile::fake()->image('invalid.jpg', 1600, 900),
+            'sequence' => 0,
+            'placement' => 'customer_dashboard',
+        ])->assertSessionHasErrors('placement');
+
+        $this->assertDatabaseCount('hero_banners', 0);
     }
 
     public function test_replacing_a_banner_deletes_the_old_image_after_success(): void

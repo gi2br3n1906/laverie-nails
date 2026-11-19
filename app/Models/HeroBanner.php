@@ -18,6 +18,7 @@ class HeroBanner extends Model
     protected $fillable = [
         'image_path',
         'is_active',
+        'placement',
         'sequence',
     ];
 
@@ -26,6 +27,7 @@ class HeroBanner extends Model
     {
         return [
             'is_active' => 'boolean',
+            'placement' => 'string',
             'sequence' => 'integer',
         ];
     }
@@ -34,5 +36,14 @@ class HeroBanner extends Model
     public function scopeActiveOrdered(Builder $query): void
     {
         $query->where('is_active', true)->orderBy('sequence')->orderBy('id');
+    }
+
+    /** @param Builder<HeroBanner> $query */
+    public function scopeForPlacement(Builder $query, string $placement): void
+    {
+        $query->where('placement', $placement)
+            ->where('is_active', true)
+            ->orderBy('sequence')
+            ->orderByDesc('id');
     }
 }

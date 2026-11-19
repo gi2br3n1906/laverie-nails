@@ -1,5 +1,5 @@
 <x-layouts.storefront :title="__('about.title')">
-    <x-storefront.landscape-hero :heading="__('about.heading')" />
+    <x-storefront.landscape-hero :heading="__('about.heading')" :image="$aboutBanner?->image_path ? Storage::disk('public')->url($aboutBanner->image_path) : asset('images/hero-banner.png')" />
 
     <section class="bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="about-story-heading">
         <div class="mx-auto max-w-2xl text-center">

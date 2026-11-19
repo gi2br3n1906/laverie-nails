@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Frontend;
 
+use App\Models\HeroBanner;
 use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -54,6 +55,45 @@ class InformationalPagesTest extends TestCase
             ]);
 
         $this->assertSame(8, substr_count($response->getContent(), 'data-faq-item'));
+    }
+
+    public function test_about_and_faq_display_only_their_assigned_active_banner(): void
+    {
+        HeroBanner::factory()->create([
+            'image_path' => 'banners/about.jpg',
+            'placement' => 'about_us',
+            'sequence' => 1,
+        ]);
+        HeroBanner::factory()->create([
+            'image_path' => 'banners/faq.jpg',
+            'placement' => 'faq',
+            'sequence' => 1,
+        ]);
+        HeroBanner::factory()->inactive()->create([
+            'image_path' => 'banners/inactive-about.jpg',
+            'placement' => 'about_us',
+        ]);
+
+        $aboutResponse = $this->get(route('about'))->assertOk()
+            ->assertSee('banners/about.jpg')
+            ->assertDontSee('banners/faq.jpg')
+            ->assertDontSee('banners/inactive-about.jpg');
+        $faqResponse = $this->get(route('faq'))->assertOk()
+            ->assertSee('banners/faq.jpg')
+            ->assertDontSee('banners/about.jpg')
+            ->assertDontSee('banners/inactive-about.jpg');
+
+        $this->assertStringNotContainsString('images/hero-banner.png', $aboutResponse->getContent());
+        $this->assertStringNotContainsString('images/hero-banner.png', $faqResponse->getContent());
+    }
+
+    public function test_about_and_faq_fall_back_when_no_active_placement_banner_exists(): void
+    {
+        HeroBanner::factory()->inactive()->create(['placement' => 'about_us']);
+        HeroBanner::factory()->create(['placement' => 'home_hero']);
+
+        $this->get(route('about'))->assertOk()->assertSee('images/hero-banner.png');
+        $this->get(route('faq'))->assertOk()->assertSee('images/hero-banner.png');
     }
 
     public function test_shipping_policy_uses_the_live_zone_rates_and_real_order_statuses(): void

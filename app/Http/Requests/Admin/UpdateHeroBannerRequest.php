@@ -20,6 +20,7 @@ class UpdateHeroBannerRequest extends FormRequest
         return [
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['sometimes', 'boolean'],
+            'placement' => ['sometimes', 'string', 'in:home_hero,about_us,faq'],
             'sequence' => ['required', 'integer', 'min:0', 'max:10000'],
         ];
     }

@@ -18,7 +18,8 @@ class HeroBannerFactory extends Factory
         return [
             'image_path' => 'banners/'.$this->faker->uuid().'.jpg',
             'is_active' => true,
-            'sequence' => $this->faker->numberBetween(0, 100),
+            'placement' => 'home_hero',
+            'sequence' => fake()->numberBetween(0, 100),
         ];
     }
 

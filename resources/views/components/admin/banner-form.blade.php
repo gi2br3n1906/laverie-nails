@@ -18,14 +18,24 @@
     </div>
 
     <div>
+        <label class="text-sm font-semibold" for="placement">Placement / Lokasi Banner</label>
+        <select class="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 outline-none focus:border-stone-500 focus:ring-4 focus:ring-stone-200" id="placement" name="placement" required>
+            @foreach (['home_hero' => 'Homepage Hero Slider', 'about_us' => 'Halaman About Us', 'faq' => 'Halaman FAQ'] as $value => $label)
+                <option value="{{ $value }}" @selected(old('placement', $banner?->placement ?? 'home_hero') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('placement')" />
+    </div>
+
+    <div>
         <label class="text-sm font-semibold" for="sequence">Display sequence</label>
         <input class="mt-2 w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 outline-none focus:border-stone-500 focus:ring-4 focus:ring-stone-200" id="sequence" name="sequence" type="number" min="0" max="10000" step="1" value="{{ old('sequence', $banner?->sequence ?? 0) }}" required>
-        <p class="mt-2 text-xs text-stone-500">Lower numbers appear first in the homepage carousel.</p>
+        <p class="mt-2 text-xs text-stone-500">Lower numbers appear first within the selected placement.</p>
         <x-input-error :messages="$errors->get('sequence')" />
     </div>
 
     <label class="flex items-center gap-3">
         <input class="size-5 rounded border-stone-300 text-stone-900 focus:ring-stone-300" name="is_active" type="checkbox" value="1" @checked(old('is_active', $banner?->is_active ?? true))>
-        <span class="text-sm font-semibold">Show this banner on the homepage</span>
+        <span class="text-sm font-semibold">Show this banner on its selected page</span>
     </label>
 </div>
