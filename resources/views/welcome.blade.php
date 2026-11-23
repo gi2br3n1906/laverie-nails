@@ -79,15 +79,15 @@
     <section class="bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="shape-heading">
         <div class="mx-auto max-w-screen-2xl">
             <div class="text-center"><h2 class="font-display text-4xl tracking-wide text-[#0C1C39] sm:text-6xl" id="shape-heading">{{ __('ui.home.shop_by_style') }}</h2></div>
-            <div class="mt-12 flex gap-6 overflow-x-auto pb-4 sm:justify-between sm:gap-4">
+            <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 justify-items-center gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-5 md:gap-6">
                 @forelse ($styleCategories as $category)
-                    <x-storefront.shape-card :name="$category->name" :category="$category->slug" :image="$category->products->first()?->primaryImage?->image_path" />
+                    <x-storefront.shape-card :name="$category->name" :category="$category->slug" />
                 @empty
-                    <x-storefront.shape-card name="Classy" shape="Almond" variant="almond" />
-                    <x-storefront.shape-card name="Coquette" shape="Coffin" variant="coffin" />
-                    <x-storefront.shape-card name="Y2K" shape="Oval" variant="oval" />
-                    <x-storefront.shape-card name="Floral" shape="Squoval" variant="squoval" />
-                    <x-storefront.shape-card name="Grunge" shape="Square" variant="square" />
+                    <x-storefront.shape-card name="Classy" />
+                    <x-storefront.shape-card name="Coquette" />
+                    <x-storefront.shape-card name="Y2K" />
+                    <x-storefront.shape-card name="Floral" />
+                    <x-storefront.shape-card name="Grunge" />
                 @endforelse
             </div>
         </div>

@@ -242,8 +242,36 @@ class HomepageTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('Editorial Classy')
+            ->assertSee('images/styles/'.$visible->slug.'.webp', false)
+            ->assertSee(route('products.index', ['category' => $visible->slug]), false)
             ->assertDontSee('Hidden Coquette')
             ->assertDontSee('Empty Y2K');
+    }
+
+    public function test_shop_by_style_fallback_uses_default_local_webp_assets_and_category_filters(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        foreach (['classy', 'coquette', 'y2k', 'floral', 'grunge'] as $slug) {
+            $this->assertStringContainsString('src="'.asset('images/styles/'.$slug.'.webp').'"', $content);
+            $this->assertStringContainsString(route('products.index', ['category' => $slug]), $content);
+        }
+    }
+
+    public function test_shop_by_style_uses_transparent_local_webp_assets_and_places_labels_below_images(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+        preg_match('/<section[^>]*aria-labelledby="shape-heading".*?<\/section>/s', $content, $section);
+
+        $this->assertNotEmpty($section);
+        $this->assertStringContainsString('md:grid-cols-5', $section[0]);
+        $this->assertStringContainsString('grid-cols-2', $section[0]);
+        $this->assertStringContainsString('h-28 w-full items-center justify-center bg-white sm:h-36 md:h-40', $section[0]);
+        $this->assertStringContainsString('max-h-full w-auto object-contain transition-transform duration-200 group-hover:-translate-y-1', $section[0]);
+        $this->assertStringContainsString('mt-3 text-center font-serif text-sm text-[#0C1C39] sm:text-base', $section[0]);
+        $this->assertStringNotContainsString('rounded-full', $section[0]);
+        $this->assertStringNotContainsString('object-cover', $section[0]);
+        $this->assertStringContainsString('images/styles/classy.webp', $section[0]);
     }
 
     public function test_our_collection_uses_latest_active_products_and_supports_missing_image_fallback(): void
