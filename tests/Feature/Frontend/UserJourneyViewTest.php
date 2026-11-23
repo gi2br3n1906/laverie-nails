@@ -23,10 +23,13 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('video tutorial')
             ->assertSee('Video tutorial coming soon')
             ->assertSee('data-guidance-video-placeholder', false)
-            ->assertSeeInOrder(['Measure 1', 'measure-1.svg', 'Measure 2', 'measure-2.svg'])
+            ->assertSeeInOrder(['Measure 1 — Measuring Tape', 'A1.png', 'A2.png', 'A3.png', 'Measure 2 — Paper / Washi Tape & Ruler', 'B1.png', 'B2.png', 'B3.png'])
             ->assertSee('data-guidance-image-grid="measure-1"', false)
             ->assertSee('data-guidance-image-grid="measure-2"', false)
-            ->assertSee('aspect-[3/4]', false)
+            ->assertSee('aspect-[4/3]', false)
+            ->assertSee('loading="lazy"', false)
+            ->assertSee('Place the measuring tape horizontally across the widest part of your nail bed, following the natural curve of your nail. Avoid pulling the tape tight or flattening it against your nail. Record your measurements.')
+            ->assertSee('Hold a piece of paper or washi tape against your nail bed, following the natural curvature of your nail without pulling it tight. Mark the two widest points of your nail with a pen, then use a ruler to measure the distance between the marks.')
             ->assertDontSee('Your perfect fit starts here')
             ->assertDontSee('Step one')
             ->assertDontSee('Step two')
@@ -38,6 +41,19 @@ class UserJourneyViewTest extends TestCase
             ->assertDontSee('Mulai pengukuran')
             ->assertDontSee('Tiga langkah')
             ->assertDontSee('Persiapkan, ukur, lalu catat');
+    }
+
+    public function test_guidance_page_renders_the_measurement_methods_in_indonesian(): void
+    {
+        $this->withSession(['locale' => 'id'])
+            ->get(route('guidance'))
+            ->assertOk()
+            ->assertSee('Pengukuran 1 — Pita Ukur')
+            ->assertSee('Pengukuran 2 — Kertas / Washi Tape & Penggaris')
+            ->assertSee('Letakkan pita ukur secara horizontal melintasi bagian terlebar dari dasar kuku Anda, mengikuti lengkungan alami kuku.')
+            ->assertSee('Tempelkan selembar kertas atau washi tape pada dasar kuku Anda, mengikuti lengkungan alami kuku tanpa menariknya terlalu kencang.')
+            ->assertSee('A1.png')
+            ->assertSee('B3.png');
     }
 
     public function test_input_page_has_five_finger_fields_per_hand_and_scoped_toggle_hooks(): void

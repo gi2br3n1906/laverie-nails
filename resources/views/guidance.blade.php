@@ -10,9 +10,9 @@
                 <h2 class="font-display text-4xl font-semibold text-[#0C1C39] sm:text-5xl">{{ __('ui.guidance.measure_1') }}</h2>
             </div>
             <div class="mt-8 grid w-full grid-cols-3 gap-2 sm:gap-3 md:gap-4" data-guidance-image-grid="measure-1">
-                @for ($image = 1; $image <= 3; $image++)
-                    <img class="aspect-[3/4] h-auto w-full rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-contain shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/measure-1.svg') }}" alt="{{ __('ui.guidance.measure_1_alt', ['number' => $image]) }}">
-                @endfor
+                @foreach (['A1.png', 'A2.png', 'A3.png'] as $image => $filename)
+                    <img class="aspect-[4/3] h-auto w-full rounded-xl border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/'.$filename) }}" alt="{{ __('ui.guidance.measure_1_alt', ['number' => $image + 1]) }}" loading="lazy">
+                @endforeach
             </div>
             <p class="mt-7 max-w-2xl text-xs leading-6 text-stone-600 md:text-sm md:leading-7">{{ __('ui.guidance.measure_1_copy') }}</p>
         </article>
@@ -22,9 +22,9 @@
                 <h2 class="font-display text-4xl font-semibold text-[#0C1C39] sm:text-5xl">{{ __('ui.guidance.measure_2') }}</h2>
             </div>
             <div class="mt-8 grid w-full grid-cols-3 gap-2 sm:gap-3 md:gap-4" data-guidance-image-grid="measure-2">
-                @for ($image = 1; $image <= 3; $image++)
-                    <img class="aspect-[3/4] h-auto w-full rounded-[1.5rem] border border-[#92A1B5]/40 bg-white object-contain shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/measure-2.svg') }}" alt="{{ __('ui.guidance.measure_2_alt', ['number' => $image]) }}">
-                @endfor
+                @foreach (['B1.png', 'B2.png', 'B3.png'] as $image => $filename)
+                    <img class="aspect-[4/3] h-auto w-full rounded-xl border border-[#92A1B5]/40 bg-white object-cover shadow-xl shadow-[#0C1C39]/5" src="{{ asset('images/'.$filename) }}" alt="{{ __('ui.guidance.measure_2_alt', ['number' => $image + 1]) }}" loading="lazy">
+                @endforeach
             </div>
             <p class="mt-7 max-w-2xl text-xs leading-6 text-stone-600 md:text-sm md:leading-7">{{ __('ui.guidance.measure_2_copy') }}</p>
         </article>
