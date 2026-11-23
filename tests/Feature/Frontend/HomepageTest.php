@@ -107,6 +107,38 @@ class HomepageTest extends TestCase
         $this->assertStringContainsString('prefers-reduced-motion: reduce', $carouselScript);
     }
 
+    public function test_homepage_mobile_carousels_return_to_original_desktop_grids(): void
+    {
+        $content = $this->get(route('home'))->assertOk()->getContent();
+
+        preg_match('/<div[^>]*data-homepage-size-grid[^>]*>/', $content, $prettyPicks);
+        preg_match('/<div[^>]*class="[^"]*md:grid md:grid-cols-5[^"]*"[^>]*>/', $content, $styles);
+        preg_match('/<section[^>]*aria-labelledby="reviews-heading"[^>]*>.*?(<div[^>]*md:grid md:grid-cols-3[^>]*>)/s', $content, $reviews);
+        preg_match('/<div[^>]*class="[^"]*md:grid-cols-4 md:gap-x-6[^"]*"/', $content, $collection);
+
+        $this->assertNotEmpty($prettyPicks);
+        $this->assertNotEmpty($styles);
+        $this->assertNotEmpty($reviews);
+        $this->assertNotEmpty($collection);
+
+        foreach ([$prettyPicks[0], $styles[0], $reviews[0]] as $scrollContainer) {
+            $this->assertStringContainsString('flex', $scrollContainer);
+            $this->assertStringContainsString('overflow-x-auto', $scrollContainer);
+            $this->assertStringContainsString('snap-x snap-mandatory scroll-smooth gap-4', $scrollContainer);
+            $this->assertStringContainsString('[&::-webkit-scrollbar]:hidden', $scrollContainer);
+            $this->assertStringContainsString('md:overflow-visible', $scrollContainer);
+        }
+
+        $this->assertStringContainsString('w-[68%] shrink-0 snap-start text-center sm:w-[45%] md:w-auto', $content);
+        $this->assertStringContainsString('w-[80%] shrink-0 snap-start', $content);
+        $this->assertStringContainsString('sm:w-[55%]', $content);
+        $this->assertStringContainsString('md:w-auto md:overflow-visible', $content);
+        $this->assertStringContainsString('w-[32%] shrink-0 snap-start', $content);
+        $this->assertStringContainsString('md:grid-cols-5 md:gap-6', $styles[0]);
+        $this->assertStringContainsString('md:grid-cols-3 md:gap-5', $reviews[0]);
+        $this->assertStringContainsString('grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6', $collection[0]);
+    }
+
     public function test_homepage_footer_contains_shop_brand_help_center_social_and_newsletter_content(): void
     {
         $this->get(route('home'))
@@ -265,7 +297,7 @@ class HomepageTest extends TestCase
 
         $this->assertNotEmpty($section);
         $this->assertStringContainsString('md:grid-cols-5', $section[0]);
-        $this->assertStringContainsString('grid-cols-2', $section[0]);
+        $this->assertStringContainsString('flex w-[32%] shrink-0 snap-start', $section[0]);
         $this->assertStringContainsString('h-28 w-full items-center justify-center bg-white sm:h-36 md:h-40', $section[0]);
         $this->assertStringContainsString('max-h-full w-auto object-contain transition-transform duration-200 group-hover:-translate-y-1', $section[0]);
         $this->assertStringContainsString('mt-3 text-center font-serif text-sm text-[#0C1C39] sm:text-base', $section[0]);

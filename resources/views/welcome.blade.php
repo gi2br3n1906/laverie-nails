@@ -62,9 +62,9 @@
                 <h2 class="font-display text-4xl font-semibold tracking-wide text-[#0C1C39] sm:text-6xl" id="featured-sets-heading">{{ __('ui.home.pretty_picks') }}</h2>
             </div>
 
-            <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-5" data-homepage-size-grid>
+            <div class="mt-12 flex snap-x snap-mandatory scroll-smooth gap-4 overflow-x-auto overflow-y-hidden pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-3 md:gap-x-6 md:gap-y-10 md:overflow-visible md:pb-0 lg:grid-cols-5" data-homepage-size-grid>
                 @forelse ($sizeProducts as $catalog)
-                    <x-storefront.product-card :product="$catalog" :badge="__('ui.home.pretty_pick_badge')" :homepage-card="false" />
+                    <x-storefront.product-card :product="$catalog" :badge="__('ui.home.pretty_pick_badge')" :homepage-card="false" scroll-card="pretty-picks" />
                 @empty
                     @for ($card = 0; $card < 5; $card++)<x-storefront.size-product-placeholder />@endfor
                 @endforelse
@@ -79,7 +79,7 @@
     <section class="bg-white px-5 py-16 sm:px-8 sm:py-24 lg:px-12" aria-labelledby="shape-heading">
         <div class="mx-auto max-w-screen-2xl">
             <div class="text-center"><h2 class="font-display text-4xl tracking-wide text-[#0C1C39] sm:text-6xl" id="shape-heading">{{ __('ui.home.shop_by_style') }}</h2></div>
-            <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 justify-items-center gap-x-6 gap-y-8 sm:grid-cols-3 md:grid-cols-5 md:gap-6">
+            <div class="mx-auto mt-12 flex max-w-5xl snap-x snap-mandatory scroll-smooth gap-4 overflow-x-auto overflow-y-hidden pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-5 md:gap-6 md:overflow-visible md:pb-0">
                 @forelse ($styleCategories as $category)
                     <x-storefront.shape-card :name="$category->name" :category="$category->slug" />
                 @empty
@@ -109,7 +109,7 @@
         <div class="mx-auto max-w-screen-2xl">
             @php($hasDemoReviews = $reviews->contains(fn ($review) => $review->is_demo))
             <div class="text-center"><h2 class="mx-auto font-script text-6xl leading-none text-[#0C1C39] sm:text-8xl" id="reviews-heading">{{ __('ui.home.reviews_heading') }}</h2><p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-stone-600 sm:text-base" @if ($hasDemoReviews) data-homepage-reviews-demo @endif>{{ $hasDemoReviews ? __('ui.home.reviews_demo') : __('ui.home.reviews_real') }}</p></div>
-            <div class="mt-12 grid gap-5 md:grid-cols-3">
+            <div class="mt-12 flex snap-x snap-mandatory scroll-smooth gap-4 overflow-x-auto overflow-y-hidden pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:pb-0">
                 @forelse ($reviews as $review)
                     <x-storefront.review-card
                         :initials="str($review->user->name)->substr(0, 2)->upper()"
@@ -118,6 +118,7 @@
                         :text="$review->comment"
                         :tone="$loop->iteration === 2 ? 'sand' : ($loop->iteration === 3 ? 'sage' : 'rose')"
                         :is-demo="$review->is_demo"
+                        scroll-card
                     />
                 @empty
                     @for ($card = 0; $card < 3; $card++)<x-storefront.review-placeholder />@endfor

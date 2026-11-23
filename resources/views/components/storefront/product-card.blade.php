@@ -1,8 +1,8 @@
-@props(['product', 'badge' => null, 'homepageCard' => true])
+@props(['product', 'badge' => null, 'homepageCard' => true, 'scrollCard' => false])
 
 @php($badgeLabel = $badge ?? __('ui.product.badge_default'))
 
-<article class="group min-w-0" @if ($homepageCard) data-homepage-product-card @endif @if ($homepageCard === false) data-recommended-product-card @endif>
+<article @class(['group min-w-0', 'w-[68%] shrink-0 snap-start sm:w-[45%] md:w-auto md:overflow-visible' => $scrollCard === 'pretty-picks']) @if ($homepageCard) data-homepage-product-card @endif @if ($homepageCard === false) data-recommended-product-card @endif>
     <div class="relative overflow-hidden rounded-[1.5rem] bg-[#EAF0F6]">
         <a class="block aspect-square sm:aspect-[4/5]" href="{{ route('storefront.products.show', $product) }}" aria-label="{{ __('ui.product.view_aria', ['name' => $product->name]) }}">
             @if ($product->primaryImage)

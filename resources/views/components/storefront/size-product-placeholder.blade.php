@@ -1,4 +1,4 @@
-<article class="min-w-0 text-center" aria-label="Produk Laverie segera hadir" data-homepage-size-product>
+<article class="w-[68%] shrink-0 snap-start text-center sm:w-[45%] md:w-auto md:overflow-visible" aria-label="Produk Laverie segera hadir" data-homepage-size-product>
     <div class="grid aspect-square place-items-center overflow-hidden bg-gradient-to-br from-[#EAF0F6] via-[#F8FAFC] to-[#D9E4F0]" aria-hidden="true">
         <div class="flex -rotate-6 items-end gap-1.5 opacity-80">
             <span class="h-16 w-6 rounded-t-[70%] rounded-b-[40%] bg-white/70 shadow-lg sm:h-20 sm:w-7"></span>

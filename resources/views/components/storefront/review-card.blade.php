@@ -1,4 +1,4 @@
-@props(['initials', 'name', 'title', 'text', 'tone' => 'rose', 'isDemo' => false])
+@props(['initials', 'name', 'title', 'text', 'tone' => 'rose', 'isDemo' => false, 'scrollCard' => false])
 
 @php
     $toneClass = match ($tone) {
@@ -8,7 +8,7 @@
     };
 @endphp
 
-<article class="rounded-[1.75rem] border border-stone-200 bg-white p-5 sm:p-6" data-homepage-review-card>
+<article @class(['w-[80%] shrink-0 snap-start rounded-[1.75rem] border border-stone-200 bg-white p-5 sm:w-[55%] sm:p-6 md:w-auto md:overflow-visible' => $scrollCard, 'rounded-[1.75rem] border border-stone-200 bg-white p-5 sm:p-6' => ! $scrollCard]) data-homepage-review-card>
     <div @class(['grid aspect-[4/3] place-items-center rounded-2xl bg-gradient-to-br', $toneClass])>
         <span class="grid size-20 place-items-center rounded-full border border-white/70 bg-white/50 font-serif text-3xl">{{ $initials }}</span>
     </div>
