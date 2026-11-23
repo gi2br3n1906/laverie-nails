@@ -23,7 +23,7 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('video tutorial')
             ->assertSee('Video tutorial coming soon')
             ->assertSee('data-guidance-video-placeholder', false)
-            ->assertSeeInOrder(['Measure 1 — Measuring Tape', 'A1.png', 'A2.png', 'A3.png', 'Measure 2 — Paper / Washi Tape & Ruler', 'B1.png', 'B2.png', 'B3.png'])
+            ->assertSeeInOrder(['Measure 1 — Measuring Tape', 'A1.webp', 'A2.webp', 'A3.webp', 'Measure 2 — Paper / Washi Tape & Ruler', 'B1.webp', 'B2.webp', 'B3.webp'])
             ->assertSee('data-guidance-image-grid="measure-1"', false)
             ->assertSee('data-guidance-image-grid="measure-2"', false)
             ->assertSee('aspect-[4/3]', false)
@@ -52,8 +52,8 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('Pengukuran 2 — Kertas / Washi Tape & Penggaris')
             ->assertSee('Letakkan pita ukur secara horizontal melintasi bagian terlebar dari dasar kuku Anda, mengikuti lengkungan alami kuku.')
             ->assertSee('Tempelkan selembar kertas atau washi tape pada dasar kuku Anda, mengikuti lengkungan alami kuku tanpa menariknya terlalu kencang.')
-            ->assertSee('A1.png')
-            ->assertSee('B3.png');
+            ->assertSee('A1.webp')
+            ->assertSee('B3.webp');
     }
 
     public function test_input_page_has_five_finger_fields_per_hand_and_scoped_toggle_hooks(): void
