@@ -130,13 +130,16 @@ class HomepageTest extends TestCase
         }
 
         $this->assertStringContainsString('w-[68%] shrink-0 snap-start text-center sm:w-[45%] md:w-auto', $content);
-        $this->assertStringContainsString('w-[80%] shrink-0 snap-start', $content);
-        $this->assertStringContainsString('sm:w-[55%]', $content);
-        $this->assertStringContainsString('md:w-auto md:overflow-visible', $content);
+        $this->assertStringContainsString('w-[66%] shrink-0 snap-start', $content);
+        $this->assertStringContainsString('sm:w-[46%]', $content);
+        $this->assertStringContainsString('md:w-auto md:overflow-visible md:p-5', $content);
         $this->assertStringContainsString('w-[32%] shrink-0 snap-start', $content);
         $this->assertStringContainsString('md:grid-cols-5 md:gap-6', $styles[0]);
         $this->assertStringContainsString('md:grid-cols-3 md:gap-5', $reviews[0]);
         $this->assertStringContainsString('grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6', $collection[0]);
+        $this->assertStringContainsString('text-xs leading-relaxed', $content);
+        $this->assertStringContainsString('sm:text-sm', $content);
+        $this->assertStringContainsString('line-clamp-3', $content);
     }
 
     public function test_homepage_footer_contains_shop_brand_help_center_social_and_newsletter_content(): void
