@@ -130,8 +130,8 @@ class HomepageTest extends TestCase
         }
 
         $this->assertStringContainsString('w-[68%] shrink-0 snap-start text-center sm:w-[45%] md:w-auto', $content);
-        $this->assertStringContainsString('w-[66%] shrink-0 snap-start', $content);
-        $this->assertStringContainsString('sm:w-[46%]', $content);
+        $this->assertStringContainsString('w-[60%] shrink-0 snap-start', $content);
+        $this->assertStringContainsString('sm:w-[42%]', $content);
         $this->assertStringContainsString('md:w-auto md:overflow-visible md:p-5', $content);
         $this->assertStringContainsString('w-[32%] shrink-0 snap-start', $content);
         $this->assertStringContainsString('md:grid-cols-5 md:gap-6', $styles[0]);
