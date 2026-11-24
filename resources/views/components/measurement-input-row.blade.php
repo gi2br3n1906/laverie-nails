@@ -1,10 +1,10 @@
-@props(['hand', 'finger', 'label', 'translation', 'required' => true])
+@props(['hand', 'finger', 'label', 'required' => true])
 
 @php($field = $hand.'_hand_data.'.$finger)
 
 <div class="grid gap-3 rounded-2xl border border-[#92A1B5]/40 bg-white p-4 shadow-sm transition focus-within:border-[#92A1B5] focus-within:shadow-md sm:grid-cols-[1fr_9rem] sm:items-center">
     <label for="{{ $hand }}_{{ $finger }}">
-        <span class="block font-semibold text-[#0C1C39]">{{ $label }} <em class="font-normal text-[#92A1B5]">({{ $translation }})</em></span>
+        <span class="block font-semibold text-[#0C1C39]">{{ $label }}</span>
     </label>
     <div>
         <div class="relative">

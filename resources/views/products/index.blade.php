@@ -81,11 +81,11 @@
         </div>
     @endif
 
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-10 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4" data-product-catalog-grid>
         @forelse ($catalogs as $product)
-            <x-storefront.product-card :product="$product" :badge="__('ui.catalog.badge')" :homepage-card="false" />
+            <x-storefront.product-card :product="$product" :badge="__('ui.catalog.badge')" :homepage-card="false" compact="catalog" />
         @empty
-            <div class="rounded-3xl border border-dashed border-stone-300 bg-white p-12 text-center sm:col-span-2 lg:col-span-3">
+            <div class="col-span-2 rounded-3xl border border-dashed border-stone-300 bg-white p-6 text-center sm:p-12 md:col-span-3 lg:col-span-4">
                 <p class="font-serif text-2xl font-semibold">{{ __('ui.catalog.empty_title') }}</p>
                                 <p class="mt-2 text-stone-500">{{ __('ui.catalog.empty_copy') }}</p>
                 <a class="mt-6 inline-flex rounded-full bg-[#0C1C39] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#192B48]" href="{{ route('products.index') }}">{{ __('ui.catalog.back_all') }}</a>

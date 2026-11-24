@@ -63,20 +63,15 @@ class UserJourneyViewTest extends TestCase
             ->assertSee('Sizing')
             ->assertSee('enter the nail measurement in milimeters')
             ->assertSee('sizes of the fingernails on the right and left hands are different')
-            ->assertSee('<em', false)
+            ->assertDontSee('(thumb)')
             ->assertSee('← Back')
             ->assertSee('>Result<', false)
             ->assertDontSee('Find your perfect fit')
             ->assertSee('Thumb')
-            ->assertSee('thumb')
             ->assertSee('Index')
-            ->assertSee('index')
             ->assertSee('Middle')
-            ->assertSee('middle')
             ->assertSee('Ring')
-            ->assertSee('ring')
             ->assertSee('Pinky')
-            ->assertSee('pinky')
             ->assertDontSee('Wajib diisi lengkap untuk lima jari.')
             ->assertDontSee('Aktifkan untuk mengukur tangan kiri secara independen.')
             ->assertDontSee('Isi lengkap ketika toggle diaktifkan.')
@@ -90,6 +85,16 @@ class UserJourneyViewTest extends TestCase
                 ->assertSee('name="right_hand_data['.$finger.']"', false)
                 ->assertSee('name="left_hand_data['.$finger.']"', false);
         }
+
+        $this->withSession(['locale' => 'id'])->get(route('measurements.create'))
+            ->assertOk()
+            ->assertSee('Jempol')
+            ->assertDontSee('>Jempol <em', false)
+            ->assertDontSee('(jempol)')
+            ->assertDontSee('(telunjuk)')
+            ->assertDontSee('(tengah)')
+            ->assertDontSee('(manis)')
+            ->assertDontSee('(kelingking)');
 
         $response
             ->assertSee('min="0"', false)

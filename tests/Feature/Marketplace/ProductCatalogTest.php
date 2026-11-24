@@ -27,6 +27,9 @@ class ProductCatalogTest extends TestCase
             ->assertDontSee('Official Laverie collection')
             ->assertDontSee('Koleksi Press-On Nails')
             ->assertSee('PUBLIC-LAVERIE-CATALOG')
+            ->assertSee('data-product-catalog-grid', false)
+            ->assertSee('grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4', false)
+            ->assertSee('text-[0.5rem] leading-none tracking-normal', false)
             ->assertDontSee('INACTIVE-CATALOG');
     }
 

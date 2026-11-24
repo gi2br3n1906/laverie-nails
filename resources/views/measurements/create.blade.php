@@ -1,11 +1,11 @@
 <x-layouts.app :title="__('ui.measurements.create_title')">
     @php
         $fingers = [
-            'jempol' => [__('ui.common.finger_thumb'), 'thumb'],
-            'telunjuk' => [__('ui.common.finger_index'), 'index'],
-            'tengah' => [__('ui.common.finger_middle'), 'middle'],
-            'manis' => [__('ui.common.finger_ring'), 'ring'],
-            'kelingking' => [__('ui.common.finger_pinky'), 'pinky'],
+            'jempol' => __('ui.common.finger_thumb'),
+            'telunjuk' => __('ui.common.finger_index'),
+            'tengah' => __('ui.common.finger_middle'),
+            'manis' => __('ui.common.finger_ring'),
+            'kelingking' => __('ui.common.finger_pinky'),
         ];
     @endphp
 
@@ -19,7 +19,7 @@
             @csrf
             <section class="rounded-[2rem] border border-[#92A1B5]/40 bg-[#EAF0F6]/60 p-5 sm:p-8" aria-labelledby="right-hand-heading">
                 <div class="flex items-center gap-4"><span class="grid size-12 place-items-center rounded-2xl bg-[#0C1C39] font-display text-xl font-bold text-white">R</span><h2 class="font-display text-3xl font-semibold text-[#0C1C39]" id="right-hand-heading">{{ __('ui.measurements.right_hand') }}</h2></div>
-                <div class="mt-6 grid gap-4">@foreach ($fingers as $finger => [$label, $translation])<x-measurement-input-row hand="right" :finger="$finger" :label="$label" :translation="$translation" />@endforeach</div>
+                <div class="mt-6 grid gap-4">@foreach ($fingers as $finger => $label)<x-measurement-input-row hand="right" :finger="$finger" :label="$label" />@endforeach</div>
             </section>
 
             <section class="rounded-[2rem] border border-[#92A1B5]/40 bg-white p-5 shadow-sm sm:p-8">
@@ -33,7 +33,7 @@
                     <div class="overflow-hidden">
                         <div class="mt-8 border-t border-[#92A1B5]/30 pt-8">
                             <div class="flex items-center gap-4"><span class="grid size-12 place-items-center rounded-2xl bg-[#0C1C39] font-display text-xl font-bold text-white">L</span><h2 class="font-display text-3xl font-semibold text-[#0C1C39]">{{ __('ui.measurements.left_hand') }}</h2></div>
-                            <div class="mt-6 grid gap-4">@foreach ($fingers as $finger => [$label, $translation])<x-measurement-input-row hand="left" :finger="$finger" :label="$label" :translation="$translation" :required="false" />@endforeach</div>
+                            <div class="mt-6 grid gap-4">@foreach ($fingers as $finger => $label)<x-measurement-input-row hand="left" :finger="$finger" :label="$label" :required="false" />@endforeach</div>
                         </div>
                     </div>
                 </div>
